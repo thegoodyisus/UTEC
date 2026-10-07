@@ -1,0 +1,5 @@
+{
+  "tipoDoc": "RUC",
+  "documento": "{{rucComprador}}",
+  "uso": "comprador"
+}

@@ -1,0 +1,136 @@
+/* ============================================================
+   Componente: list-row + section-header
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (movimientos / gestión de pagos)
+   Fila de lista genérica: leading (ícono/avatar) + textos + trailing (monto/acción).
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+/* ---- Encabezado de sección con acción ---- */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-2) 0;
+}
+.section-header__title {
+  margin: 0;
+  font-family: var(--font-family-titles);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+.section-header__action {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border: none;
+  background: none;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+.section-header__action svg { width: 16px; height: 16px; }
+.section-header__action:hover { color: var(--color-primary); }
+.section-header__action:active,
+.section-header__action.is-active { color: var(--color-primary); opacity: 0.8; }
+.section-header__action:focus-visible,
+.section-header__action.is-focused { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-small); }
+.section-header__action:disabled,
+.section-header__action.is-disabled { color: var(--color-disabled-text); cursor: not-allowed; }
+
+/* ---- Fila de lista ---- */
+.list-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-surface-container-low);
+  box-sizing: border-box;
+  text-align: left;
+  background: none;
+  border-left: none; border-right: none; border-top: none;
+}
+
+.list-row__leading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 auto;
+  color: var(--color-text);
+}
+.list-row__leading svg { width: 22px; height: 22px; }
+
+/* Leading circular (avatar/programado) */
+.list-row__leading--circle {
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-container-low);
+}
+
+.list-row__content { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.list-row__title {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.list-row__subtitle {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body-small);
+  color: var(--color-text-secondary);
+}
+
+.list-row__trailing {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+}
+.list-row__amount {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  white-space: nowrap;
+}
+.list-row__amount--negative { color: var(--color-danger); }
+.list-row__chevron { color: var(--color-text-secondary); }
+.list-row__chevron svg { width: 18px; height: 18px; }
+
+/* Botón editar circular (programados) */
+.list-row__edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--color-primary);
+  flex: 0 0 auto;
+}
+.list-row__edit svg { width: 16px; height: 16px; }
+.list-row__edit:hover { background: rgba(19, 92, 64, 0.06); }
+.list-row__edit:active,
+.list-row__edit.is-active { background: rgba(19, 92, 64, 0.12); }
+.list-row__edit:focus-visible,
+.list-row__edit.is-focused { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.list-row__edit:disabled,
+.list-row__edit.is-disabled { border-color: var(--color-disabled-border); color: var(--color-disabled-text); cursor: not-allowed; }
+
+/* Estados de la fila completa (clicable) */
+.list-row:hover { background: var(--color-surface-container-low); }
+.list-row.is-active,
+.list-row:active { background: var(--color-secondary-container); }
+.list-row:focus-visible,
+.list-row.is-focused { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+.list-row.is-disabled { opacity: var(--opacity-disabled); pointer-events: none; }

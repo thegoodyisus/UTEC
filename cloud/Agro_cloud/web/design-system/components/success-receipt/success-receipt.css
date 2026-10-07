@@ -1,0 +1,71 @@
+/* ============================================================
+   Componente: success-receipt
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (desembolso exitoso)
+   Comprobante de éxito: tarjeta blanca con monto + acciones, sobre verde.
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.success-receipt {
+  width: 100%;
+  max-width: 430px;
+  padding: var(--space-8) var(--space-6) 0;
+  background: var(--color-secondary); /* fondo verde */
+  box-sizing: border-box;
+}
+
+.success-receipt__card {
+  background: var(--color-surface);
+  border-radius: var(--radius-xlarge);
+  padding: var(--space-6);
+  text-align: center;
+}
+.success-receipt__icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 64px; height: 64px; margin: 0 auto var(--space-4);
+}
+.success-receipt__icon svg { width: 56px; height: 56px; }
+.success-receipt__caption { margin: 0; font-family: var(--font-family-base); font-size: var(--font-size-md); color: var(--color-text); }
+.success-receipt__caption strong { font-weight: var(--font-weight-bold); }
+.success-receipt__amount {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  margin: var(--space-2) 0;
+  font-family: var(--font-family-titles);
+  font-size: 40px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+.success-receipt__amount svg { width: 28px; height: 28px; color: var(--color-success); }
+.success-receipt__meta { margin: 0; font-family: var(--font-family-base); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.success-receipt__code { margin: var(--space-2) 0 var(--space-4); font-family: var(--font-family-base); font-size: var(--font-size-md); color: var(--color-text); }
+.success-receipt__code strong { font-weight: var(--font-weight-bold); }
+
+/* Botón "Ver detalle" pill verde claro */
+.success-receipt__detail {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-2) var(--space-5);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-secondary-container);
+  color: var(--color-secondary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+}
+.success-receipt__detail svg { width: 18px; height: 18px; }
+
+/* Divisor punteado + acciones descargar/compartir */
+.success-receipt__divider { border: none; border-top: 1.5px dashed var(--color-border); margin: var(--space-5) 0 0; }
+.success-receipt__actions {
+  display: flex;
+  justify-content: space-around;
+  padding: var(--space-4) 0 var(--space-6);
+}
+.success-receipt__action {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  border: none; background: none;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}
+.success-receipt__action svg { width: 20px; height: 20px; }

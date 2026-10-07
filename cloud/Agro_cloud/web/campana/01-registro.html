@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Registrar campaña</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/text-field/text-field.css" />
+  <link rel="stylesheet" href="../design-system/components/select-field/select-field.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/campana.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <header class="flow-header">
+      <a class="flow-header__back" href="home.html" aria-label="Volver" data-testid="camp-registro-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <div class="progress-bar" role="progressbar" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"><span class="progress-bar__fill" style="width: 33%"></span></div>
+    </header>
+
+    <form class="screen__body" id="form-campana" novalidate>
+      <span class="state-chip" data-testid="camp-estado">BORRADOR</span>
+      <h1 class="screen__title">Registra tu campaña</h1>
+      <p class="screen__subtitle">Cuéntanos qué vas a producir. Podrás editarlo antes de publicar.</p>
+
+      <div class="field-group">
+        <div class="select-field">
+          <label class="select-field__label" for="cultivo">Cultivo</label>
+          <div class="select-field__control">
+            <select class="select-field__select" id="cultivo" data-testid="camp-cultivo"></select>
+            <span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+        </div>
+
+        <div class="select-field">
+          <label class="select-field__label" for="departamento">Departamento</label>
+          <div class="select-field__control">
+            <select class="select-field__select" id="departamento" data-testid="camp-departamento"></select>
+            <span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+        </div>
+        <div class="select-field">
+          <label class="select-field__label" for="provincia">Provincia</label>
+          <div class="select-field__control">
+            <select class="select-field__select" id="provincia" data-testid="camp-provincia"></select>
+            <span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+        </div>
+        <div class="select-field">
+          <label class="select-field__label" for="distrito">Distrito</label>
+          <div class="select-field__control">
+            <select class="select-field__select" id="distrito" data-testid="camp-distrito"></select>
+            <span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+        </div>
+
+        <div class="text-field">
+          <label class="text-field__label" for="cosecha">Fecha estimada de cosecha</label>
+          <input class="text-field__input" id="cosecha" type="date" data-testid="camp-cosecha" />
+        </div>
+
+        <div>
+          <label class="text-field__label" style="display:block; margin-bottom: var(--space-2);">Volumen esperado</label>
+          <div class="input-unit">
+            <div class="text-field">
+              <input class="text-field__input no-spin" id="volumen" type="number" min="1" value="2000" data-testid="camp-volumen" aria-label="Volumen esperado" />
+            </div>
+            <div class="select-field">
+              <div class="select-field__control">
+                <select class="select-field__select" id="unidad" data-testid="camp-unidad">
+                  <option value="kg">kg</option>
+                  <option value="tonelada">tonelada</option>
+                </select>
+                <span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="select-field">
+          <label class="select-field__label" for="logistica">Logística</label>
+          <div class="select-field__control">
+            <select class="select-field__select" id="logistica" data-testid="camp-logistica"></select>
+            <span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+        </div>
+
+        <div class="money-field">
+          <label class="money-field__label" for="capital">Capital que necesitas (opcional)</label>
+          <div class="money-input">
+            <span class="money-input__currency">S/</span>
+            <input id="capital" type="text" inputmode="numeric" placeholder="0" data-testid="camp-capital" aria-label="Capital necesario en soles" />
+          </div>
+        </div>
+
+        <div class="photo-section">
+          <label class="text-field__label">Fotos de tu producción (opcional, jpg o png hasta 5 MB)</label>
+          <p class="mock-note" style="text-align:left; margin:0;">Producto, terreno, parcelas, cosechas anteriores, transporte, etc.</p>
+          <label class="photo-add" data-testid="camp-add-fotos">
+            <span>＋ Agregar fotos</span>
+            <input type="file" id="fotos-input" accept="image/jpeg,image/png" multiple hidden />
+          </label>
+          <div class="photo-grid" id="photo-grid"></div>
+        </div>
+      </div>
+
+      <p class="text-field__error" id="camp-error" style="display:none;">Revisa: el volumen debe ser mayor a cero y la fecha válida.</p>
+    </form>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="camp-continuar" data-testid="camp-continuar-button">Continuar</button>
+      <p class="mock-note">Las fotos se suben a S3 y Amazon Rekognition reconoce el cultivo.</p>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/campana.js"></script>
+  <script>
+    var sel = function (id) { return document.getElementById(id); };
+    var capital = sel("capital");
+    var grid = sel("photo-grid");
+    var err = sel("camp-error");
+    var fotos = [];
+    var subiendo = 0;
+    function opciones(select, lista, valor) {
+      select.innerHTML = lista.map(function (x) { return '<option value="' + Agro.escapar(x[0]) + '">' + Agro.escapar(x[1]) + '</option>'; }).join("");
+      if (valor) select.value = valor;
+    }
+    function provincias(dep, valor) {
+      opciones(sel("provincia"), Object.keys(Agro.UBIGEO[dep] || {}).map(function (p) { return [p, p]; }), valor);
+      distritos(sel("provincia").value);
+    }
+    function distritos(prov, valor) {
+      var dep = sel("departamento").value;
+      opciones(sel("distrito"), ((Agro.UBIGEO[dep] || {})[prov] || []).map(function (d) { return [d, d]; }), valor);
+    }
+    function pintarFotos() {
+      grid.innerHTML = fotos.map(function (f, i) {
+        return '<div class="photo-thumb" style="position:relative">' + (f.vista ? '<img src="' + f.vista + '" alt="Foto ' + (i + 1) + '"/>' : '<span class="mock-note">foto ' + (i + 1) + '</span>') +
+          '<span class="mock-note" style="position:absolute;left:4px;bottom:2px;background:#fff;border-radius:6px;padding:0 4px;margin:0;">' + f.estado + '</span></div>';
+      }).join("");
+    }
+    sel("departamento").addEventListener("change", function () { provincias(this.value); });
+    sel("provincia").addEventListener("change", function () { distritos(this.value); });
+    capital.addEventListener("input", function () {
+      var d = capital.value.replace(/[^0-9]/g, "");
+      capital.value = d ? Number(d).toLocaleString("es-PE") : "";
+    });
+
+    Agro.proteger({ fase: "app", rol: "agricultor" }).then(function (ctx) {
+      var b = Agro.borrador();
+      var p = ctx.perfil;
+      return Agro.catalogo().then(function (cat) {
+        //primero los cultivos del agricultor
+        var propios = (p.cultivos || []).filter(function (s) { return cat[s]; });
+        var otros = Object.keys(cat).filter(function (s) { return propios.indexOf(s) < 0; });
+        opciones(sel("cultivo"), propios.map(function (s) { return [s, cat[s].nombre + " (tu cultivo)"]; }).concat(otros.map(function (s) { return [s, cat[s].nombre]; })), b.cultivo);
+        opciones(sel("departamento"), Object.keys(Agro.UBIGEO).map(function (d) { return [d, d]; }), b.departamento || p.departamento);
+        provincias(sel("departamento").value, b.provincia || p.provincia);
+        distritos(sel("provincia").value, b.distrito || p.distrito);
+        opciones(sel("logistica"), [["Recojo", "Recojo en chacra"], ["Envio", "Envío al comprador"]], b.logistica);
+        var futuro = new Date(Date.now() + 90 * 86400000).toISOString().slice(0, 10);
+        sel("cosecha").value = b.cosecha || futuro;
+        sel("cosecha").min = new Date(Date.now() + 86400000).toISOString().slice(0, 10);
+        if (b.volumenKg) { sel("volumen").value = b.unidad === "tonelada" ? b.volumenKg / 1000 : b.volumenKg; sel("unidad").value = b.unidad || "kg"; }
+        if (b.capital) capital.value = Number(b.capital).toLocaleString("es-PE");
+        fotos = (b.fotos || []).map(function (id) { return { id: id, vista: "", estado: "subida" }; });
+        pintarFotos();
+      });
+    }).catch(function (e) { err.textContent = Agro.mensaje(e); err.style.display = "block"; });
+
+    sel("fotos-input").addEventListener("change", function (e) {
+      var b = Agro.borrador();
+      Array.prototype.forEach.call(e.target.files, function (archivo) {
+        if (["image/jpeg", "image/png"].indexOf(archivo.type) < 0 || archivo.size > 5242880) {
+          err.textContent = archivo.name + ": solo jpg o png de hasta 5 MB.";
+          err.style.display = "block";
+          return;
+        }
+        var f = { id: null, vista: URL.createObjectURL(archivo), estado: "subiendo..." };
+        fotos.push(f);
+        subiendo++;
+        pintarFotos();
+        Agro.subirFoto(b.campaniaId, archivo).then(function (id) {
+          f.id = id;
+          f.estado = "subida ✓";
+          var actual = Agro.borrador();
+          Agro.borrador({ fotos: (actual.fotos || []).concat([id]) });
+        }).catch(function (x) {
+          f.estado = "error";
+          err.textContent = Agro.mensaje(x);
+          err.style.display = "block";
+        }).finally(function () { subiendo--; pintarFotos(); });
+      });
+      e.target.value = "";
+    });
+
+    sel("camp-continuar").addEventListener("click", function () {
+      var unidad = sel("unidad").value;
+      var cantidad = Number(sel("volumen").value);
+      var volumenKg = Math.round(unidad === "tonelada" ? cantidad * 1000 : cantidad);
+      var cosecha = sel("cosecha").value;
+      if (!(volumenKg > 0) || !cosecha || cosecha <= new Date().toISOString().slice(0, 10)) {
+        err.textContent = "Revisa: el volumen debe ser mayor a cero y la cosecha una fecha futura.";
+        err.style.display = "block";
+        return;
+      }
+      if (subiendo > 0) { err.textContent = "Espera a que terminen de subir las fotos."; err.style.display = "block"; return; }
+      Agro.borrador({
+        cultivo: sel("cultivo").value, departamento: sel("departamento").value, provincia: sel("provincia").value,
+        distrito: sel("distrito").value, logistica: sel("logistica").value, cosecha: cosecha, volumenKg: volumenKg, unidad: unidad,
+        capital: parseInt((capital.value || "0").replace(/[^0-9]/g, ""), 10) || 0
+      });
+      goTo("02-condiciones.html");
+    });
+  </script>
+</body>
+</html>

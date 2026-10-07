@@ -1,0 +1,13 @@
+{
+  "campaniaId": "{{#guid}}",
+  "cultivo": "papa",
+  "departamento": "Cusco",
+  "provincia": "Cusco",
+  "distrito": "Wanchaq",
+  "cosecha": "2027-06-15",
+  "volumenKg": 2000,
+  "logistica": "Recojo",
+  "capital": "5000.00",
+  "precioAhoraPorKg": "1.80",
+  "precioContraentregaPorKg": "2.10"
+}

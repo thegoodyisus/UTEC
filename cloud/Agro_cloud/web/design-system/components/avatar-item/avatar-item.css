@@ -1,0 +1,65 @@
+/* ============================================================
+   Componente: avatar-item + avatar-list
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (home — Favoritos)
+   Ítem de favorito: avatar circular + nombre.
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.avatar-list {
+  display: flex;
+  gap: var(--space-4);
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+}
+
+.avatar-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-text);
+  flex: 0 0 auto;
+  width: 72px;
+}
+
+.avatar-item__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+.avatar-item__avatar svg,
+.avatar-item__avatar img { width: 34px; height: 34px; }
+
+.avatar-item__name {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body-small);
+  line-height: var(--line-height-small);
+  color: var(--color-text);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 72px;
+}
+
+/* ---- Estados ---- */
+.avatar-item:hover .avatar-item__avatar { box-shadow: var(--shadow-md); }
+.avatar-item:active .avatar-item__avatar,
+.avatar-item.is-active .avatar-item__avatar { transform: scale(0.96); box-shadow: 0 0 0 2px var(--color-secondary); }
+.avatar-item.is-active .avatar-item__name { color: var(--color-secondary); font-weight: var(--font-weight-bold); }
+.avatar-item:focus-visible { outline: none; }
+.avatar-item:focus-visible .avatar-item__avatar,
+.avatar-item.is-focused .avatar-item__avatar { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.avatar-item:disabled,
+.avatar-item.is-disabled { cursor: not-allowed; opacity: var(--opacity-disabled); }
+.avatar-item:disabled .avatar-item__name,
+.avatar-item.is-disabled .avatar-item__name { color: var(--color-disabled-text); }

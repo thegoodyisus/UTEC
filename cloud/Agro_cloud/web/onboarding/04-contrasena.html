@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Crea tu clave</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <header class="flow-header">
+      <a class="flow-header__back" href="cuenta.html" aria-label="Volver" data-testid="contrasena-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <div class="progress-bar" role="progressbar" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"><span class="progress-bar__fill" style="width: 30%"></span></div>
+    </header>
+
+    <div class="screen__body" style="align-items:center; text-align:center;">
+      <h1 class="screen__title" id="pin-title">Crea tu clave numérica</h1>
+      <p class="screen__subtitle">Elige una clave de 6 dígitos para ingresar a AgroCredit.</p>
+
+      <div class="pin-display" id="pin-dots" role="status" aria-label="Dígitos ingresados"></div>
+
+      <div class="keypad" id="keypad" role="group" aria-label="Teclado numérico dinámico"></div>
+      <p class="text-field__error" id="pin-error" style="display:none; text-align:center;"></p>
+      <p class="mock-note">El orden de las teclas cambia cada vez (teclado dinámico). Esta clave será tu contraseña de AgroCredit.</p>
+    </div>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="pin-continuar" data-testid="contrasena-crear-button">Crear clave</button>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    // Fase 1: crear PIN. Fase 2: confirmar PIN. Todo ficticio.
+    var firstPin = null;
+    function start() {
+      initPinPad({
+        keypad: "#keypad",
+        dots: "#pin-dots",
+        length: 6,
+        button: "#pin-continuar",
+        onValid: function (pin) {
+          if (!firstPin) {
+            firstPin = pin;
+            document.getElementById("pin-title").textContent = "Repite tu clave";
+            document.querySelector(".screen__subtitle").textContent = "Confirma los mismos 6 dígitos.";
+            start(); // reconstruye keypad (nuevo orden dinámico)
+          } else if (pin === firstPin) {
+            crearCuenta(pin);
+          } else {
+            firstPin = null;
+            document.getElementById("pin-title").textContent = "Las claves no coinciden";
+            document.querySelector(".screen__subtitle").textContent = "Vuelve a crear tu clave de 6 dígitos.";
+            start();
+          }
+        }
+      });
+    }
+    Agro.proteger({ fase: "registro", paso: "04-contrasena" }).then(start);
+
+    //crea la cuenta en cognito con el pin como clave; el pin no se guarda en el navegador
+    function crearCuenta(pin) {
+      var f = Agro.flujo();
+      var err = document.getElementById("pin-error");
+      var btn = document.getElementById("pin-continuar");
+      btn.disabled = true;
+      btn.textContent = "Creando tu cuenta...";
+      err.style.display = "none";
+      Agro.registrar({ documento: f.cuenta.documento, correo: f.cuenta.correo, pin: pin, rol: f.rol }).then(function () {
+        f.cuenta.registrada = true;
+        Agro.guardarFlujo(f);
+        Agro.completar("04-contrasena");
+        goTo("03-otp.html");
+      }).catch(function (e) {
+        err.innerHTML = Agro.mensaje(e) + (e.code === "UsernameExistsException" ? ' <a href="00b-login.html">Iniciar sesión</a>' : "");
+        err.style.display = "block";
+        btn.textContent = "Crear clave";
+        firstPin = null;
+        document.getElementById("pin-title").textContent = "Crea tu clave numérica";
+        start();
+      });
+    }
+  </script>
+</body>
+</html>

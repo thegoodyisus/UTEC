@@ -1,0 +1,56 @@
+/* ============================================================
+   Design System — Estados estándar
+   Convención de los 4 estados para TODOS los componentes interactivos:
+
+     1. Default   → estilo base (sin clase)
+     2. Active    → .is-active (seleccionado)  +  :active (press físico)
+     3. Focused   → :focus-visible (teclado)   +  .is-focused (para demos)
+     4. Disabled  → :disabled / [disabled] / [aria-disabled="true"]  +  .is-disabled
+                    Disabled SIEMPRE en gris (tokens --color-disabled-*).
+
+   Reglas transversales aplicables por clase utilitaria. Los componentes
+   definen además sus matices propios (color selected verde según botón).
+   ============================================================ */
+
+/* ---- Focused: anillo de foco consistente ---- */
+:where(button, a, input, select, textarea, [tabindex]):focus-visible,
+.is-focused {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---- Disabled: gris + no interactivo (transversal) ---- */
+.is-disabled,
+[disabled],
+[aria-disabled="true"] {
+  cursor: not-allowed !important;
+}
+
+/* Botones / chips / controles deshabilitados en gris */
+.is-disabled:where(button, .btn, .filter-chip, .option-selector__option, .segmented-tabs__tab, .dashed-button),
+button:disabled,
+.btn:disabled {
+  background: var(--color-disabled-bg) !important;
+  border-color: var(--color-disabled-border) !important;
+  color: var(--color-disabled-text) !important;
+  box-shadow: none !important;
+}
+.is-disabled:where(button, .btn) svg,
+button:disabled svg { color: var(--color-disabled-text) !important; }
+
+/* Inputs deshabilitados en gris */
+input:disabled,
+select:disabled,
+textarea:disabled,
+.is-disabled:where(input, select, textarea) {
+  background: var(--color-disabled-bg) !important;
+  border-color: var(--color-disabled-border) !important;
+  color: var(--color-disabled-text) !important;
+}
+
+/* Elementos icónicos / de navegación deshabilitados */
+.is-disabled:where(.quick-action, .list-row, .avatar-item, .account-radio, .bottom-bar__item, .bottom-bar-qr__item),
+[aria-disabled="true"]:where(.quick-action, .list-row, .avatar-item, .account-radio) {
+  opacity: var(--opacity-disabled);
+  pointer-events: none;
+}

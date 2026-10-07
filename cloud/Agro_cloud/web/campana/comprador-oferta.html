@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Registrar oferta</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/campana.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+    <header class="flow-header">
+      <a class="flow-header__back" href="home-comprador.html" aria-label="Volver" data-testid="oferta-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <span style="font-weight: var(--font-weight-bold);">Registrar oferta</span>
+    </header>
+    <div class="screen__body">
+      <h1 class="screen__title" style="color: var(--color-primary);">Registrar oferta</h1>
+      <p class="screen__subtitle">Aquí registrarás tu oferta a un agricultor. Este flujo incluirá el paso "Cómo pagarás los lotes".</p>
+      <div class="offer-group">
+        <div><div class="campaign-card__title">Pantalla en construcción</div>
+        <div class="campaign-card__meta">La definiremos en el siguiente paso, integrando la forma de pago.</div></div>
+      </div>
+    </div>
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" onclick="goTo('home-comprador.html')">Volver al inicio</button>
+    </div>
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/campana.js"></script>
+  <script>
+    //para ofertar primero se elige una campana publicada
+    Agro.proteger({ fase: "app", rol: "comprador" }).then(function () { location.replace("home-comprador.html"); });
+  </script>
+</body>
+</html>

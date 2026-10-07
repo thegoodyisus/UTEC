@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Validación por SMS</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/account-radio-item/account-radio-item.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <header class="flow-header">
+      <a class="flow-header__back" href="00-inicio.html" aria-label="Volver" data-testid="otp-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <div class="progress-bar" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"><span class="progress-bar__fill" style="width: 20%"></span></div>
+    </header>
+
+    <div class="screen__body">
+      <h1 class="screen__title">Ingresa el código</h1>
+      <p class="screen__subtitle" id="otp-texto">Te enviamos un código de 6 dígitos a tu correo.</p>
+
+      <div class="otp-input" role="group" aria-label="Código de verificación">
+        <input class="otp-input__cell" inputmode="numeric" maxlength="1" aria-label="Dígito 1" data-testid="otp-cell-1" />
+        <input class="otp-input__cell" inputmode="numeric" maxlength="1" aria-label="Dígito 2" data-testid="otp-cell-2" />
+        <input class="otp-input__cell" inputmode="numeric" maxlength="1" aria-label="Dígito 3" data-testid="otp-cell-3" />
+        <input class="otp-input__cell" inputmode="numeric" maxlength="1" aria-label="Dígito 4" data-testid="otp-cell-4" />
+        <input class="otp-input__cell" inputmode="numeric" maxlength="1" aria-label="Dígito 5" data-testid="otp-cell-5" />
+        <input class="otp-input__cell" inputmode="numeric" maxlength="1" aria-label="Dígito 6" data-testid="otp-cell-6" />
+      </div>
+
+      <p class="text-field__error" id="otp-error" style="display:none; text-align:center;"></p>
+
+      <div style="display:flex; justify-content:space-between; gap: var(--space-4);">
+        <button class="text-link" type="button" data-testid="otp-reenviar" id="otp-reenviar">Reenviar código</button>
+        <button class="text-link" type="button" data-testid="otp-cambiar" onclick="goTo('cuenta.html')">Usar otro documento</button>
+      </div>
+      <p class="mock-note" id="otp-info"></p>
+    </div>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="otp-validar" data-testid="otp-validar-button">Validar</button>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    //codigo real enviado por cognito al correo
+    var celdas = Array.prototype.slice.call(document.querySelectorAll(".otp-input__cell"));
+    var err = document.getElementById("otp-error");
+    var info = document.getElementById("otp-info");
+    var cuenta = null;
+    celdas.forEach(function (c, i) {
+      c.addEventListener("input", function () { c.value = c.value.replace(/[^0-9]/g, "").slice(0, 1); if (c.value && i < celdas.length - 1) celdas[i + 1].focus(); });
+      c.addEventListener("keydown", function (e) { if (e.key === "Backspace" && !c.value && i > 0) celdas[i - 1].focus(); });
+    });
+    Agro.proteger({ fase: "registro", paso: "03-otp" }).then(function (ctx) {
+      cuenta = ctx.flujo.cuenta;
+      if (cuenta.correo) {
+        var partes = cuenta.correo.split("@");
+        document.getElementById("otp-texto").innerHTML = "Te enviamos un código de 6 dígitos a <strong>" + partes[0].slice(0, 2) + "***@" + partes[1] + "</strong>.";
+      }
+    });
+    document.getElementById("otp-validar").addEventListener("click", function () {
+      var codigo = celdas.map(function (c) { return c.value; }).join("");
+      if (!/^[0-9]{6}$/.test(codigo)) { err.textContent = "Ingresa los 6 dígitos."; err.style.display = "block"; return; }
+      var btn = this;
+      btn.disabled = true;
+      err.style.display = "none";
+      Agro.confirmar(cuenta.documento, codigo).then(function () {
+        Agro.completar("03-otp");
+        info.textContent = "Cuenta verificada. Ahora ingresa con tu clave.";
+        setTimeout(function () { goTo("00b-login.html?doc=" + encodeURIComponent(cuenta.documento) + "&verificada=1"); }, 900);
+      }).catch(function (e) {
+        btn.disabled = false;
+        err.textContent = Agro.mensaje(e);
+        err.style.display = "block";
+      });
+    });
+    document.getElementById("otp-reenviar").addEventListener("click", function () {
+      Agro.reenviar(cuenta.documento).then(function () { info.textContent = "Te enviamos un nuevo código."; })
+        .catch(function (e) { info.textContent = Agro.mensaje(e); });
+    });
+  </script>
+</body>
+</html>

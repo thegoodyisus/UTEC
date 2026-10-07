@@ -1,0 +1,23 @@
+docs {
+  # AgroCredit API v1.6.0 (coleccion de evidencia)
+
+  Generada desde `cloud/api/openapi.yaml` por `cloud/api/coleccion.py`. No editar a mano: regenerar.
+
+  ## Como usarla
+  1. Copiar `.env.ejemplo` como `.env` en esta carpeta y completar `BASE_URL` (`http://<dns del ALB>/api/v1`, sale de `python tareas.py probar`).
+  2. Iniciar sesion en la web con la cuenta de agricultor, abrir la consola del navegador y ejecutar:
+
+  ```js
+  copy((() => { const k = Object.keys(localStorage).find(k => k.endsWith('.LastAuthUser')); return localStorage[k.slice(0, -13) + '.' + localStorage[k] + '.idToken']; })())
+  ```
+
+  3. Pegar en `TOKEN_AGRICULTOR`; repetir con la cuenta de comprador para `TOKEN_COMPRADOR`. Completar `DNI_AGRICULTOR` y `RUC_COMPRADOR` con los documentos de esas cuentas. Los tokens duran 60 minutos.
+  4. Elegir el entorno `agrocredit` y correr la coleccion en orden (Runner, con 2.5 s de espera entre peticiones: las escrituras por cola tardan 1 a 2 s).
+
+  ## Que demuestra
+  - Lecturas por clave e indices de DynamoDB, insert asincrono (202, SQS + Lambda), update directo condicional (200 / 409), transaccion del padron y controles de acceso (401 / 403).
+  - Cada peticion tiene en **Docs**: microservicio, tabla o servicio AWS, operacion de DynamoDB y la respuesta real de la ultima corrida en AWS.
+  - Evidencia completa: `docs/api/evidencia-apis.md`. Modelo de datos y consultas PartiQL: `docs/base-datos/agrocredit-base-datos.md`.
+
+  Datos ficticios (Ley 29733). `.env` y `.reportes/` no se comparten (tienen tokens).
+}

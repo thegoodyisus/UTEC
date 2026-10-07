@@ -1,0 +1,5 @@
+{
+  "fotoId": "{{#guid}}",
+  "tipoContenido": "image/jpeg",
+  "tamanoBytes": 245760
+}

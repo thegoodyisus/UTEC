@@ -1,0 +1,49 @@
+/* ============================================================
+   Componente: top-bar
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh
+   Barra superior de navegación: botón atrás + título de sección.
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 430px;
+  min-height: 56px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  box-sizing: border-box;
+}
+
+/* Botón atrás circular */
+.top-bar__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-container-low);
+  color: var(--color-text);
+  flex: 0 0 auto;
+}
+.top-bar__back svg { width: 20px; height: 20px; }
+.top-bar__back:hover { background: var(--color-border); }
+.top-bar__back:active,
+.top-bar__back.is-active { background: var(--color-border); transform: scale(0.96); }
+.top-bar__back:focus-visible,
+.top-bar__back.is-focused { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.top-bar__back:disabled,
+.top-bar__back.is-disabled { background: var(--color-disabled-bg); color: var(--color-disabled-text); cursor: not-allowed; }
+
+/* Título de sección (verde de marca) */
+.top-bar__title {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-secondary);
+}

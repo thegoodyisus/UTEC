@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Condiciones de venta</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/campana.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <header class="flow-header">
+      <a class="flow-header__back" href="01-registro.html" aria-label="Volver" data-testid="camp-cond-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <div class="progress-bar" role="progressbar" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"><span class="progress-bar__fill" style="width: 66%"></span></div>
+    </header>
+
+    <div class="screen__body">
+      <h1 class="screen__title">Tú defines tu precio</h1>
+      <p class="screen__subtitle">Publica dos precios por <span id="u-inline">kg</span>. El comprador elegirá una de las dos opciones.</p>
+
+      <div class="market-ref">
+        <span>Precio referencial de mercado hoy</span>
+        <strong id="ref-mercado">-</strong>
+      </div>
+      <p class="mock-note" style="text-align:left; margin-top: calc(-1 * var(--space-3));">Referencia de demostración del catálogo (no es un precio real de mercado). Tú decides tus precios.</p>
+
+      <div class="price-card">
+        <span class="price-card__title">💵 Paga ahora</span>
+        <p class="price-card__hint">Recibes un adelanto antes de la entrega. Suele ser un precio menor.</p>
+        <div class="price-input">
+          <span class="price-input__currency">S/</span>
+          <input id="precio-ahora" type="number" min="0" step="0.01" data-testid="camp-precio-ahora" aria-label="Precio paga ahora" />
+          <span class="price-input__currency">/ <span class="u-label">kg</span></span>
+        </div>
+      </div>
+
+      <div class="price-card">
+        <span class="price-card__title">📦 Paga contraentrega</span>
+        <p class="price-card__hint">Cobras al momento de entregar. Normalmente un precio mayor.</p>
+        <div class="price-input">
+          <span class="price-input__currency">S/</span>
+          <input id="precio-contra" type="number" min="0" step="0.01" data-testid="camp-precio-contra" aria-label="Precio contraentrega" />
+          <span class="price-input__currency">/ <span class="u-label">kg</span></span>
+        </div>
+      </div>
+
+      <p class="text-field__error" id="cond-error" style="display:none;"></p>
+      <div class="wow">
+        <span class="wow__icon">✨</span>
+        <p class="wow__text">Tú decides cómo y a qué precio vender tu producción.</p>
+      </div>
+    </div>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="cond-continuar" data-testid="camp-cond-continuar-button">Confirmar precios</button>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/campana.js"></script>
+  <script>
+    var err = document.getElementById("cond-error");
+    Agro.proteger({ fase: "app", rol: "agricultor" }).then(function () {
+      var b = Agro.borrador();
+      if (!b.cultivo || !b.volumenKg) { location.replace("01-registro.html"); return; }
+      return Agro.catalogo().then(function (cat) {
+        var ref = cat[b.cultivo] ? cat[b.cultivo].referenciaMercadoPorKg : "0.00";
+        document.getElementById("ref-mercado").textContent = Agro.soles(ref) + " / kg";
+        document.getElementById("precio-ahora").value = b.precioAhoraPorKg || ref;
+        document.getElementById("precio-contra").value = b.precioContraentregaPorKg || Agro.aDinero(Number(ref) * 1.1);
+      });
+    }).catch(function (e) { err.textContent = Agro.mensaje(e); err.style.display = "block"; });
+
+    document.getElementById("cond-continuar").addEventListener("click", function () {
+      var ahora = Number(document.getElementById("precio-ahora").value);
+      var contra = Number(document.getElementById("precio-contra").value);
+      if (!(ahora > 0) || !(contra > 0)) { err.textContent = "Los dos precios deben ser mayores a cero."; err.style.display = "block"; return; }
+      Agro.borrador({ precioAhoraPorKg: Agro.aDinero(ahora), precioContraentregaPorKg: Agro.aDinero(contra) });
+      goTo("03-revisar-publicar.html");
+    });
+  </script>
+</body>
+</html>

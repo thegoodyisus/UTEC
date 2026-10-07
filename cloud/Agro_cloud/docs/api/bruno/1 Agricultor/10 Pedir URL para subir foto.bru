@@ -1,0 +1,75 @@
+meta {
+  name: 10 Pedir URL para subir foto
+  type: http
+  seq: 10
+}
+
+post {
+  url: {{process.env.BASE_URL}}/campanas/{{campaniaId}}/fotos/url
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_AGRICULTOR}}
+}
+
+body:json {
+  {
+    "fotoId": "{{$randomUUID}}",
+    "tipoContenido": "image/jpeg",
+    "tamanoBytes": 245760
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 200) {
+    bru.setVar("fotoId", res.getBody().fotoId);
+  }
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Pedir URL para subir foto
+
+  | | |
+  |---|---|
+  | API | `POST /campanas/{campaniaId}/fotos/url` |
+  | Token | agricultor |
+  | Microservicio | Campanas y fotos |
+  | Tipo | escritura asincrona |
+  | Tabla o servicio | S3 agro-fotos -> SQS agro-fotos -> Lambda agro-etiquetar -> Rekognition -> agro-datos |
+  | Operacion | la api firma un POST a entrada/<sub>/<campana>/<foto>; la lambda registra CAMP#<id> / FOTO#<fotoId> |
+  | Esperado | 200 |
+
+  Guarda `fotoId` (de `fotoId` en la respuesta) para las peticiones siguientes.
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 200
+
+  ```json
+  {
+    "fotoId": "cec2e834-865c-4344-b271-230871ad68d5",
+    "url": "https://agro-fotos-<cuenta>.s3.amazonaws.com/",
+    "campos": {
+      "Content-Type": "image/jpeg",
+      "key": "entrada/d4284488-10b1-7035-9797-1a365810ca8d/7e19831b-fbbe-4a8e-bfb9-b8716848d1e5/cec2e834-865c-4344-b271-230871ad68d5.jpg",
+      "x-amz-algorithm": "AWS4-HMAC-SHA256",
+      "x-amz-credential": "***",
+      "x-amz-date": "20261006T230650Z",
+      "x-amz-security-token": "***",
+      "policy": "***",
+      "x-amz-signature": "***"
+    },
+    "expiraEn": "2026-10-06T23:11:50Z"
+  }
+  ```
+}

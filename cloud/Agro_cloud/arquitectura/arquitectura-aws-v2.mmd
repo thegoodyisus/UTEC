@@ -1,0 +1,94 @@
+%% agrocredit en aws: vista de despliegue con el porque de cada decision (v2, 2026-10-05)
+%% pensado para llevarlo a una herramienta con iconos oficiales de aws: cada nodo dice servicio, funcion y motivo
+%% Dn = numero de decision en docs/HANDOFF-demo-cloud.md seccion 5. sin el monitoreo del panel (decision 60)
+flowchart TB
+    usr(["Usuario: agricultor o comprador<br/>navegador de celular o PC"])
+
+    subgraph cuenta["Cuenta AWS Academy Learner Lab - region us-east-1 (D1: unica region permitida; todo usa el rol LabRole porque el lab no deja crear roles IAM)"]
+        direction TB
+
+        cog["Amazon Cognito - user pool + app client publico<br/>Funcion: registro, correo con codigo, login SRP, ID token de 60 min<br/>Por que: identidad gestionada sin guardar claves en nuestra base;<br/>usuario = DNI/RUC y PIN de 6 digitos como en banca movil (D16); rol inmutable (D16b)"]
+
+        subgraph vpc["VPC agro-red 10.20.0.0/16 - red propia (las cuentas de companeros pueden no tener VPC por defecto)"]
+            direction TB
+            igw["Internet Gateway<br/>salida a internet sin NAT Gateway (D9: el NAT cuesta ~USD 1/dia)"]
+            alb["Application Load Balancer agro-alb - HTTP 80 abierto (D31)<br/>Funcion: punto de entrada unico; /api/* a servicios, /* a la web<br/>Por que: reparte entre 2 zonas y saca un contenedor caido en ~10 s<br/>(chequeo cada 5 s, 2 fallas, drenaje 10 s) (D46). Sin HTTPS: limitacion aceptada (D8)"]
+
+            subgraph ecs["Amazon ECS Fargate - agro-cluster: servicio web y servicio api, 2 tareas cada uno"]
+                direction LR
+                subgraph aza["Zona us-east-1a - subred publica /24"]
+                    weba["Tarea web A<br/>nginx 1.27, ARM64"]
+                    apia["Tarea api A<br/>FastAPI, ARM64"]
+                end
+                subgraph azb["Zona us-east-1b - subred publica /24"]
+                    webb["Tarea web B<br/>nginx 1.27, ARM64"]
+                    apib["Tarea api B<br/>FastAPI, ARM64"]
+                end
+                ecsnota["Por que ECS Fargate: contenedores sin administrar servidores;<br/>minimo 2 replicas en 2 zonas = activo-activo, si una cae la otra atiende (D4, D46);<br/>ARM64 cuesta ~20% menos (D29); EKS descartado por costo y complejidad"]
+            end
+            sgs["Security groups<br/>agro-alb: entra 80 de internet, sale solo a las tareas<br/>agro-tareas: entra solo desde el ALB, sale solo 443<br/>Por que: las tareas tienen IP publica (sin NAT) pero nadie llega a ellas salvo el ALB (D9)"]
+        end
+
+        subgraph datos["Datos - Amazon DynamoDB on-demand, sin PITR"]
+            tabla[("agro-datos - tabla unica PK/SK<br/>indice por-usuario: mis campanas y mis ofertas<br/>indice disperso publicadas-por-cultivo: busqueda del comprador<br/>Por que DynamoDB: pago por uso y sin servidor, mas barato que RDS para USD 50 (D3);<br/>tabla unica porque los patrones de acceso son conocidos (D18); nombres funcionales (D58)")]
+            padron[("agro-padron-personas / agro-padron-empresas<br/>10 + 10 registros ficticios, clave id<br/>Por que separadas: es referencia que se consume, no transaccion;<br/>se borra y asigna en una sola transaccion entre tablas (D58)")]
+        end
+
+        subgraph insercion["Escrituras asincronas"]
+            qins["Amazon SQS agro-insercion + DLQ<br/>3 intentos, luego a la DLQ<br/>Por que: la API responde 202 rapido y un pico no tumba la base;<br/>nada se pierde si el worker falla (D5)"]
+            wk["AWS Lambda agro-worker - Python 3.12 ARM64, lotes de 10<br/>Por que: escribe con condicion attribute_not_exists: reenviar no duplica;<br/>oferta + contador en una transaccion (D5, D12)"]
+        end
+
+        subgraph fotos["Fotos y reconocimiento de imagen"]
+            s3[("Amazon S3 agro-fotos-cuenta - creado con CloudFormation (D41)<br/>privado, cifrado AES256, solo HTTPS, CORS solo al ALB<br/>entrada/sub/... expira en 1 dia; final sub/papa_fecha_hora.jpg<br/>Por que URL prefirmada: el archivo no pasa por la API (D6)")]
+            qfot["Amazon SQS agro-fotos + DLQ<br/>Por que: desacopla la subida del analisis y permite reintentos"]
+            et["AWS Lambda agro-etiquetar - lotes de 5<br/>mapea etiquetas al catalogo, renombra la foto, registra el resultado"]
+            rek["Amazon Rekognition DetectLabels<br/>Por que: reconoce la verdura sin entrenar un modelo; confianza minima 70%"]
+        end
+
+        subgraph ops["Despliegue, operacion y costo"]
+            ecr["Amazon ECR agro-web y agro-api<br/>conserva 5 imagenes<br/>Por que: imagenes privadas; se construyen con Docker local porque el lab bloquea CodeBuild (D23)"]
+            cwl["Amazon CloudWatch Logs<br/>logs de las 4 tareas y de las 2 Lambdas<br/>retencion 1 dia (costo); buscar por requestId"]
+            sch["Amazon EventBridge Scheduler<br/>a las 2 h del despliegue pone las tareas en 0 (D19, D27)<br/>Por que: si alguien olvida destruir, no se agota el credito"]
+            ssm["AWS Systems Manager Parameter Store<br/>/agro-/registro: ids sin prefijo para destruir por prefijo (D38)"]
+        end
+    end
+
+    tf["Terraform 1.16.5 + tareas.py en la PC del alumno (Windows o Mac)<br/>un archivo de parametros, credenciales solo en Conexion/credenciales.txt<br/>destruir verifica 0 recursos agro- al final (D21, D22, D47)"]
+
+    usr -->|"HTTP 80"| alb
+    usr <-->|"login SRP: ID token"| cog
+    alb -->|"/*"| weba & webb
+    alb -->|"/api/*"| apia & apib
+    ecs -.->|"api valida el token con JWKS"| cog
+    ecs -->|"api: leer, crear perfil"| tabla
+    ecs -->|"api: tomar registro del padron"| padron
+    ecs -->|"api: campana u oferta, responde 202"| qins
+    qins --> wk -->|"PutItem condicional"| tabla
+    usr -->|"POST de la foto con URL prefirmada"| s3
+    s3 -->|"evento ObjectCreated"| qfot --> et
+    et -->|"DetectLabels sobre el objeto"| rek
+    et -->|"copia y borra original"| s3
+    et -->|"registro FOTO"| tabla
+    ecr -.->|"pull de imagenes por 443"| ecs
+    sch -.->|"ecs:UpdateService"| ecs
+    tf -.->|"crea y destruye todo"| cuenta
+
+    classDef red fill:#8C4FFF,color:#fff,stroke:#5a2fb5
+    classDef computo fill:#ED7100,color:#fff,stroke:#a34e00
+    classDef datos fill:#2E73B8,color:#fff,stroke:#1d4f80
+    classDef integracion fill:#E7157B,color:#fff,stroke:#a10e55
+    classDef seguridad fill:#DD344C,color:#fff,stroke:#9c2233
+    classDef ia fill:#01A88D,color:#fff,stroke:#016e5c
+    classDef gestion fill:#E7157B,color:#fff,stroke:#a10e55
+    classDef externo fill:#f2f2f2,color:#1d1d1b,stroke:#999
+    class alb,igw,sgs red
+    class weba,webb,apia,apib,wk,et computo
+    class ecsnota externo
+    class tabla,padron,s3 datos
+    class qins,qfot,sch integracion
+    class cog seguridad
+    class rek ia
+    class ecr computo
+    class cwl,ssm gestion
+    class usr,tf externo

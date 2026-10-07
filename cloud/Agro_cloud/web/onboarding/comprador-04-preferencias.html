@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Preferencias del comprador</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <!-- Barra de estado simulada (verde de marca) -->
+    <div class="status-sim status-sim--brand" aria-hidden="true">
+      <span class="status-sim__time">9:41</span>
+      <span class="status-sim__net">4G · 100 %</span>
+    </div>
+
+    <!-- Top bar: Registro de empresa + etiqueta "Empresas" -->
+    <header class="flow-topbar">
+      <span class="flow-topbar__title">
+        <a class="flow-header__back" href="comprador-05-pagos.html" aria-label="Volver" data-testid="pref-back">
+          <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+        </a>
+        Registro de empresa
+      </span>
+      <span class="flow-topbar__tag">Empresas</span>
+    </header>
+
+    <!-- Pasos del registro de empresa (Paso 4 de 5 · Preferencias) -->
+    <div class="step-header">
+      <p class="step-header__label">Paso 4 de 5 · Preferencias</p>
+      <div class="step-bar" role="progressbar" aria-valuenow="4" aria-valuemin="0" aria-valuemax="5" aria-label="Paso 4 de 5">
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg"></span>
+      </div>
+    </div>
+
+    <div class="screen__body">
+      <h1 class="screen__title" style="color: var(--color-primary);">¿Qué quieres comprar?</h1>
+      <p class="screen__subtitle">Elige tus cultivos y, para cada uno, las zonas donde lo quieres comprar.</p>
+
+      <!-- Paso 1: Cultivos -->
+      <div class="pref-group">
+        <p class="pref-group__label">Cultivos</p>
+        <div class="chip-choices" id="cultivos" role="group" aria-label="Cultivos de interés">
+          <label class="chip-choice"><input type="checkbox" name="cultivo" value="Papa" data-testid="pref-cultivo-papa" /> Papa</label>
+          <label class="chip-choice"><input type="checkbox" name="cultivo" value="Café" data-testid="pref-cultivo-cafe" /> Café</label>
+          <label class="chip-choice"><input type="checkbox" name="cultivo" value="Maíz" data-testid="pref-cultivo-maiz" /> Maíz</label>
+          <label class="chip-choice"><input type="checkbox" name="cultivo" value="Espárrago" data-testid="pref-cultivo-esparrago" /> Espárrago</label>
+          <label class="chip-choice"><input type="checkbox" name="cultivo" value="Arroz" data-testid="pref-cultivo-arroz" /> Arroz</label>
+          <label class="chip-choice"><input type="checkbox" name="cultivo" value="Quinua" data-testid="pref-cultivo-quinua" /> Quinua</label>
+          <label class="chip-choice"><input type="checkbox" name="cultivo" value="Cacao" data-testid="pref-cultivo-cacao" /> Cacao</label>
+        </div>
+      </div>
+
+      <!-- Paso 2: Zonas por cultivo (se generan según los cultivos elegidos) -->
+      <div class="pref-group" id="zonas-wrap" style="display:none;">
+        <p class="pref-group__label">Zonas por cultivo</p>
+        <div id="zonas-por-cultivo" style="display:flex; flex-direction:column; gap: var(--space-3);"></div>
+      </div>
+
+      <p class="text-field__error" id="pref-error" style="display:none;">Elige al menos un cultivo y una zona para cada cultivo seleccionado.</p>
+    </div>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="btn-pref" data-testid="pref-guardar-button">Guardar preferencias</button>
+      <p class="mock-note">Con esto te mostraremos agricultores cerca de tus zonas · datos ficticios</p>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    var ZONAS = ["Cusco", "Junín", "Puno", "Apurímac", "Arequipa", "La Libertad", "Piura", "Lima"];
+    var cont = document.getElementById("zonas-por-cultivo");
+    var wrap = document.getElementById("zonas-wrap");
+
+    function slug(s) { return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, "-").toLowerCase(); }
+
+    function renderZonas() {
+      var elegidos = Array.prototype.map.call(document.querySelectorAll('input[name="cultivo"]:checked'), function (el) { return el.value; });
+      wrap.style.display = elegidos.length ? "flex" : "none";
+
+      // Conserva selección previa por cultivo
+      var previas = {};
+      cont.querySelectorAll('input[type="checkbox"]:checked').forEach(function (el) {
+        var c = el.getAttribute("data-cultivo");
+        (previas[c] = previas[c] || []).push(el.value);
+      });
+
+      cont.innerHTML = elegidos.map(function (cultivo) {
+        var chips = ZONAS.map(function (z) {
+          var checked = (previas[cultivo] || []).indexOf(z) !== -1 ? "checked" : "";
+          return '<label class="chip-choice"><input type="checkbox" data-cultivo="' + cultivo + '" value="' + z + '" ' + checked + ' /> ' + z + '</label>';
+        }).join("");
+        return '<div class="zone-block" data-testid="zonas-' + slug(cultivo) + '">' +
+                 '<p class="zone-block__title">' + cultivo + '</p>' +
+                 '<p class="zone-block__hint">¿Dónde quieres comprar ' + cultivo.toLowerCase() + '?</p>' +
+                 '<div class="chip-choices">' + chips + '</div>' +
+               '</div>';
+      }).join("");
+    }
+
+    document.querySelectorAll('input[name="cultivo"]').forEach(function (r) {
+      r.addEventListener("change", renderZonas);
+    });
+
+    document.getElementById("btn-pref").addEventListener("click", function () {
+      var elegidos = Array.prototype.map.call(document.querySelectorAll('input[name="cultivo"]:checked'), function (el) { return el.value; });
+      var err = document.getElementById("pref-error");
+      if (elegidos.length === 0) { err.style.display = "block"; return; }
+
+      // Mapa cultivo -> zonas
+      var mapa = {};
+      var completo = true;
+      elegidos.forEach(function (c) {
+        var zs = Array.prototype.map.call(cont.querySelectorAll('input[data-cultivo="' + c + '"]:checked'), function (el) { return el.value; });
+        mapa[c] = zs;
+        if (zs.length === 0) completo = false;
+      });
+      if (!completo) { err.style.display = "block"; return; }
+      err.style.display = "none";
+
+      // Zonas únicas (para el matching general del Home)
+      var zonasUnicas = [];
+      Object.keys(mapa).forEach(function (c) { mapa[c].forEach(function (z) { if (zonasUnicas.indexOf(z) === -1) zonasUnicas.push(z); }); });
+
+      saveProfile({
+        rol: "comprador",
+        compradorRegistrado: true,
+        compradorCultivos: elegidos,
+        compradorZonasPorCultivo: mapa,
+        compradorZonas: zonasUnicas
+      });
+      Agro.completar("comprador-04-preferencias");
+      goTo("comprador-06-verificacion.html");
+    });
+  </script>
+<script>
+    //paso simulado que se mantiene (respuesta 1b): las preferencias no se guardan en la base
+    Agro.proteger({ fase: "alta", paso: "comprador-04-preferencias" });
+  </script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Oportunidad</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/campana.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <header class="flow-header">
+      <a class="flow-header__back" href="ofertas-campana.html" aria-label="Volver" data-testid="op-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <span style="font-weight: var(--font-weight-bold);">Oportunidad</span>
+    </header>
+
+    <div class="screen__body">
+      <h1 class="screen__title">Revisa la oferta</h1>
+      <p class="screen__subtitle">Detalle completo de la operación antes de aceptar.</p>
+
+      <div class="detail-card">
+        <div class="detail-card__buyer">
+          <span class="detail-card__avatar" id="op-avatar">AF</span>
+          <div>
+            <div class="detail-card__name" id="op-comprador">Comprador</div>
+            <div class="screen__subtitle" style="font-size: var(--font-size-sm);">Comprador formal · verificado</div>
+          </div>
+        </div>
+        <div class="review-list" id="op-detalle" style="background: transparent; padding: 0;"></div>
+      </div>
+
+      <p class="open-note">Las condiciones mostradas son de demostración (mock). No representan una operación real.</p>
+    </div>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="aceptar" data-testid="op-aceptar-button">Aceptar oferta</button>
+      <button class="btn btn--secondary btn--block" type="button" data-testid="op-volver-button" onclick="goTo('ofertas-campana.html')">Volver</button>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/campana.js"></script>
+  <script>
+    var c = getCampaign();
+    var o = c.ofertaSeleccionada || getOfertas()[0];
+    var u = unitLabel(c.unidad);
+    document.getElementById("op-comprador").textContent = o.comprador;
+    document.getElementById("op-avatar").textContent = o.comprador.split(" ").slice(0, 2).map(function (w) { return w[0]; }).join("").toUpperCase();
+    var rows = [
+      ["Cultivo", c.cultivo],
+      ["Volumen solicitado", o.volumen.toLocaleString("es-PE") + " " + u],
+      ["Modalidad", o.modalidad],
+      ["Precio", money(o.precio) + " / " + u],
+      ["Monto total", money(o.total)],
+      ["Logística", o.logistica],
+      ["Fecha propuesta", o.fecha]
+    ];
+    document.getElementById("op-detalle").innerHTML = rows.map(function (r) {
+      return '<div class="review-list__row"><span>' + r[0] + '</span><span>' + r[1] + '</span></div>';
+    }).join("");
+
+    document.getElementById("aceptar").addEventListener("click", function () {
+      var esPagoAhora = o.modalidad === "Pago ahora";
+      setCampaign({
+        volumenComprometido: o.volumen,
+        volumenDisponible: Math.max(0, c.volumenEsperado - o.volumen),
+        modalidadElegida: o.modalidad,
+        precioAhora: esPagoAhora ? o.precio : c.precioAhora,
+        adelanto: esPagoAhora ? Math.round(o.total * 0.4) : 0,
+        estado: esPagoAhora ? "PAGO_ANTICIPADO" : "CONTRAENTREGA"
+      });
+      goTo("oferta-aceptada.html");
+    });
+  </script>
+<script>
+    //paso simulado que se mantiene (decision 54, respuesta 1b): solo guarda de navegacion
+    Agro.proteger({ fase: "app", rol: "agricultor" });
+  </script>
+</body>
+</html>

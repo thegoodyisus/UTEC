@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit v02 — Prototipo de Campaña</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="assets/campana.css" />
+</head>
+<body>
+  <div class="screen">
+    <div class="screen__body">
+      <!-- Logo AgroCredit (variante fondo claro) -->
+      <div class="brand-lockup" role="img" aria-label="AgroCredit" style="margin: var(--space-2) 0 var(--space-4);">
+        <p class="brand-lockup__wordmark">
+          <span class="brand-lockup__agro">Agro</span><span class="brand-lockup__credit">Credit</span>
+          <span class="brand-lockup__leaf" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 20c0-8 6-14 16-15-1 10-7 15-16 15Z" fill="currentColor"/><path d="M9 17c2-3 5-5 8-6" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+        </p>
+      </div>
+      <p class="screen__subtitle">Prototipo con Home y tres journeys. El centro de todo es el Home. Datos ficticios.</p>
+
+      <div class="section-title"><h2>Centro</h2></div>
+      <nav class="index-list">
+        <a class="index-link" href="home.html" data-testid="idx-home"><span class="index-link__num">🏠</span> Home del agricultor</a>
+      </nav>
+
+      <div class="section-title"><h2>Journey A — Publicar</h2></div>
+      <nav class="index-list">
+        <a class="index-link" href="01-registro.html"><span class="index-link__num">1</span> Registrar campaña</a>
+        <a class="index-link" href="02-condiciones.html"><span class="index-link__num">2</span> Condiciones de venta</a>
+        <a class="index-link" href="03-revisar-publicar.html"><span class="index-link__num">3</span> Revisar y publicar</a>
+        <a class="index-link" href="campana-publicada.html"><span class="index-link__num">✓</span> Campaña publicada</a>
+      </nav>
+
+      <div class="section-title"><h2>Journey B — Ofertas</h2></div>
+      <nav class="index-list">
+        <a class="index-link" href="match-push.html"><span class="index-link__num">🔔</span> Match (push simulada)</a>
+        <a class="index-link" href="ofertas-campana.html"><span class="index-link__num">4</span> Ofertas de esta campaña</a>
+        <a class="index-link" href="04-oportunidad.html"><span class="index-link__num">5</span> Oportunidad</a>
+        <a class="index-link" href="oferta-aceptada.html"><span class="index-link__num">✓</span> Oferta aceptada</a>
+      </nav>
+
+      <div class="section-title"><h2>Comprador — Compra de lotes</h2></div>
+      <nav class="index-list">
+        <a class="index-link" href="home-comprador.html"><span class="index-link__num">🏠</span> Home del comprador</a>
+        <a class="index-link" href="ofertas-cultivos.html"><span class="index-link__num">1</span> Campañas publicadas</a>
+        <a class="index-link" href="lote-detalle.html"><span class="index-link__num">2</span> Detalle del lote</a>
+        <a class="index-link" href="mis-ofertas.html"><span class="index-link__num">✓</span> Mis ofertas</a>
+      </nav>
+
+      <p class="mock-note">Prototipo AgroCredit v05 · design-system propio · sin datos reales.</p>
+    </div>
+  </div>
+</body>
+</html>

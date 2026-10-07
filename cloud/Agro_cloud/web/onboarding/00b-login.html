@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Iniciar sesión</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/text-field/text-field.css" />
+  <link rel="stylesheet" href="../design-system/components/select-field/select-field.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body>
+  <!-- Fondo de marca; la tarjeta de login va centrada arriba -->
+  <div class="screen screen--login">
+
+    <div class="status-sim status-sim--on-hero" aria-hidden="true">
+      <span class="status-sim__time">9:41</span>
+      <span class="status-sim__net">4G · 100 %</span>
+    </div>
+
+    <section class="login-card">
+      <header class="login-card__head">
+        <span style="width:24px;"></span>
+        <h1 class="login-card__title">Iniciar sesión</h1>
+        <a class="login-card__close" href="00-inicio.html" aria-label="Cerrar" data-testid="login-cerrar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+        </a>
+      </header>
+
+      <form class="login-form" id="form-login" novalidate>
+        <!-- Tipo de documento -->
+        <div class="select-field">
+          <label class="select-field__label" for="tipo-doc">Tipo de documento</label>
+          <div class="select-field__control">
+            <select class="select-field__select" id="tipo-doc" data-testid="login-tipo-doc">
+              <option value="DNI">DNI</option>
+              <option value="RUC">RUC</option>
+            </select>
+            <span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+        </div>
+
+        <!-- Número de documento (con botón limpiar) -->
+        <div class="text-field" data-rule="documento" data-error="Revisa el número según DNI (8) o RUC (11).">
+          <label class="text-field__label" for="documento">Número de documento</label>
+          <div class="field-affix">
+            <input class="text-field__input" id="documento" name="documento" type="text" inputmode="numeric" maxlength="11" placeholder="8 números" data-testid="login-documento" />
+            <button class="field-affix__btn" type="button" id="doc-clear" aria-label="Borrar documento" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Contraseña (con limpiar + mostrar/ocultar) -->
+        <div class="text-field" data-rule="requerido" data-error="Ingresa tu contraseña.">
+          <label class="text-field__label" for="password">Clave de 6 dígitos</label>
+          <div class="field-affix">
+            <input class="text-field__input" id="password" name="password" type="password" inputmode="numeric" maxlength="6" autocomplete="current-password" placeholder="6 dígitos" data-testid="login-password" />
+            <button class="field-affix__btn" type="button" id="pass-clear" aria-label="Borrar contraseña" tabindex="-1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+            <button class="field-affix__btn" type="button" id="pass-toggle" aria-label="Mostrar u ocultar contraseña" data-testid="login-ver-password">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <button class="text-link" type="button" data-testid="login-olvido" onclick="document.getElementById('login-msg').textContent='Recuperar la clave no está incluido en esta demo (simulado).';">¿Olvidaste tu contraseña?</button>
+
+        <p class="text-field__error" id="login-error" style="display:none;">Revisa tu documento y contraseña.</p>
+        <p class="mock-note" id="login-msg" style="text-align:left; min-height:16px;"></p>
+      </form>
+
+      <div class="login-card__footer">
+        <button class="btn btn--primary btn--block" type="submit" form="form-login" data-testid="login-entrar-button">Iniciar sesión</button>
+        <p class="mock-note">Ingreso real con Amazon Cognito. ¿No tienes cuenta? <a href="00-rol.html">Crea una</a>.</p>
+      </div>
+    </section>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    var tipo = document.getElementById("tipo-doc");
+    var doc = document.getElementById("documento");
+    var pass = document.getElementById("password");
+
+    // Placeholder/tope según tipo de documento.
+    function syncDoc() {
+      var esRuc = tipo.value === "RUC";
+      doc.placeholder = esRuc ? "11 números" : "8 números";
+      doc.maxLength = esRuc ? 11 : 8;
+      doc.value = doc.value.slice(0, doc.maxLength);
+    }
+    tipo.addEventListener("change", syncDoc);
+    syncDoc();
+
+    // Solo dígitos en el documento.
+    doc.addEventListener("input", function () {
+      doc.value = doc.value.replace(/[^0-9]/g, "").slice(0, doc.maxLength);
+    });
+
+    // Botones limpiar.
+    document.getElementById("doc-clear").addEventListener("click", function () { doc.value = ""; doc.focus(); });
+    document.getElementById("pass-clear").addEventListener("click", function () { pass.value = ""; pass.focus(); });
+
+    // Mostrar / ocultar contraseña.
+    document.getElementById("pass-toggle").addEventListener("click", function () {
+      pass.type = pass.type === "password" ? "text" : "password";
+      this.classList.toggle("is-active", pass.type === "text");
+    });
+
+    pass.addEventListener("input", function () { pass.value = pass.value.replace(/[^0-9]/g, "").slice(0, 6); });
+
+    //llega desde la verificacion del correo con el documento listo
+    var q = new URLSearchParams(location.search);
+    if (q.get("doc")) {
+      doc.value = q.get("doc").replace(/[^0-9]/g, "");
+      if (doc.value.length === 11) { tipo.value = "RUC"; syncDoc(); doc.value = q.get("doc"); }
+    }
+    if (q.get("verificada")) document.getElementById("login-msg").textContent = "Cuenta verificada. Ingresa tu clave.";
+
+    //si ya hay sesion, directo a su destino
+    Agro.sesion().then(function (s) { if (s) Agro.destinoTrasLogin().then(function (d) { location.replace(d); }); });
+
+    document.getElementById("form-login").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var esRuc = tipo.value === "RUC";
+      var okDoc = new RegExp("^[0-9]{" + (esRuc ? 11 : 8) + "}$").test(doc.value.trim());
+      var okPass = /^[0-9]{6}$/.test(pass.value);
+      var err = document.getElementById("login-error");
+      if (!okDoc || !okPass) {
+        err.style.display = "block";
+        err.textContent = !okDoc ? ("Ingresa un " + tipo.value + " válido.") : "La clave tiene 6 dígitos.";
+        return;
+      }
+      err.style.display = "none";
+      var boton = document.querySelector('[data-testid="login-entrar-button"]');
+      boton.disabled = true;
+      boton.textContent = "Ingresando...";
+      Agro.entrar(doc.value.trim(), pass.value).then(function () {
+        return Agro.destinoTrasLogin();
+      }).then(function (destino) {
+        location.replace(destino);
+      }).catch(function (e) {
+        boton.disabled = false;
+        boton.textContent = "Iniciar sesión";
+        if (e && e.code === "UserNotConfirmedException") {
+          //cuenta creada pero sin verificar: se reenvia el codigo y se va a validarlo
+          var f = Agro.flujo();
+          f.cuenta = { tipoDoc: tipo.value, documento: doc.value.trim(), correo: "", registrada: true };
+          Agro.guardarFlujo(f);
+          Agro.reenviar(doc.value.trim()).finally(function () { goTo("03-otp.html"); });
+          return;
+        }
+        err.textContent = Agro.mensaje(e);
+        err.style.display = "block";
+      });
+    });
+  </script>
+</body>
+</html>

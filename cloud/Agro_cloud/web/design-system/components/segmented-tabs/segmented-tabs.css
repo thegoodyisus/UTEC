@@ -1,0 +1,46 @@
+/* ============================================================
+   Componente: segmented-tabs
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (home)
+   Tabs segmentados de contenido (Operaciones / Mis productos).
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.segmented-tabs {
+  display: inline-flex;
+  width: 100%;
+  padding: var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-container-low);
+}
+
+.segmented-tabs__tab {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: none;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.segmented-tabs__tab:active { color: var(--color-text); }
+.segmented-tabs__tab.is-active {
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: var(--font-weight-bold);
+  box-shadow: var(--shadow-sm);
+}
+.segmented-tabs__tab:focus-visible,
+.segmented-tabs__tab.is-focused { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+.segmented-tabs__tab:disabled,
+.segmented-tabs__tab.is-disabled {
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}

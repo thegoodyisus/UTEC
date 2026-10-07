@@ -1,0 +1,100 @@
+/* ============================================================
+   Componente: tooltip + info-icon-button
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (flujo de préstamo)
+   Tooltip informativo verde con flecha. Se muestra al activar el ícono (i).
+   Depende de tokens/tokens.css y styles/base.css
+
+   REGLA DE PRODUCTO:
+   El tooltip informativo es SIEMPRE interactivo: aparece cuando el
+   cliente selecciona un ícono de información (i). No se muestra en hover
+   pasivo por sí solo; se abre/cierra por interacción (tap/click/teclado).
+   ============================================================ */
+
+/* ---- Botón de información (i) que dispara el tooltip ---- */
+.info-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: none;
+  color: var(--color-primary);
+  vertical-align: middle;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.info-icon-button svg { width: 18px; height: 18px; }
+.info-icon-button:hover { opacity: 0.8; }
+/* Active: mientras el tooltip está abierto (aria-expanded / anchor is-open) */
+.info-icon-button[aria-expanded="true"],
+.info-icon-button.is-active { opacity: 1; }
+.tooltip-anchor.is-open .info-icon-button { color: var(--color-primary); }
+/* Focused */
+.info-icon-button:focus-visible,
+.info-icon-button.is-focused { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+/* Disabled (gris) */
+.info-icon-button:disabled,
+.info-icon-button.is-disabled { color: var(--color-disabled-text); cursor: not-allowed; opacity: 1; }
+
+/* Contenedor de anclaje: posiciona el tooltip respecto al (i) */
+.tooltip-anchor {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* ---- Burbuja del tooltip ---- */
+.tooltip {
+  position: absolute;
+  z-index: 50;
+  bottom: calc(100% + 10px);        /* por defecto: arriba del ícono */
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 200px;
+  max-width: 280px;
+  padding: var(--space-4);
+  border-radius: var(--radius-large);
+  background: var(--color-primary);  /* verde de marca #135c40 */
+  color: var(--color-on-primary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+  /* estado oculto por defecto */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+/* Flecha inferior apuntando al ícono */
+.tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: var(--color-primary);
+}
+
+/* Estado visible (controlado por JS con aria-expanded / clase is-open) */
+.tooltip-anchor.is-open .tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Posición alternativa: debajo del ícono */
+.tooltip--below {
+  bottom: auto;
+  top: calc(100% + 10px);
+}
+.tooltip--below::after {
+  top: auto;
+  bottom: 100%;
+  border-top-color: transparent;
+  border-bottom-color: var(--color-primary);
+}

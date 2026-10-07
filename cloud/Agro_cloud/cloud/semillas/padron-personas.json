@@ -1,0 +1,72 @@
+[
+  {
+    "id": "p01",
+    "nombres": "Marisol",
+    "apellidos": "Quispe Huamán",
+    "celular": "951204387",
+    "correo": "marisol.quispe@correo.example"
+  },
+  {
+    "id": "p02",
+    "nombres": "Renato",
+    "apellidos": "Villanueva Torres",
+    "celular": "962318745",
+    "correo": "renato.villanueva@correo.example"
+  },
+  {
+    "id": "p03",
+    "nombres": "Elena",
+    "apellidos": "Ccori Mamani",
+    "celular": "973540162",
+    "correo": "elena.ccori@correo.example"
+  },
+  {
+    "id": "p04",
+    "nombres": "Julio César",
+    "apellidos": "Paredes Salas",
+    "celular": "984671203",
+    "correo": "julio.paredes@correo.example"
+  },
+  {
+    "id": "p05",
+    "nombres": "Rosa Amelia",
+    "apellidos": "Condori Apaza",
+    "celular": "945812630",
+    "correo": "rosa.condori@correo.example"
+  },
+  {
+    "id": "p06",
+    "nombres": "Diego",
+    "apellidos": "Ramírez Chávez",
+    "celular": "956903418",
+    "correo": "diego.ramirez@correo.example"
+  },
+  {
+    "id": "p07",
+    "nombres": "Lucía",
+    "apellidos": "Huanca Flores",
+    "celular": "967125894",
+    "correo": "lucia.huanca@correo.example"
+  },
+  {
+    "id": "p08",
+    "nombres": "Alberto",
+    "apellidos": "Taipe Gutiérrez",
+    "celular": "978236501",
+    "correo": "alberto.taipe@correo.example"
+  },
+  {
+    "id": "p09",
+    "nombres": "Carmen",
+    "apellidos": "Yupanqui Rojas",
+    "celular": "989347216",
+    "correo": "carmen.yupanqui@correo.example"
+  },
+  {
+    "id": "p10",
+    "nombres": "Óscar",
+    "apellidos": "Medina Cárdenas",
+    "celular": "940458932",
+    "correo": "oscar.medina@correo.example"
+  }
+]

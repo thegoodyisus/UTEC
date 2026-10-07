@@ -1,0 +1,102 @@
+meta {
+  name: 08 Mis campanas
+  type: http
+  seq: 8
+}
+
+get {
+  url: {{process.env.BASE_URL}}/campanas
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_AGRICULTOR}}
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Mis campanas
+
+  | | |
+  |---|---|
+  | API | `GET /campanas` |
+  | Token | agricultor |
+  | Microservicio | Campanas y fotos |
+  | Tipo | lectura |
+  | Tabla o servicio | agro-datos (indice por-usuario) |
+  | Operacion | Query usuarioClave=USER#<sub>, usuarioOrden empieza con CAMP# |
+  | Esperado | 200 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 200
+
+  ```json
+  {
+    "items": [
+      {
+        "campaniaId": "7e19831b-fbbe-4a8e-bfb9-b8716848d1e5",
+        "propietarioSub": "d4284488-10b1-7035-9797-1a365810ca8d",
+        "productorNombre": "Productor de prueba",
+        "cultivo": "papa",
+        "departamento": "Cusco",
+        "provincia": "Cusco",
+        "distrito": "Wanchaq",
+        "cosecha": "2027-06-15",
+        "volumenKg": 2000,
+        "logistica": "Recojo",
+        "capital": "5000.00",
+        "precioAhoraPorKg": "1.80",
+        "precioContraentregaPorKg": "2.10",
+        "referenciaMercadoPorKg": "1.20",
+        "estado": "PUBLICADA",
+        "numeroOfertas": 0,
+        "creadoEn": "2026-10-06T23:06:42Z"
+      },
+      {
+        "campaniaId": "4a3bc615-e363-420e-b00f-209e7a6a170e",
+        "propietarioSub": "d4284488-10b1-7035-9797-1a365810ca8d",
+        "productorNombre": "Productor de prueba",
+        "cultivo": "papa",
+        "departamento": "Cusco",
+        "provincia": "Cusco",
+        "distrito": "Wanchaq",
+        "cosecha": "2027-06-15",
+        "volumenKg": 2000,
+        "logistica": "Recojo",
+        "capital": "5000.00",
+        "precioAhoraPorKg": "1.80",
+        "precioContraentregaPorKg": "2.10",
+        "referenciaMercadoPorKg": "1.20",
+        "estado": "PUBLICADA",
+        "numeroOfertas": 0,
+        "creadoEn": "2026-10-06T23:05:40Z"
+      },
+      {
+        "campaniaId": "a3047fea-c61f-4131-9176-9b842a34322a",
+        "propietarioSub": "d4284488-10b1-7035-9797-1a365810ca8d",
+        "productorNombre": "Productor de prueba",
+        "cultivo": "papa",
+        "departamento": "Cusco",
+        "provincia": "Calca",
+        "distrito": "Pisac",
+        "cosecha": "2027-01-04",
+        "volumenKg": 100,
+        "logistica": "Recojo",
+        "capital": "0.00",
+        "precioAhoraPorKg": "2.00",
+        "precioContraentregaPorKg": "4.00",
+        "referenciaMercadoPorKg": "1.20",
+        "estado": "PUBLICADA",
+        "numeroOfertas": 1,
+        "creadoEn": "2026-10-06T22:07:31Z"
+      }
+    ],
+    "siguienteCursor": null
+  }
+  ```
+}

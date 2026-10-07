@@ -1,0 +1,92 @@
+meta {
+  name: 16 Buscar campanas publicadas (papa, Cusco)
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{process.env.BASE_URL}}/campanas/publicadas?cultivo=papa&departamento=Cusco
+  body: none
+  auth: bearer
+}
+
+params:query {
+  cultivo: papa
+  departamento: Cusco
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_COMPRADOR}}
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Buscar campanas publicadas (papa, Cusco)
+
+  | | |
+  |---|---|
+  | API | `GET /campanas/publicadas` |
+  | Token | comprador |
+  | Microservicio | Campanas y fotos |
+  | Tipo | lectura |
+  | Tabla o servicio | agro-datos (indice publicadas-por-cultivo) |
+  | Operacion | Query publicadaClave=PUB#<cultivo>#<departamento> |
+  | Esperado | 200 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 200
+
+  ```json
+  {
+    "items": [
+      {
+        "campaniaId": "a3047fea-c61f-4131-9176-9b842a34322a",
+        "productorNombre": "Productor de prueba",
+        "cultivo": "papa",
+        "departamento": "Cusco",
+        "provincia": "Calca",
+        "distrito": "Pisac",
+        "cosecha": "2027-01-04",
+        "volumenKg": 100,
+        "logistica": "Recojo",
+        "precioAhoraPorKg": "2.00",
+        "precioContraentregaPorKg": "4.00",
+        "referenciaMercadoPorKg": "1.20"
+      },
+      {
+        "campaniaId": "4a3bc615-e363-420e-b00f-209e7a6a170e",
+        "productorNombre": "Productor de prueba",
+        "cultivo": "papa",
+        "departamento": "Cusco",
+        "provincia": "Cusco",
+        "distrito": "Wanchaq",
+        "cosecha": "2027-06-15",
+        "volumenKg": 2000,
+        "logistica": "Recojo",
+        "precioAhoraPorKg": "1.80",
+        "precioContraentregaPorKg": "2.10",
+        "referenciaMercadoPorKg": "1.20"
+      },
+      {
+        "campaniaId": "7e19831b-fbbe-4a8e-bfb9-b8716848d1e5",
+        "productorNombre": "Productor de prueba",
+        "cultivo": "papa",
+        "departamento": "Cusco",
+        "provincia": "Cusco",
+        "distrito": "Wanchaq",
+        "cosecha": "2027-06-15",
+        "volumenKg": 2000,
+        "logistica": "Recojo",
+        "precioAhoraPorKg": "1.80",
+        "precioContraentregaPorKg": "2.10",
+        "referenciaMercadoPorKg": "1.20"
+      }
+    ],
+    "siguienteCursor": null
+  }
+  ```
+}

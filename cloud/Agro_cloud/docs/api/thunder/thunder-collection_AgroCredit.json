@@ -1,0 +1,822 @@
+{
+  "clientName": "Thunder Client",
+  "collectionName": "AgroCredit API v1.6.0",
+  "collectionId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+  "dateExported": "2026-10-06T00:00:00.000Z",
+  "version": "1.2",
+  "folders": [
+    {
+      "_id": "8c8d34f4-eab6-5fa2-9871-c4b74db11f1b",
+      "name": "0 Plataforma (publico)",
+      "containerId": "",
+      "created": "2026-10-06T00:00:00.000Z",
+      "sortNum": 10000
+    },
+    {
+      "_id": "af6fd0a4-a9ba-58e7-b5eb-99cc7ec2b0fa",
+      "name": "1 Agricultor",
+      "containerId": "",
+      "created": "2026-10-06T00:00:00.000Z",
+      "sortNum": 20000
+    },
+    {
+      "_id": "9d2a9a48-e9d5-5f1d-806b-c5db94a21294",
+      "name": "2 Comprador",
+      "containerId": "",
+      "created": "2026-10-06T00:00:00.000Z",
+      "sortNum": 30000
+    },
+    {
+      "_id": "1847af5c-10b5-5dea-ad4e-3afb684e23b2",
+      "name": "3 Agricultor ve lo recibido",
+      "containerId": "",
+      "created": "2026-10-06T00:00:00.000Z",
+      "sortNum": 40000
+    },
+    {
+      "_id": "bdebb94a-1979-5575-8708-47e3b3672a65",
+      "name": "4 Seguridad (deben fallar)",
+      "containerId": "",
+      "created": "2026-10-06T00:00:00.000Z",
+      "sortNum": 50000
+    }
+  ],
+  "requests": [
+    {
+      "_id": "beb289c1-0eeb-50e4-a0e0-4954a11f074e",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "8c8d34f4-eab6-5fa2-9871-c4b74db11f1b",
+      "name": "01 Chequeo de salud",
+      "url": "{{baseUrl}}/salud",
+      "method": "GET",
+      "sortNum": 10000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Plataforma. Tipo: lectura. Destino: memoria de la tarea ECS (sin tabla). Detalle: -. Esperado: 200."
+    },
+    {
+      "_id": "adc90a46-befe-5600-876a-0a53932f3463",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "8c8d34f4-eab6-5fa2-9871-c4b74db11f1b",
+      "name": "02 Configuracion de inicio de sesion",
+      "url": "{{baseUrl}}/config",
+      "method": "GET",
+      "sortNum": 20000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Identidad y perfil. Tipo: lectura. Destino: variables de entorno de la tarea: ids de Cognito (sin tabla). Detalle: -. Esperado: 200."
+    },
+    {
+      "_id": "a24d080a-a5f3-5557-b24e-d578eabe9593",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "af6fd0a4-a9ba-58e7-b5eb-99cc7ec2b0fa",
+      "name": "03 Crear mi perfil (agricultor)",
+      "url": "{{baseUrl}}/perfil",
+      "method": "POST",
+      "sortNum": 30000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "201"
+        }
+      ],
+      "docs": "Microservicio: Identidad y perfil. Tipo: escritura directa. Destino: agro-datos. Detalle: PutItem USER#<sub> / PROFILE (condicion attribute_not_exists); lee CATALOGO o CUENTA_DEMO para validar. Esperado: 201.",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"rol\": \"agricultor\",\n  \"nombres\": \"Rosa\",\n  \"apellidos\": \"Quispe Mamani\",\n  \"tipoDoc\": \"DNI\",\n  \"documento\": \"{{dniAgricultor}}\",\n  \"celular\": \"987654321\",\n  \"correo\": \"nombre@correo.example\",\n  \"correoEs\": \"mio\",\n  \"cultivos\": [\n    \"papa\"\n  ],\n  \"departamento\": \"Cusco\",\n  \"provincia\": \"Cusco\",\n  \"distrito\": \"Wanchaq\"\n}",
+        "form": []
+      },
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenAgricultor}}"
+      }
+    },
+    {
+      "_id": "699a2e7e-a721-528f-92aa-1f93cad297a6",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "af6fd0a4-a9ba-58e7-b5eb-99cc7ec2b0fa",
+      "name": "04 Consultar mi perfil",
+      "url": "{{baseUrl}}/perfil",
+      "method": "GET",
+      "sortNum": 40000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Identidad y perfil. Tipo: lectura. Destino: agro-datos. Detalle: GetItem USER#<sub> / PROFILE. Esperado: 200.",
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenAgricultor}}"
+      }
+    },
+    {
+      "_id": "3d818d2f-c6fe-5384-9481-7696d5a52bd2",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "af6fd0a4-a9ba-58e7-b5eb-99cc7ec2b0fa",
+      "name": "05 Catalogo de cultivos",
+      "url": "{{baseUrl}}/catalogo/cultivos",
+      "method": "GET",
+      "sortNum": 50000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Padron y catalogos. Tipo: lectura. Destino: agro-datos. Detalle: Query PK=CATALOGO, SK empieza con CULTIVO#. Esperado: 200.",
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenAgricultor}}"
+      }
+    },
+    {
+      "_id": "94f9575b-dbee-539b-8b55-503d6ab2d478",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "af6fd0a4-a9ba-58e7-b5eb-99cc7ec2b0fa",
+      "name": "06 Registrar campana (insert por cola)",
+      "url": "{{baseUrl}}/campanas",
+      "method": "POST",
+      "sortNum": 60000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "202"
+        },
+        {
+          "type": "set-env-var",
+          "custom": "json.recursoId",
+          "action": "setto",
+          "value": "{{campaniaId}}"
+        }
+      ],
+      "docs": "Microservicio: Campanas y fotos. Tipo: escritura asincrona. Destino: SQS agro-insercion -> Lambda agro-worker -> agro-datos. Detalle: la api lee CATALOGO y PROFILE y encola; el worker hace PutItem CAMP#<id> / META con indices por-usuario y publicadas-por-cultivo. Esperado: 202.",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"campaniaId\": \"{{#guid}}\",\n  \"cultivo\": \"papa\",\n  \"departamento\": \"Cusco\",\n  \"provincia\": \"Cusco\",\n  \"distrito\": \"Wanchaq\",\n  \"cosecha\": \"2027-06-15\",\n  \"volumenKg\": 2000,\n  \"logistica\": \"Recojo\",\n  \"capital\": \"5000.00\",\n  \"precioAhoraPorKg\": \"1.80\",\n  \"precioContraentregaPorKg\": \"2.10\"\n}",
+        "form": []
+      },
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenAgricultor}}"
+      }
+    },
+    {
+      "_id": "75ebf641-79af-5748-99f1-2b11df259078",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "af6fd0a4-a9ba-58e7-b5eb-99cc7ec2b0fa",
+      "name": "07 Ver campana (repetir hasta 200)",
+      "url": "{{baseUrl}}/campanas/{{campaniaId}}",
+      "method": "GET",
+      "sortNum": 70000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Campanas y fotos. Tipo: lectura. Destino: agro-datos. Detalle: GetItem CAMP#<id> / META. Esperado: 200.",
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenAgricultor}}"
+      }
+    },
+    {
+      "_id": "8589a47e-d71f-5517-8cb8-13d9dc99c167",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "af6fd0a4-a9ba-58e7-b5eb-99cc7ec2b0fa",
+      "name": "08 Mis campanas",
+      "url": "{{baseUrl}}/campanas",
+      "method": "GET",
+      "sortNum": 80000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Campanas y fotos. Tipo: lectura. Destino: agro-datos (indice por-usuario). Detalle: Query usuarioClave=USER#<sub>, usuarioOrden empieza con CAMP#. Esperado: 200.",
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenAgricultor}}"
+      }
+    },
+    {
+      "_id": "2e30d657-9916-5b99-a588-0fec40796bd8",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "af6fd0a4-a9ba-58e7-b5eb-99cc7ec2b0fa",
+      "name": "09 Actualizar campana (update directo, sin ofertas)",
+      "url": "{{baseUrl}}/campanas/{{campaniaId}}",
+      "method": "PATCH",
+      "sortNum": 90000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Campanas y fotos. Tipo: actualizacion directa. Destino: agro-datos. Detalle: UpdateItem CAMP#<id> / META con condicion attribute_exists(PK) AND propietarioSub = <sub> AND numeroOfertas = 0. Esperado: 200.",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"volumenKg\": 1800,\n  \"precioAhoraPorKg\": \"1.95\"\n}",
+        "form": []
+      },
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenAgricultor}}"
+      }
+    },
+    {
+      "_id": "cd763136-72a8-5196-92ff-dfe41bf8565d",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "af6fd0a4-a9ba-58e7-b5eb-99cc7ec2b0fa",
+      "name": "10 Pedir URL para subir foto",
+      "url": "{{baseUrl}}/campanas/{{campaniaId}}/fotos/url",
+      "method": "POST",
+      "sortNum": 100000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        },
+        {
+          "type": "set-env-var",
+          "custom": "json.fotoId",
+          "action": "setto",
+          "value": "{{fotoId}}"
+        }
+      ],
+      "docs": "Microservicio: Campanas y fotos. Tipo: escritura asincrona. Destino: S3 agro-fotos -> SQS agro-fotos -> Lambda agro-etiquetar -> Rekognition -> agro-datos. Detalle: la api firma un POST a entrada/<sub>/<campana>/<foto>; la lambda registra CAMP#<id> / FOTO#<fotoId>. Esperado: 200.",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"fotoId\": \"{{#guid}}\",\n  \"tipoContenido\": \"image/jpeg\",\n  \"tamanoBytes\": 245760\n}",
+        "form": []
+      },
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenAgricultor}}"
+      }
+    },
+    {
+      "_id": "1f79e403-fb72-5680-b83d-1a0904e46e0c",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "af6fd0a4-a9ba-58e7-b5eb-99cc7ec2b0fa",
+      "name": "11 Ver fotos de la campana",
+      "url": "{{baseUrl}}/campanas/{{campaniaId}}/fotos",
+      "method": "GET",
+      "sortNum": 110000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Campanas y fotos. Tipo: lectura. Destino: agro-datos + S3 agro-fotos. Detalle: Query PK=CAMP#<id>, SK empieza con FOTO#; URL de lectura temporal. Esperado: 200.",
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenAgricultor}}"
+      }
+    },
+    {
+      "_id": "df034299-4ef3-54dc-924f-475e4bb8a780",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "9d2a9a48-e9d5-5f1d-806b-c5db94a21294",
+      "name": "12 Consultar padron (empresa por RUC)",
+      "url": "{{baseUrl}}/padron/consulta",
+      "method": "POST",
+      "sortNum": 120000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Padron y catalogos. Tipo: escritura directa (transaccion). Destino: agro-padron-empresas o agro-padron-personas + agro-datos. Detalle: Scan consistente + TransactWriteItems: Delete del registro del padron + Put USER#<sub> / PADRON#<uso>#<tipoDoc>. Esperado: 200.",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"tipoDoc\": \"RUC\",\n  \"documento\": \"{{rucComprador}}\",\n  \"uso\": \"comprador\"\n}",
+        "form": []
+      },
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenComprador}}"
+      }
+    },
+    {
+      "_id": "6126414a-c71f-59d3-a25c-621c56b56d03",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "9d2a9a48-e9d5-5f1d-806b-c5db94a21294",
+      "name": "13 Consultar padron (representante por DNI)",
+      "url": "{{baseUrl}}/padron/consulta",
+      "method": "POST",
+      "sortNum": 130000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Padron y catalogos. Tipo: escritura directa (transaccion). Destino: agro-padron-empresas o agro-padron-personas + agro-datos. Detalle: Scan consistente + TransactWriteItems: Delete del registro del padron + Put USER#<sub> / PADRON#<uso>#<tipoDoc>. Esperado: 200.",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"tipoDoc\": \"DNI\",\n  \"documento\": \"{{dniRepresentante}}\",\n  \"uso\": \"representante\"\n}",
+        "form": []
+      },
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenComprador}}"
+      }
+    },
+    {
+      "_id": "5e58d457-e393-5079-a6d7-3163ee874b34",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "9d2a9a48-e9d5-5f1d-806b-c5db94a21294",
+      "name": "14 Cuentas de prueba",
+      "url": "{{baseUrl}}/cuentas-demo",
+      "method": "GET",
+      "sortNum": 140000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Padron y catalogos. Tipo: lectura. Destino: agro-datos. Detalle: Query PK=CUENTA_DEMO. Esperado: 200.",
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenComprador}}"
+      }
+    },
+    {
+      "_id": "815d4d28-fc05-5352-b1fb-91d2853c8b55",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "9d2a9a48-e9d5-5f1d-806b-c5db94a21294",
+      "name": "15 Crear mi perfil (comprador)",
+      "url": "{{baseUrl}}/perfil",
+      "method": "POST",
+      "sortNum": 150000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "201"
+        }
+      ],
+      "docs": "Microservicio: Identidad y perfil. Tipo: escritura directa. Destino: agro-datos. Detalle: PutItem USER#<sub> / PROFILE (condicion attribute_not_exists); lee CATALOGO o CUENTA_DEMO para validar. Esperado: 201.",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"rol\": \"comprador\",\n  \"tipoDoc\": \"RUC\",\n  \"documento\": \"{{rucComprador}}\",\n  \"razonSocial\": \"Agroindustrias Sierra Verde SAC\",\n  \"contactoNombre\": \"Marisol Quispe Huamán\",\n  \"contactoCelular\": \"987654321\",\n  \"contactoCorreo\": \"compras@correo.example\",\n  \"contactoCargo\": \"Jefa de compras\",\n  \"cuentaCargoId\": \"cc-8830\",\n  \"modalidadPago\": \"recibir\"\n}",
+        "form": []
+      },
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenComprador}}"
+      }
+    },
+    {
+      "_id": "15e6adfe-aeb9-5d8c-badc-25a006de3322",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "9d2a9a48-e9d5-5f1d-806b-c5db94a21294",
+      "name": "16 Buscar campanas publicadas (papa, Cusco)",
+      "url": "{{baseUrl}}/campanas/publicadas?cultivo=papa&departamento=Cusco",
+      "method": "GET",
+      "sortNum": 160000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Campanas y fotos. Tipo: lectura. Destino: agro-datos (indice publicadas-por-cultivo). Detalle: Query publicadaClave=PUB#<cultivo>#<departamento>. Esperado: 200.",
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenComprador}}"
+      }
+    },
+    {
+      "_id": "a9ce32f3-94ae-5045-adde-da815ac40932",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "9d2a9a48-e9d5-5f1d-806b-c5db94a21294",
+      "name": "17 Ver campana publicada",
+      "url": "{{baseUrl}}/campanas/{{campaniaId}}",
+      "method": "GET",
+      "sortNum": 170000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Campanas y fotos. Tipo: lectura. Destino: agro-datos. Detalle: GetItem CAMP#<id> / META. Esperado: 200.",
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenComprador}}"
+      }
+    },
+    {
+      "_id": "597de2d0-cfdf-5d0c-b80d-241ccc152716",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "9d2a9a48-e9d5-5f1d-806b-c5db94a21294",
+      "name": "18 Enviar oferta (insert por cola)",
+      "url": "{{baseUrl}}/campanas/{{campaniaId}}/ofertas",
+      "method": "POST",
+      "sortNum": 180000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "202"
+        },
+        {
+          "type": "set-env-var",
+          "custom": "json.recursoId",
+          "action": "setto",
+          "value": "{{ofertaId}}"
+        }
+      ],
+      "docs": "Microservicio: Ofertas. Tipo: escritura asincrona. Destino: SQS agro-insercion -> Lambda agro-worker -> agro-datos. Detalle: la api lee META y PROFILE y encola; el worker hace TransactWriteItems: Put CAMP#<id> / OFFER#<id> + Update META numeroOfertas. Esperado: 202.",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"ofertaId\": \"{{#guid}}\",\n  \"volumenKg\": 1200,\n  \"precioPorKg\": \"1.85\",\n  \"modalidad\": \"Pago ahora\",\n  \"logistica\": \"Recojo\",\n  \"fechaEntrega\": \"2027-06-20\"\n}",
+        "form": []
+      },
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenComprador}}"
+      }
+    },
+    {
+      "_id": "560b3073-6bff-50a0-97d9-c8739f814497",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "9d2a9a48-e9d5-5f1d-806b-c5db94a21294",
+      "name": "19 Mis ofertas (repetir hasta que aparezca)",
+      "url": "{{baseUrl}}/ofertas",
+      "method": "GET",
+      "sortNum": 190000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Ofertas. Tipo: lectura. Destino: agro-datos (indice por-usuario). Detalle: Query usuarioClave=USER#<sub>, usuarioOrden empieza con OFFER#. Esperado: 200.",
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenComprador}}"
+      }
+    },
+    {
+      "_id": "c8d784c5-521e-59ad-9a7f-6919581c126b",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "1847af5c-10b5-5dea-ad4e-3afb684e23b2",
+      "name": "20 Ofertas recibidas en mi campana",
+      "url": "{{baseUrl}}/campanas/{{campaniaId}}/ofertas",
+      "method": "GET",
+      "sortNum": 200000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Ofertas. Tipo: lectura. Destino: agro-datos. Detalle: Query PK=CAMP#<id>, SK empieza con OFFER#. Esperado: 200.",
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenAgricultor}}"
+      }
+    },
+    {
+      "_id": "fa3d5432-51d2-561c-9167-54d05c918b45",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "1847af5c-10b5-5dea-ad4e-3afb684e23b2",
+      "name": "21 Ver campana (numeroOfertas = 1)",
+      "url": "{{baseUrl}}/campanas/{{campaniaId}}",
+      "method": "GET",
+      "sortNum": 210000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "200"
+        }
+      ],
+      "docs": "Microservicio: Campanas y fotos. Tipo: lectura. Destino: agro-datos. Detalle: GetItem CAMP#<id> / META. Esperado: 200.",
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenAgricultor}}"
+      }
+    },
+    {
+      "_id": "989a636f-1ec7-5a26-9ebe-cf78348d5bd6",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "1847af5c-10b5-5dea-ad4e-3afb684e23b2",
+      "name": "22 Actualizar campana con ofertas (debe dar 409)",
+      "url": "{{baseUrl}}/campanas/{{campaniaId}}",
+      "method": "PATCH",
+      "sortNum": 220000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "409"
+        }
+      ],
+      "docs": "Microservicio: Campanas y fotos. Tipo: actualizacion directa. Destino: agro-datos. Detalle: UpdateItem CAMP#<id> / META con condicion attribute_exists(PK) AND propietarioSub = <sub> AND numeroOfertas = 0. Esperado: 409.",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"volumenKg\": 1800,\n  \"precioAhoraPorKg\": \"1.95\"\n}",
+        "form": []
+      },
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenAgricultor}}"
+      }
+    },
+    {
+      "_id": "4b36634e-f050-5e7c-9f06-d1a0be637b8a",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "bdebb94a-1979-5575-8708-47e3b3672a65",
+      "name": "23 Registrar campana sin token",
+      "url": "{{baseUrl}}/campanas",
+      "method": "POST",
+      "sortNum": 230000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "401"
+        }
+      ],
+      "docs": "Microservicio: Campanas y fotos. Tipo: escritura asincrona. Destino: SQS agro-insercion -> Lambda agro-worker -> agro-datos. Detalle: la api lee CATALOGO y PROFILE y encola; el worker hace PutItem CAMP#<id> / META con indices por-usuario y publicadas-por-cultivo. Esperado: 401.",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"campaniaId\": \"{{#guid}}\",\n  \"cultivo\": \"papa\",\n  \"departamento\": \"Cusco\",\n  \"provincia\": \"Cusco\",\n  \"distrito\": \"Wanchaq\",\n  \"cosecha\": \"2027-06-15\",\n  \"volumenKg\": 2000,\n  \"logistica\": \"Recojo\",\n  \"capital\": \"5000.00\",\n  \"precioAhoraPorKg\": \"1.80\",\n  \"precioContraentregaPorKg\": \"2.10\"\n}",
+        "form": []
+      }
+    },
+    {
+      "_id": "e9dcbff1-ffc8-50ca-b2f5-7a0041dfd9b0",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "bdebb94a-1979-5575-8708-47e3b3672a65",
+      "name": "24 Comprador intenta registrar campana",
+      "url": "{{baseUrl}}/campanas",
+      "method": "POST",
+      "sortNum": 240000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "403"
+        }
+      ],
+      "docs": "Microservicio: Campanas y fotos. Tipo: escritura asincrona. Destino: SQS agro-insercion -> Lambda agro-worker -> agro-datos. Detalle: la api lee CATALOGO y PROFILE y encola; el worker hace PutItem CAMP#<id> / META con indices por-usuario y publicadas-por-cultivo. Esperado: 403.",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"campaniaId\": \"{{#guid}}\",\n  \"cultivo\": \"papa\",\n  \"departamento\": \"Cusco\",\n  \"provincia\": \"Cusco\",\n  \"distrito\": \"Wanchaq\",\n  \"cosecha\": \"2027-06-15\",\n  \"volumenKg\": 2000,\n  \"logistica\": \"Recojo\",\n  \"capital\": \"5000.00\",\n  \"precioAhoraPorKg\": \"1.80\",\n  \"precioContraentregaPorKg\": \"2.10\"\n}",
+        "form": []
+      },
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenComprador}}"
+      }
+    },
+    {
+      "_id": "54159c19-2fc2-5666-bee5-860f5c20fd1e",
+      "colId": "2f356184-32c7-5b36-aeec-57fa5bcc2a7e",
+      "containerId": "bdebb94a-1979-5575-8708-47e3b3672a65",
+      "name": "25 Agricultor intenta ofertar",
+      "url": "{{baseUrl}}/campanas/{{campaniaId}}/ofertas",
+      "method": "POST",
+      "sortNum": 250000,
+      "created": "2026-10-06T00:00:00.000Z",
+      "modified": "2026-10-06T00:00:00.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "params": [],
+      "tests": [
+        {
+          "type": "res-code",
+          "custom": "",
+          "action": "equal",
+          "value": "403"
+        }
+      ],
+      "docs": "Microservicio: Ofertas. Tipo: escritura asincrona. Destino: SQS agro-insercion -> Lambda agro-worker -> agro-datos. Detalle: la api lee META y PROFILE y encola; el worker hace TransactWriteItems: Put CAMP#<id> / OFFER#<id> + Update META numeroOfertas. Esperado: 403.",
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"ofertaId\": \"{{#guid}}\",\n  \"volumenKg\": 1200,\n  \"precioPorKg\": \"1.85\",\n  \"modalidad\": \"Pago ahora\",\n  \"logistica\": \"Recojo\",\n  \"fechaEntrega\": \"2027-06-20\"\n}",
+        "form": []
+      },
+      "auth": {
+        "type": "bearer",
+        "bearer": "{{tokenAgricultor}}"
+      }
+    }
+  ]
+}

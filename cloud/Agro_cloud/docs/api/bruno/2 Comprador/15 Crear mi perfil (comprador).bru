@@ -1,0 +1,69 @@
+meta {
+  name: 15 Crear mi perfil (comprador)
+  type: http
+  seq: 15
+}
+
+post {
+  url: {{process.env.BASE_URL}}/perfil
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_COMPRADOR}}
+}
+
+body:json {
+  {
+    "rol": "comprador",
+    "tipoDoc": "RUC",
+    "documento": "{{process.env.RUC_COMPRADOR}}",
+    "razonSocial": "Agroindustrias Sierra Verde SAC",
+    "contactoNombre": "Marisol Quispe Huamán",
+    "contactoCelular": "987654321",
+    "contactoCorreo": "compras@correo.example",
+    "contactoCargo": "Jefa de compras",
+    "cuentaCargoId": "cc-8830",
+    "modalidadPago": "recibir"
+  }
+}
+
+tests {
+  test("codigo 201 o 409", function () {
+    expect([201, 409]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Crear mi perfil (comprador)
+
+  | | |
+  |---|---|
+  | API | `POST /perfil` |
+  | Token | comprador |
+  | Microservicio | Identidad y perfil |
+  | Tipo | escritura directa |
+  | Tabla o servicio | agro-datos |
+  | Operacion | PutItem USER#<sub> / PROFILE (condicion attribute_not_exists); lee CATALOGO o CUENTA_DEMO para validar |
+  | Esperado | 201 o 409 |
+
+  409 tambien es correcto: el perfil ya existe y no se duplica.
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 409
+
+  ```json
+  {
+    "type": "about:blank",
+    "title": "Conflicto",
+    "status": 409,
+    "instance": "/api/v1/perfil",
+    "requestId": "53934830-a071-4ed1-89f5-271b4ad39d94",
+    "detail": "el perfil ya existe"
+  }
+  ```
+}

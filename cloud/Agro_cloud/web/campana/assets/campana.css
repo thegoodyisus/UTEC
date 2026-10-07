@@ -1,0 +1,545 @@
+/* ============================================================
+   Prototipo AgroCredit — Módulo Campaña (layout)
+   Consume tokens/base del design-system. No redefine tokens.
+   ============================================================ */
+
+/* Escritorio: fondo neutro que centra el mockup del celular */
+body {
+  background: #c7ccd4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--space-6) 0;
+}
+/* Mockup de celular: 375 x 800, marco, sombra y scroll interno */
+.screen {
+  display: flex;
+  flex-direction: column;
+  box-sizing: content-box;   /* 375x800 = área de pantalla; el marco va por fuera */
+  width: 375px;
+  height: 800px;
+  max-width: 100%;
+  margin: 0 auto;
+  background: var(--color-surface);
+  border-radius: 40px;
+  border: 10px solid #111418;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
+.screen::-webkit-scrollbar { width: 0; background: transparent; }
+.screen--brand { background: var(--color-secondary); }
+.screen__body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+}
+.screen__title {
+  margin: 0;
+  font-family: var(--font-family-titles);
+  font-size: var(--font-size-heading-large);
+  line-height: var(--line-height-heading);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+.screen__subtitle { margin: 0; font-size: var(--font-size-md); line-height: 1.4; color: var(--color-text-secondary); }
+.screen__footer { padding: var(--space-4) var(--space-6) var(--space-8); display: flex; flex-direction: column; gap: var(--space-3); }
+
+.field-group { display: flex; flex-direction: column; gap: var(--space-5); }
+.field-row { display: flex; gap: var(--space-3); }
+.field-row > * { flex: 1 1 0; }
+
+/* Chip de estado de campaña */
+.state-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* Momento WOW */
+.wow {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-4);
+  border-radius: var(--radius-large);
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+}
+.wow__icon { font-size: 24px; line-height: 1; flex: 0 0 auto; }
+.wow__text { margin: 0; font-weight: var(--font-weight-medium); }
+
+/* Referencia de mercado */
+.market-ref {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-large);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+.market-ref strong { color: var(--color-text); }
+
+/* Tarjeta de opción de precio (pago ahora / contraentrega) */
+.price-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+}
+.price-card__title { font-weight: var(--font-weight-bold); color: var(--color-text); }
+.price-card__hint { font-size: var(--font-size-sm); color: var(--color-text-secondary); margin: 0; }
+.price-input {
+  display: flex; align-items: center; gap: var(--space-2);
+  border: 1px solid var(--color-border); border-radius: var(--radius-large);
+  padding: var(--space-2) var(--space-4); background: var(--color-surface);
+}
+.price-input__currency { color: var(--color-text-secondary); font-weight: var(--font-weight-bold); }
+.price-input input {
+  border: none; outline: none; width: 100%;
+  font-family: var(--font-family-titles); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold);
+  color: var(--color-text); background: transparent;
+}
+
+/* Resumen (revisar) */
+.review-list { display: flex; flex-direction: column; gap: var(--space-2); background: var(--color-surface-container-low); border-radius: var(--radius-large); padding: var(--space-4); }
+.review-list__row { display: flex; justify-content: space-between; gap: var(--space-4); font-size: var(--font-size-sm); }
+.review-list__row span:first-child { color: var(--color-text-secondary); }
+.review-list__row span:last-child { color: var(--color-text); font-weight: var(--font-weight-medium); text-align: right; }
+
+/* Detalle de oportunidad / comprador */
+.detail-card {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-large);
+}
+.detail-card__buyer { display: flex; align-items: center; gap: var(--space-3); }
+.detail-card__avatar {
+  width: 44px; height: 44px; border-radius: var(--radius-pill);
+  background: var(--color-primary); color: var(--color-on-primary);
+  display: flex; align-items: center; justify-content: center; font-weight: var(--font-weight-bold);
+  flex: 0 0 auto;
+}
+.detail-card__name { font-weight: var(--font-weight-bold); color: var(--color-text); }
+
+/* Barra de capital cubierto */
+.capital-bar { height: 10px; border-radius: var(--radius-pill); background: var(--color-secondary-container); overflow: hidden; }
+.capital-bar__fill { height: 100%; background: var(--color-secondary); border-radius: var(--radius-pill); transition: width 0.3s ease; }
+.capital-figures { display: flex; justify-content: space-between; font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+
+/* Timeline de seguimiento */
+.timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.timeline__item { display: flex; gap: var(--space-3); padding-bottom: var(--space-4); position: relative; }
+.timeline__dot { width: 16px; height: 16px; border-radius: var(--radius-pill); background: var(--color-border); flex: 0 0 auto; margin-top: 2px; }
+.timeline__item.is-done .timeline__dot { background: var(--color-secondary); }
+.timeline__item.is-current .timeline__dot { background: var(--color-primary); box-shadow: 0 0 0 3px var(--color-secondary-container); }
+.timeline__label { font-size: var(--font-size-sm); color: var(--color-text); }
+.timeline__item:not(.is-done):not(.is-current) .timeline__label { color: var(--color-text-secondary); }
+
+/* Liquidación */
+.settlement { display: flex; flex-direction: column; gap: var(--space-2); background: var(--color-surface-container-low); border-radius: var(--radius-large); padding: var(--space-4); }
+.settlement__row { display: flex; justify-content: space-between; font-size: var(--font-size-md); }
+.settlement__row--minus span:last-child { color: var(--color-danger); }
+.settlement__row--total { border-top: 1px solid var(--color-border); padding-top: var(--space-2); margin-top: var(--space-2); font-weight: var(--font-weight-bold); }
+.settlement__row--total span:last-child { color: var(--color-success); font-size: var(--font-size-lg); }
+
+.mock-note { font-size: var(--font-size-body-small); color: var(--color-text-secondary); text-align: center; }
+.open-note { font-size: var(--font-size-body-small); color: var(--color-text-secondary); border-left: 3px solid var(--color-border); padding-left: var(--space-3); }
+
+.text-link { background: none; border: none; padding: 0; color: var(--color-secondary); font-weight: var(--font-weight-medium); font-size: var(--font-size-sm); cursor: pointer; }
+.text-link:hover { text-decoration: underline; }
+
+/* Índice */
+.index-list { display: flex; flex-direction: column; gap: var(--space-3); }
+.index-link { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-large); background: var(--color-surface); color: var(--color-text); font-weight: var(--font-weight-medium); }
+.index-link__num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: var(--radius-pill); background: var(--color-secondary); color: var(--color-on-secondary); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); flex: 0 0 auto; }
+.index-link:hover { border-color: var(--color-secondary); }
+
+/* ---- Volumen + selector de unidad ---- */
+.input-unit { display: flex; gap: var(--space-2); }
+.input-unit .text-field { flex: 2 1 0; }
+.input-unit .select-field { flex: 1 1 0; }
+
+/* ---- Input de dinero con prefijo S/ (sin spinner) ---- */
+.money-field { display: flex; flex-direction: column; gap: var(--space-2); width: 100%; }
+.money-field__label { font-family: var(--font-family-base); font-size: var(--font-size-md); font-weight: var(--font-weight-medium); color: var(--color-text); }
+.money-input {
+  display: flex; align-items: center; gap: var(--space-2);
+  border: 1px solid var(--color-border); border-radius: var(--radius-large);
+  padding: var(--space-4); background: var(--color-surface);
+}
+.money-input__currency { color: var(--color-text-secondary); font-weight: var(--font-weight-bold); }
+.money-input input {
+  border: none; outline: none; width: 100%; background: transparent;
+  font-family: var(--font-family-base); font-size: var(--font-size-md); color: var(--color-text);
+}
+input[type="number"].no-spin::-webkit-outer-spin-button,
+input[type="number"].no-spin::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"].no-spin { -moz-appearance: textfield; }
+
+/* ---- Fotos (opcional) + thumbnails ---- */
+.photo-section { display: flex; flex-direction: column; gap: var(--space-3); }
+.photo-add {
+  display: inline-flex; align-items: center; gap: var(--space-2); align-self: flex-start;
+  padding: var(--space-3) var(--space-4);
+  border: 1.5px dashed var(--color-secondary); border-radius: var(--radius-large);
+  background: var(--color-secondary-container); color: var(--color-on-secondary-container);
+  font-weight: var(--font-weight-medium); cursor: pointer;
+}
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-2); }
+.photo-thumb {
+  position: relative; aspect-ratio: 1 / 1; border-radius: var(--radius-large);
+  overflow: hidden; background: var(--color-surface-container-low);
+}
+.photo-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.photo-thumb__remove {
+  position: absolute; top: 4px; right: 4px; width: 22px; height: 22px;
+  border: none; border-radius: var(--radius-pill); background: rgba(0,0,0,0.55); color: #fff;
+  cursor: pointer; font-size: 14px; line-height: 1;
+}
+
+/* ---- Home ---- */
+.home-header { display: flex; align-items: center; justify-content: space-between; padding: var(--space-6) var(--space-6) var(--space-2); }
+.home-header__hello { margin: 0; font-family: var(--font-family-titles); font-size: var(--font-size-heading-large); font-weight: var(--font-weight-bold); color: var(--color-text); }
+.section-title { display: flex; align-items: center; justify-content: space-between; margin: var(--space-4) 0 var(--space-2); }
+.section-title h2 { margin: 0; font-family: var(--font-family-titles); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-text); }
+.icon-btn {
+  display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px;
+  border: none; border-radius: var(--radius-pill); background: var(--color-secondary); color: var(--color-on-secondary);
+  font-size: 22px; line-height: 1; cursor: pointer;
+}
+.campaign-card {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-large);
+  background: var(--color-surface);
+}
+.campaign-card__head { display: flex; align-items: center; justify-content: space-between; }
+.campaign-card__title { font-weight: var(--font-weight-bold); color: var(--color-text); }
+.campaign-card__meta { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.badge {
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px var(--space-2);
+  border-radius: var(--radius-pill); background: var(--color-primary); color: var(--color-on-primary);
+  font-size: var(--font-size-body-small); font-weight: var(--font-weight-bold);
+}
+.badge--soft { background: var(--color-secondary-container); color: var(--color-on-secondary-container); }
+.offer-group {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+  padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-large); background: var(--color-surface);
+}
+.offer-card {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-4); border: 1px solid var(--color-border); border-radius: var(--radius-large); background: var(--color-surface);
+}
+
+/* ---- In-app banner / push simulada ---- */
+.inapp {
+  display: flex; gap: var(--space-3); align-items: flex-start;
+  padding: var(--space-4); border-radius: var(--radius-large);
+  background: var(--color-secondary-container); color: var(--color-on-secondary-container);
+}
+.inapp__icon { font-size: 24px; }
+.push {
+  display: flex; gap: var(--space-3); align-items: center;
+  padding: var(--space-3) var(--space-4); border-radius: var(--radius-large);
+  background: var(--color-surface); box-shadow: var(--shadow-md); border: 1px solid var(--color-border);
+}
+.push__app { width: 36px; height: 36px; border-radius: var(--radius-small); background: var(--color-secondary); color: var(--color-on-secondary); display:flex; align-items:center; justify-content:center; font-weight: var(--font-weight-bold); flex: 0 0 auto; }
+
+/* ---- Push notification como banner superior (entra deslizándose desde arriba) ---- */
+.push-banner {
+  position: absolute;
+  top: var(--space-3);
+  left: 50%;
+  transform: translate(-50%, calc(-100% - var(--space-6)));
+  width: calc(100% - var(--space-8));
+  max-width: 400px;
+  z-index: 50;
+  opacity: 0;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+}
+.push-banner.is-visible {
+  transform: translate(-50%, 0);
+  opacity: 1;
+}
+
+/* ---- Perfil en Home: chips de productos + editor ---- */
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+}
+.profile-card__head { display: flex; align-items: center; justify-content: space-between; }
+.profile-card__label { font-size: var(--font-size-sm); color: var(--color-text-secondary); font-weight: var(--font-weight-medium); }
+.chip-list { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.chip {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: 6px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-secondary-container);
+  color: var(--color-on-secondary-container);
+  font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);
+}
+.chip__remove {
+  border: none; background: transparent; color: var(--color-on-secondary-container);
+  cursor: pointer; font-size: 16px; line-height: 1; padding: 0; display: none;
+}
+.chip-list.is-editing .chip__remove { display: inline-flex; }
+.chip--empty { background: transparent; color: var(--color-text-secondary); padding-left: 0; }
+.chip-add {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 6px var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 1.5px dashed var(--color-secondary);
+  background: transparent; color: var(--color-on-secondary-container);
+  font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); cursor: pointer;
+}
+.profile-add-row { display: none; gap: var(--space-2); }
+.profile-add-row.is-visible { display: flex; }
+.profile-add-row .text-field { flex: 1 1 auto; }
+.profile-add-row .btn { flex: 0 0 auto; padding: var(--space-3) var(--space-4); }
+
+/* ---- Pantallas de éxito (consistentes con el onboarding) ---- */
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+  padding: var(--space-10) var(--space-6);
+  flex: 1 1 auto;
+  justify-content: center;
+}
+.success__icon {
+  width: 96px; height: 96px; border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  display: flex; align-items: center; justify-content: center;
+}
+.success__icon svg { width: 56px; height: 56px; }
+.success__title {
+  margin: 0;
+  font-family: var(--font-family-titles);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-on-secondary);
+}
+.success__text { margin: 0; color: var(--color-on-secondary); opacity: 0.95; max-width: 28ch; }
+
+.summary-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background: var(--color-surface);
+  border-radius: var(--radius-large);
+  padding: var(--space-4);
+}
+.summary-list__row { display: flex; justify-content: space-between; gap: var(--space-4); font-size: var(--font-size-sm); }
+.summary-list__row span:first-child { color: var(--color-text-secondary); }
+.summary-list__row span:last-child { color: var(--color-text); font-weight: var(--font-weight-medium); }
+
+/* ============================================================
+   Logo AgroCredit (lockup de marca)
+   ============================================================ */
+.brand-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+.brand-lockup__wordmark {
+  margin: 0;
+  font-family: var(--font-family-titles);
+  font-size: 40px;
+  line-height: 1;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.5px;
+  display: inline-flex;
+  align-items: flex-start;
+}
+.brand-lockup__agro { color: var(--color-primary); }
+.brand-lockup__credit { color: var(--color-secondary); }
+.brand-lockup__leaf { width: 18px; height: 18px; margin-left: 1px; margin-top: 4px; color: var(--color-secondary); }
+.brand-lockup__leaf svg { width: 100%; height: 100%; display: block; }
+.brand-lockup--on-green .brand-lockup__agro,
+.brand-lockup--on-green .brand-lockup__credit,
+.brand-lockup--on-green .brand-lockup__leaf { color: #ffffff; }
+.brand-lockup--on-green .brand-lockup__backing,
+
+/* Variante compacta para barras (app-bar): solo el wordmark, tamaño reducido */
+.brand-lockup--inline { flex-direction: row; gap: 0; }
+.brand-lockup--inline .brand-lockup__wordmark { font-size: 22px; }
+.brand-lockup--inline .brand-lockup__leaf { width: 11px; height: 11px; margin-top: 2px; }
+
+/* ============================================================
+   Isotipo AgroCredit (solo la hojita) — para espacios donde NO
+   cabe el logo completo (app-bar, favicon, avatares, badges).
+   Por defecto: hojita verde sobre círculo verde claro.
+   --on-green: círculo blanco translúcido, hojita blanca.
+   ============================================================ */
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-pill);
+  background: var(--color-secondary-container);
+  color: var(--color-secondary);
+  flex: 0 0 auto;
+}
+.brand-mark svg { width: 62%; height: 62%; display: block; }
+.brand-mark--on-green { background: rgba(255, 255, 255, 0.22); color: #ffffff; }
+
+/* ---- Botón de regreso: contenedor 24x24, flecha 8x14 (todo el prototipo v02) ---- */
+.flow-header__back { width: 24px; height: 24px; }
+.flow-header__back svg { width: 8px; height: 14px; }
+
+/* ============================================================
+   v03 — Comprador: campañas publicadas, detalle de lote, oferta
+   ============================================================ */
+
+/* Barra de estado simulada (verde de marca) */
+.status-sim {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-4) var(--space-5) 0;
+  font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+.status-sim--brand {
+  background: var(--color-primary); color: var(--color-on-primary);
+  padding: var(--space-3) var(--space-5);
+}
+
+/* Top bar con título + etiqueta (Empresas / Comprador Andino) */
+.flow-topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+  padding: var(--space-4) var(--space-5) var(--space-3);
+  background: var(--color-surface);
+}
+.flow-topbar__title {
+  display: inline-flex; align-items: center; gap: var(--space-3);
+  font-family: var(--font-family-titles); font-weight: var(--font-weight-bold);
+  color: var(--color-primary); font-size: var(--font-size-lg);
+}
+.flow-topbar__title .flow-header__back { color: var(--color-primary); }
+.flow-topbar__tag { color: var(--color-secondary); font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); }
+
+/* Aviso informativo (verde suave) */
+.info-note {
+  padding: var(--space-4); border-radius: var(--radius-large);
+  background: #e6f4ec; color: var(--color-primary);
+  font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);
+}
+
+/* Fila de chips de filtro */
+.chip-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.chip--filter { background: var(--color-secondary); color: var(--color-on-secondary); }
+.chip--filter.chip--outline {
+  background: var(--color-surface); color: var(--color-text);
+  border: 1.5px solid var(--color-border);
+}
+.chip--soft { background: var(--color-secondary-container); color: var(--color-on-secondary-container); }
+
+/* ---- Tarjeta de campaña individual (lista "Campañas publicadas") ---- */
+.lote-card {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  width: 100%; text-align: left;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border); border-radius: var(--radius-large);
+  background: var(--color-surface); cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.lote-card:hover { border-color: var(--color-secondary); box-shadow: var(--shadow-sm); }
+.lote-card:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.lote-card__top { display: flex; align-items: center; justify-content: space-between; }
+.lote-card__match { color: var(--color-on-secondary-container); font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); }
+.lote-card__producer { display: flex; align-items: center; gap: var(--space-3); }
+.lote-card__figures { display: flex; align-items: baseline; gap: var(--space-2); margin-top: var(--space-1); }
+.lote-card__kilos { font-family: var(--font-family-titles); font-size: 30px; font-weight: var(--font-weight-bold); color: var(--color-primary); line-height: 1; }
+.lote-card__kilos-label { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.lote-card__row { display: flex; justify-content: space-between; gap: var(--space-3); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.lote-card__row strong { color: var(--color-text); }
+
+/* ---- Métricas del detalle del lote (grid 2x2) ---- */
+.metric-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); }
+.metric-card {
+  display: flex; flex-direction: column; gap: var(--space-1);
+  padding: var(--space-4); border: 1px solid var(--color-border);
+  border-radius: var(--radius-large); background: var(--color-surface);
+}
+.metric-card--primary { background: var(--color-primary); border-color: var(--color-primary); }
+.metric-card__label { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.metric-card__value { font-family: var(--font-family-titles); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-text); }
+.metric-card--primary .metric-card__label { color: rgba(255,255,255,0.85); }
+.metric-card--primary .metric-card__value { color: var(--color-on-primary); }
+
+/* ---- Bottom sheet (confirmar oferta vinculante) ---- */
+/* Overlay y sheet ocultos por defecto (display:none) para que NO queden
+   "levantados" dentro del mockup con scroll. Solo aparecen con .is-visible. */
+.sheet-overlay {
+  position: absolute; inset: 0; background: rgba(17,20,24,0.45);
+  display: none; z-index: 40;
+}
+.sheet-overlay.is-visible { display: block; }
+.bottom-sheet {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 45;
+  display: none; flex-direction: column; gap: var(--space-4);
+  padding: var(--space-4) var(--space-6) var(--space-8);
+  background: var(--color-surface);
+  border-top-left-radius: var(--radius-3xlarge); border-top-right-radius: var(--radius-3xlarge);
+  box-shadow: var(--shadow-elevated-strong-up);
+  animation: sheet-up 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.bottom-sheet.is-visible { display: flex; }
+@keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.bottom-sheet__grip { width: 44px; height: 5px; border-radius: var(--radius-pill); background: var(--color-border); align-self: center; }
+.bottom-sheet__title { margin: 0; font-family: var(--font-family-titles); font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); }
+
+.offer-summary {
+  display: flex; flex-direction: column; gap: var(--space-1);
+  padding: var(--space-4); border-radius: var(--radius-large);
+  background: var(--color-surface-container-low);
+}
+.offer-summary__main { font-family: var(--font-family-titles); font-weight: var(--font-weight-bold); color: var(--color-text); }
+.offer-summary__meta { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.offer-warn { margin: 0; color: #a9640a; font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); }
+
+/* ---- Mis ofertas: actividad reciente ---- */
+.activity-list { display: flex; flex-direction: column; gap: var(--space-3); }
+.activity-row {
+  padding: var(--space-4); border: 1px solid var(--color-border);
+  border-radius: var(--radius-large); background: var(--color-surface);
+  font-size: var(--font-size-sm); color: var(--color-text);
+}
+
+/* ============================================================
+   v05 (decision 61): heroes de marca en verde profundo y logo de dos hojas.
+   ============================================================ */
+.screen--brand, .landing-hero, .screen--login { background: var(--color-primary-dark); }
+.brand-lockup__agro { color: var(--color-primary-dark); }
+.brand-lockup__credit { color: var(--color-leaf-light); }
+.brand-lockup__leaf { color: var(--color-leaf); width: 0.72em; height: 0.72em; margin: -0.08em 0 0 0.04em; }
+.brand-lockup--on-green .brand-lockup__agro { color: #ffffff; }
+.brand-lockup--on-green .brand-lockup__credit { color: var(--color-mint); }
+.brand-lockup--on-green .brand-lockup__leaf { color: var(--color-leaf-light); }
+.brand-lockup--on-green .brand-lockup__leaf .hoja-b { fill: var(--color-mint); }

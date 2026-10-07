@@ -1,0 +1,106 @@
+/* ============================================================
+   Componente: bottom_bar_standard
+   Origen Figma: node 7772:12761 (file qkyZrZ17ur7zSThXvLvqDh)
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.bottom-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 430px;
+  padding: var(--space-2) var(--space-4) var(--space-3);
+  background: var(--color-surface);
+  border-top-left-radius: var(--radius-xlarge);
+  border-top-right-radius: var(--radius-xlarge);
+  box-shadow: var(--shadow-elevated-strong-up);
+  box-sizing: border-box;
+}
+
+/* Cada ítem de navegación */
+.bottom-bar__item {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) 0 0;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  transition: color 0.15s ease;
+}
+
+/* Barra indicadora superior (solo en el ítem activo) */
+.bottom-bar__item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  transition: background 0.15s ease;
+}
+
+.bottom-bar__icon {
+  width: 24px;
+  height: 24px;
+  color: var(--icon-secondary);
+  transition: color 0.15s ease;
+}
+
+.bottom-bar__label {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body-small);
+  line-height: var(--line-height-small);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-1);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+/* ---- Estado activo ---- */
+.bottom-bar__item.is-active {
+  color: var(--color-secondary);
+}
+
+.bottom-bar__item.is-active::before {
+  background: var(--color-success);
+}
+
+.bottom-bar__item.is-active .bottom-bar__icon {
+  color: var(--color-success);
+}
+
+.bottom-bar__item.is-active .bottom-bar__label {
+  color: var(--color-success);
+  font-weight: var(--font-weight-bold);
+}
+
+/* ---- Interacción ---- */
+.bottom-bar__item:hover:not(.is-active) .bottom-bar__icon,
+.bottom-bar__item:hover:not(.is-active) .bottom-bar__label {
+  color: var(--color-text);
+}
+
+.bottom-bar__item:active .bottom-bar__icon { transform: scale(0.92); }
+.bottom-bar__item:disabled,
+.bottom-bar__item.is-disabled { cursor: not-allowed; opacity: var(--opacity-disabled); }
+.bottom-bar__item:disabled .bottom-bar__icon,
+.bottom-bar__item.is-disabled .bottom-bar__icon { color: var(--color-disabled-text); }
+.bottom-bar__item:disabled .bottom-bar__label,
+.bottom-bar__item.is-disabled .bottom-bar__label { color: var(--color-disabled-text); }
+
+.bottom-bar__item:focus-visible,
+.bottom-bar__item.is-focused {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+  border-radius: var(--radius-small);
+}

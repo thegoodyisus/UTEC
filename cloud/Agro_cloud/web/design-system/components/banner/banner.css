@@ -1,0 +1,42 @@
+/* ============================================================
+   Componente: banner (promo + cta)
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (home)
+   Banners horizontales: ícono + texto + chevron.
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-4);
+  border-radius: var(--radius-large);
+  box-sizing: border-box;
+  text-align: left;
+  border: none;
+}
+
+.banner__icon { flex: 0 0 auto; display: flex; align-items: center; justify-content: center; }
+.banner__icon svg { width: 32px; height: 32px; }
+
+.banner__content { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.banner__text { margin: 0; font-family: var(--font-family-base); font-size: var(--font-size-sm); }
+.banner__title { font-weight: var(--font-weight-bold); }
+
+.banner__chevron { flex: 0 0 auto; display: flex; align-items: center; }
+.banner__chevron svg { width: 20px; height: 20px; }
+
+/* Variante promo (verde claro) */
+.banner--promo {
+  background: var(--color-secondary-container); /* #d8f9e1 */
+  color: var(--color-text);
+}
+.banner--promo .banner__title { color: var(--color-text); }
+
+/* Variante CTA (verde oscuro relleno) */
+.banner--cta {
+  background: #0a7a34;
+  color: var(--color-on-secondary);
+}
+.banner--cta .banner__text { font-weight: var(--font-weight-bold); font-size: var(--font-size-md); }

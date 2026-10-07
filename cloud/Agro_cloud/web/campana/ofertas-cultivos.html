@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Campañas publicadas</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/campana.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <!-- Barra de estado simulada (verde de marca, flujo comprador) -->
+    <div class="status-sim status-sim--brand" aria-hidden="true">
+      <span class="status-sim__time">9:41</span>
+      <span class="status-sim__net">4G · 100 %</span>
+    </div>
+
+    <!-- Top bar: título + etiqueta de empresa -->
+    <header class="flow-topbar">
+      <span class="flow-topbar__title">
+        <a class="flow-header__back" href="home-comprador.html" aria-label="Volver" data-testid="campanas-back">
+          <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+        </a>
+        Campañas publicadas
+      </span>
+      <span class="flow-topbar__tag" id="tag-empresa">Empresas</span>
+    </header>
+
+    <div class="screen__body">
+      <!-- Filtros (según lo que vino del Home: cultivo · zona) -->
+      <div class="chip-row" role="group" aria-label="Filtros">
+        <span class="chip chip--filter" id="f-cultivo">Papa</span>
+        <span class="chip chip--filter" id="f-zona">Cusco</span>
+        
+      </div>
+
+      <!-- Lista de campañas INDIVIDUALES (productores, no asociaciones) -->
+      <div id="lista-campanas" style="display:flex; flex-direction:column; gap: var(--space-4);"></div>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/campana.js"></script>
+  <script>
+    var cont = document.getElementById("lista-campanas");
+    Agro.proteger({ fase: "app", rol: "comprador" }).then(function (ctx) {
+      document.getElementById("tag-empresa").textContent = ctx.perfil.razonSocial;
+      var cultivo = Agro.parametro("cultivo"), departamento = Agro.parametro("departamento");
+      if (!cultivo || !departamento) { location.replace("home-comprador.html"); return; }
+      cont.innerHTML = '<p class="mock-note">Buscando campañas...</p>';
+      return Promise.all([Agro.catalogo(), Agro.listarTodo("/campanas/publicadas?cultivo=" + cultivo + "&departamento=" + encodeURIComponent(departamento))]).then(function (r) {
+        var cat = r[0], lista = r[1];
+        document.getElementById("f-cultivo").textContent = Agro.nombreCultivo(cat, cultivo);
+        document.getElementById("f-zona").textContent = departamento;
+        cont.innerHTML = lista.length ? lista.map(function (c) {
+          var iniciales = c.productorNombre.split(" ").slice(0, 2).map(function (w) { return w[0] || ""; }).join("");
+          return '<button class="lote-card" type="button" onclick="goTo(\'lote-detalle.html?id=' + c.campaniaId + '\')">' +
+            '<div class="lote-card__top"><span class="chip chip--soft">' + Agro.escapar(Agro.nombreCultivo(cat, c.cultivo)) + '</span></div>' +
+            '<div class="lote-card__producer"><span class="detail-card__avatar">' + Agro.escapar(iniciales) + '</span><div>' +
+            '<div class="campaign-card__title">' + Agro.escapar(c.productorNombre) + '</div>' +
+            '<div class="campaign-card__meta">' + Agro.escapar(c.distrito + ", " + c.departamento) + ' · cosecha ' + c.cosecha + '</div></div></div>' +
+            '<div class="lote-card__figures"><span class="lote-card__kilos">' + Agro.kg(c.volumenKg) + '</span><span class="lote-card__kilos-label">esperados</span></div>' +
+            '<div class="lote-card__row"><span>Paga ahora</span><strong>' + Agro.soles(c.precioAhoraPorKg) + ' / kg</strong></div>' +
+            '<div class="lote-card__row"><span>Contraentrega</span><strong>' + Agro.soles(c.precioContraentregaPorKg) + ' / kg</strong></div>' +
+            '<div class="lote-card__row"><span>Logística</span><strong>' + (c.logistica === "Envio" ? "Envío" : "Recojo") + '</strong></div>' +
+            '</button>';
+        }).join("") : '<p class="mock-note" style="text-align:left;">No hay campañas publicadas de este cultivo en ' + Agro.escapar(departamento) + ' todavía.</p>';
+      });
+    }).catch(function (e) { cont.innerHTML = '<p class="text-field__error">' + Agro.escapar(Agro.mensaje(e)) + '</p>'; });
+  </script>
+</body>
+</html>

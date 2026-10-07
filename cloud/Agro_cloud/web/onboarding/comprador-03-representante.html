@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Representante y contacto</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/text-field/text-field.css" />
+  <link rel="stylesheet" href="../design-system/components/select-field/select-field.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <!-- Barra de estado simulada (verde de marca para el flujo del comprador) -->
+    <div class="status-sim status-sim--brand" aria-hidden="true">
+      <span class="status-sim__time">9:41</span>
+      <span class="status-sim__net">4G · 100 %</span>
+    </div>
+
+    <!-- Top bar: Registro de empresa + etiqueta "Empresas" -->
+    <header class="flow-topbar">
+      <span class="flow-topbar__title">
+        <a class="flow-header__back" href="comprador-02-empresa.html" aria-label="Volver" data-testid="rep-back">
+          <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+        </a>
+        Registro de empresa
+      </span>
+      <span class="flow-topbar__tag">Empresas</span>
+    </header>
+
+    <!-- Pasos del registro de empresa (Paso 2 de 5 · Representante) -->
+    <div class="step-header">
+      <p class="step-header__label">Paso 2 de 5 · Representante</p>
+      <div class="step-bar" role="progressbar" aria-valuenow="2" aria-valuemin="0" aria-valuemax="5" aria-label="Paso 2 de 5">
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg"></span>
+        <span class="step-bar__seg"></span>
+        <span class="step-bar__seg"></span>
+      </div>
+    </div>
+
+    <form class="screen__body" id="form-rep" novalidate>
+      <h1 class="screen__title" style="color: var(--color-primary);">Representante y contacto</h1>
+
+      <div class="info-note">Debes tener poderes para comprometer a la empresa. Te pediremos la vigencia de poder.</div>
+
+      <!-- Tipo de documento del representante: DNI o RUC -->
+      <div>
+        <label class="text-field__label" style="display:block; margin-bottom: var(--space-2);">Documento del representante</label>
+        <div class="doc-toggle">
+          <input class="doc-toggle__radio" type="radio" name="rep-tipo" id="rep-dni" value="DNI" checked data-testid="rep-tipo-dni" />
+          <label class="doc-toggle__option" for="rep-dni">DNI</label>
+          <input class="doc-toggle__radio" type="radio" name="rep-tipo" id="rep-ruc" value="RUC" data-testid="rep-tipo-ruc" />
+          <label class="doc-toggle__option" for="rep-ruc">RUC</label>
+        </div>
+      </div>
+
+      <div class="text-field" data-rule="documento" data-error="Revisa el número según DNI (8) o RUC (11).">
+        <label class="text-field__label" for="rep-doc" id="rep-doc-label">Número de DNI</label>
+        <input class="text-field__input" id="rep-doc" type="text" inputmode="numeric" placeholder="8 números" data-testid="rep-doc" />
+      </div>
+
+      <div class="text-field" data-rule="requerido" data-error="Ingresa nombres y apellidos.">
+        <label class="text-field__label" for="rep-nombres">Nombres y apellidos</label>
+        <input class="text-field__input" id="rep-nombres" type="text" placeholder="Ej. Lucía Paredes Rojas" data-testid="rep-nombres" />
+      </div>
+
+      <div class="select-field">
+        <label class="select-field__label" for="rep-cargo">Cargo</label>
+        <div class="select-field__control">
+          <select class="select-field__select" id="rep-cargo" data-testid="rep-cargo">
+            <option>Jefe de abastecimiento</option>
+            <option>Gerente general</option>
+            <option>Gerente de compras</option>
+            <option>Representante legal</option>
+            <option>Otro</option>
+          </select>
+          <span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+        </div>
+      </div>
+
+      <div class="text-field" data-rule="celular" data-error="Ingresa un celular válido de 9 dígitos.">
+        <label class="text-field__label" for="rep-celular">Celular</label>
+        <input class="text-field__input" id="rep-celular" type="tel" inputmode="numeric" maxlength="9" placeholder="Ej. 912345678" data-testid="rep-celular" />
+      </div>
+
+      <div class="text-field" data-rule="correo" data-error="Ingresa un correo con formato válido.">
+        <label class="text-field__label" for="rep-correo">Correo corporativo</label>
+        <input class="text-field__input" id="rep-correo" type="email" placeholder="Ej. lucia.paredes@empresa.com" data-testid="rep-correo" />
+      </div>
+    </form>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="submit" form="form-rep" data-testid="rep-continuar-button">Continuar</button>
+      <p class="text-field__error" id="rep-error" style="display:none;"></p>
+      <p class="mock-note">Escribe el DNI del representante: un padrón de demostración completa sus datos (sin RENIEC).</p>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    var repDocLabel = document.getElementById("rep-doc-label");
+    var repDoc = document.getElementById("rep-doc");
+    var repCelular = document.getElementById("rep-celular");
+    var err = document.getElementById("rep-error");
+    function esRuc() { return document.querySelector('input[name="rep-tipo"]:checked').value === "RUC"; }
+    document.querySelectorAll('input[name="rep-tipo"]').forEach(function (r) {
+      r.addEventListener("change", function () {
+        repDocLabel.textContent = esRuc() ? "Número de RUC" : "Número de DNI";
+        repDoc.placeholder = esRuc() ? "11 números" : "8 números";
+      });
+    });
+    repCelular.addEventListener("input", function () { repCelular.value = repCelular.value.replace(/[^0-9]/g, "").slice(0, 9); });
+    //con un dni completo se consulta el padron de personas (una asignacion por usuario)
+    repDoc.addEventListener("input", function () {
+      repDoc.value = repDoc.value.replace(/[^0-9]/g, "").slice(0, esRuc() ? 11 : 8);
+      if (esRuc() || repDoc.value.length !== 8) return;
+      err.style.display = "none";
+      Agro.api("POST", "/padron/consulta", { tipoDoc: "DNI", documento: repDoc.value, uso: "representante" }).then(function (r) {
+        document.getElementById("rep-nombres").value = r.nombres + " " + r.apellidos;
+        repCelular.value = r.celular || "";
+        document.getElementById("rep-correo").value = r.correo || "";
+      }).catch(function (e) { err.textContent = Agro.mensaje(e); err.style.display = "block"; });
+    });
+    Agro.proteger({ fase: "alta", paso: "comprador-03-representante" }).then(function (ctx) {
+      var d = ctx.flujo.datos;
+      if (d.contactoNombre) {
+        document.getElementById("rep-nombres").value = d.contactoNombre;
+        repCelular.value = d.contactoCelular || "";
+        document.getElementById("rep-correo").value = d.contactoCorreo || "";
+        if (d.contactoCargo) document.getElementById("rep-cargo").value = d.contactoCargo;
+      }
+    });
+    validateForm("#form-rep", function () {
+      Agro.completar("comprador-03-representante", {
+        contactoNombre: document.getElementById("rep-nombres").value.trim(),
+        contactoCelular: repCelular.value,
+        contactoCorreo: document.getElementById("rep-correo").value.trim(),
+        contactoCargo: document.getElementById("rep-cargo").value
+      });
+      goTo("comprador-05-pagos.html");
+    });
+  </script>
+</body>
+</html>

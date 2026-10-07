@@ -1,0 +1,12 @@
+{
+  "rol": "comprador",
+  "tipoDoc": "RUC",
+  "documento": "{{rucComprador}}",
+  "razonSocial": "Agroindustrias Sierra Verde SAC",
+  "contactoNombre": "Marisol Quispe Huamán",
+  "contactoCelular": "987654321",
+  "contactoCorreo": "compras@correo.example",
+  "contactoCargo": "Jefa de compras",
+  "cuentaCargoId": "cc-8830",
+  "modalidadPago": "recibir"
+}

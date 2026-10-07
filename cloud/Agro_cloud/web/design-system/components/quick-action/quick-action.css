@@ -1,0 +1,70 @@
+/* ============================================================
+   Componente: quick-action + action-grid
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (home)
+   Acceso rápido: ícono circular + label. Se agrupan en grilla de 4 columnas.
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4) var(--space-2);
+  width: 100%;
+}
+
+.quick-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-text);
+}
+
+.quick-action__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-secondary);
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+}
+.quick-action__icon svg { width: 26px; height: 26px; }
+
+.quick-action:hover .quick-action__icon { box-shadow: var(--shadow-md); }
+/* Active (press o seleccionado) */
+.quick-action:active .quick-action__icon,
+.quick-action.is-active .quick-action__icon { transform: scale(0.96); box-shadow: var(--shadow-md); }
+.quick-action.is-active .quick-action__label { color: var(--color-secondary); font-weight: var(--font-weight-bold); }
+/* Focused */
+.quick-action:focus-visible { outline: none; }
+.quick-action:focus-visible .quick-action__icon,
+.quick-action.is-focused .quick-action__icon { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+/* Disabled (gris) */
+.quick-action:disabled,
+.quick-action.is-disabled { cursor: not-allowed; opacity: var(--opacity-disabled); }
+.quick-action:disabled .quick-action__icon,
+.quick-action.is-disabled .quick-action__icon { background: var(--color-disabled-bg); color: var(--color-disabled-text); box-shadow: none; }
+.quick-action:disabled .quick-action__label,
+.quick-action.is-disabled .quick-action__label { color: var(--color-disabled-text); }
+
+/* Ícono destacado (fondo verde relleno) */
+.quick-action__icon--featured {
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+}
+
+.quick-action__label {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body-small);
+  line-height: var(--line-height-small);
+  color: var(--color-text);
+  text-align: center;
+  max-width: 72px;
+}

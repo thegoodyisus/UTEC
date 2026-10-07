@@ -1,0 +1,91 @@
+/* ============================================================
+   Componente: summary-card + offer-sheet
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (oferta y confirmación)
+   Depende de tokens/tokens.css, styles/base.css y (opcional) tooltip.css
+   ============================================================ */
+
+/* ---- Summary card (resumen blanco de préstamo) ---- */
+.summary-card {
+  width: 100%;
+  padding: var(--space-6);
+  border-radius: var(--radius-xlarge);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  box-sizing: border-box;
+}
+.summary-card__label {
+  margin: 0;
+  text-align: center;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+.summary-card__amount {
+  margin: var(--space-1) 0 var(--space-4);
+  text-align: center;
+  font-family: var(--font-family-titles);
+  font-size: 36px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+.summary-card__row {
+  display: flex;
+  justify-content: space-around;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+}
+.summary-card__cell { display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
+.summary-card__cell-label { font-family: var(--font-family-base); font-size: var(--font-size-body-small); color: var(--color-text-secondary); }
+.summary-card__cell-value { font-family: var(--font-family-base); font-size: var(--font-size-md); font-weight: var(--font-weight-bold); color: var(--color-primary); }
+
+/* Fila secundaria separada por línea punteada */
+.summary-card__divider {
+  border: none;
+  border-top: 1.5px dashed var(--color-border);
+  margin: 0 0 var(--space-4);
+}
+.summary-card__meta {
+  display: flex;
+  justify-content: space-around;
+  gap: var(--space-4);
+}
+.summary-card__meta .summary-card__cell-value { color: var(--color-text); }
+/* celda con (i): alinea el ícono junto al valor */
+.summary-card__cell-value-inline { display: inline-flex; align-items: center; gap: var(--space-1); }
+
+/* ---- Offer sheet (hoja verde de oferta) ---- */
+.offer-sheet {
+  width: 100%;
+  max-width: 430px;
+  padding: var(--space-6) var(--space-6) var(--space-8);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  border-top-left-radius: var(--radius-3xlarge);
+  border-top-right-radius: var(--radius-3xlarge);
+  box-sizing: border-box;
+}
+.offer-sheet__title { margin: 0 0 var(--space-4); text-align: center; font-family: var(--font-family-titles); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
+.offer-sheet__badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body-small);
+  font-weight: var(--font-weight-bold);
+}
+.offer-sheet__caption { margin: var(--space-3) 0 0; font-size: var(--font-size-md); }
+.offer-sheet__amount { margin: 0 0 var(--space-4); font-family: var(--font-family-titles); font-size: 44px; font-weight: var(--font-weight-bold); }
+.offer-sheet__rates { display: flex; gap: var(--space-6); padding-bottom: var(--space-4); }
+.offer-sheet__rate-label { font-size: var(--font-size-body-small); opacity: 0.85; }
+.offer-sheet__rate-value { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
+.offer-sheet__link {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  color: var(--color-on-primary);
+  font-weight: var(--font-weight-bold);
+  text-decoration: underline;
+}
+.offer-sheet__disclaimer { margin: var(--space-4) 0; text-align: center; font-size: var(--font-size-sm); opacity: 0.9; }
+.offer-sheet__actions { display: flex; flex-direction: column; gap: var(--space-3); }

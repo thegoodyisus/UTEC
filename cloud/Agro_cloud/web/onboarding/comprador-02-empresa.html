@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Registro de empresa</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/text-field/text-field.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <!-- Barra de estado simulada (verde de marca para el flujo del comprador) -->
+    <div class="status-sim status-sim--brand" aria-hidden="true">
+      <span class="status-sim__time">9:41</span>
+      <span class="status-sim__net">4G · 100 %</span>
+    </div>
+
+    <!-- Top bar: Registro de empresa + etiqueta "Empresas" -->
+    <header class="flow-topbar">
+      <span class="flow-topbar__title">
+        <a class="flow-header__back" href="00-inicio.html" aria-label="Volver" data-testid="empresa-back">
+          <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+        </a>
+        Registro de empresa
+      </span>
+      <span class="flow-topbar__tag">Empresas</span>
+    </header>
+
+    <!-- Pasos del registro de empresa (Paso 1 de 5 · Tu empresa) -->
+    <div class="step-header">
+      <p class="step-header__label">Paso 1 de 5 · Tu empresa</p>
+      <div class="step-bar" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="5" aria-label="Paso 1 de 5">
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg"></span>
+        <span class="step-bar__seg"></span>
+        <span class="step-bar__seg"></span>
+        <span class="step-bar__seg"></span>
+      </div>
+    </div>
+
+    <form class="screen__body" id="form-empresa" novalidate>
+      <h1 class="screen__title" style="color: var(--color-primary);">Datos del Comprador</h1>
+      <p class="screen__subtitle" id="lookup-hint">Con el documento de tu cuenta completamos el resto por ti.</p>
+
+      <!-- Tipo de documento: DNI o RUC (la imagen solo tenía RUC) -->
+      <div>
+        <label class="text-field__label" style="display:block; margin-bottom: var(--space-2);">Tipo de documento</label>
+        <div class="doc-toggle">
+          <input class="doc-toggle__radio" type="radio" name="tipo-doc" id="tipo-ruc" value="RUC" checked data-testid="empresa-tipo-ruc" />
+          <label class="doc-toggle__option" for="tipo-ruc">RUC</label>
+          <input class="doc-toggle__radio" type="radio" name="tipo-doc" id="tipo-dni" value="DNI" data-testid="empresa-tipo-dni" />
+          <label class="doc-toggle__option" for="tipo-dni">DNI</label>
+        </div>
+      </div>
+
+      <div class="text-field" id="doc-field">
+        <label class="text-field__label" for="documento" id="doc-label">RUC</label>
+        <input class="text-field__input" id="documento" type="text" inputmode="numeric" placeholder="11 números" data-testid="empresa-documento" />
+        <span class="text-field__error" id="doc-error" style="display:none;"></span>
+      </div>
+
+      <!-- Datos consultados (golpe ficticio) -->
+      <div class="lookup-card" id="lookup-card" aria-live="polite"></div>
+    </form>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="btn-confirmar" data-testid="empresa-confirmar-button" disabled>Confirmar datos</button>
+      <p class="mock-note">Consulta ficticia a un padrón de demostración (sin RENIEC/SUNAT).</p>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    //el documento es el de la cuenta: el padron de demostracion completa los datos (decision 51)
+    var docInput = document.getElementById("documento");
+    var card = document.getElementById("lookup-card");
+    var btn = document.getElementById("btn-confirmar");
+    var docError = document.getElementById("doc-error");
+    var datos = null, tipo = "RUC";
+    function fila(label, valor) {
+      return '<div class="lookup-card__row"><span class="lookup-card__label">' + label + '</span><span class="lookup-card__value">' + Agro.escapar(valor) + '</span></div>';
+    }
+    Agro.proteger({ fase: "alta", paso: "comprador-02-empresa" }).then(function (ctx) {
+      var doc = ctx.usuario.documento;
+      tipo = doc.length === 11 ? "RUC" : "DNI";
+      document.getElementById(tipo === "RUC" ? "tipo-ruc" : "tipo-dni").checked = true;
+      document.querySelectorAll('input[name="tipo-doc"]').forEach(function (r) { r.disabled = true; });
+      document.getElementById("doc-label").textContent = tipo;
+      docInput.value = doc;
+      docInput.readOnly = true;
+      card.innerHTML = '<p class="mock-note">Consultando...</p>';
+      card.classList.add("is-visible");
+      return Agro.api("POST", "/padron/consulta", { tipoDoc: tipo, documento: doc, uso: "comprador" }).then(function (r) {
+        datos = r;
+        var estado = '<div class="lookup-card__row"><span class="lookup-card__label">Estado</span><span class="lookup-card__value lookup-card__value--row">' +
+          Agro.escapar(r.estado || "Activo") + '<span class="state-badge">Demo</span></span></div>';
+        card.innerHTML = tipo === "RUC"
+          ? fila("Razón social", r.razonSocial) + fila("Dirección fiscal", r.direccionFiscal) + estado + fila("Actividad", r.actividad)
+          : fila("Nombres y apellidos", r.nombres + " " + r.apellidos) + fila("Documento", "DNI " + doc) + estado;
+        btn.disabled = false;
+      });
+    }).catch(function (e) {
+      card.innerHTML = "";
+      docError.textContent = Agro.mensaje(e);
+      docError.style.display = "block";
+    });
+    btn.addEventListener("click", function () {
+      if (!datos) return;
+      Agro.completar("comprador-02-empresa", {
+        tipoDoc: tipo, documento: docInput.value,
+        razonSocial: tipo === "RUC" ? datos.razonSocial : (datos.nombres + " " + datos.apellidos)
+      });
+      goTo("comprador-03-representante.html");
+    });
+  </script>
+</body>
+</html>

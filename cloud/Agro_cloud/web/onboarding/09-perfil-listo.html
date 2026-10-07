@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — ¡Todo listo!</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen screen--brand">
+
+    <header class="flow-header" style="background: transparent;">
+      <span style="width:32px;"></span>
+      <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><span class="progress-bar__fill" style="width: 100%"></span></div>
+    </header>
+
+    <div class="success">
+      <span class="success__icon">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20c0-8 6-14 16-15-1 10-7 15-16 15Z" fill="#418e49"/><path d="M9 17c2-3 5-5 8-6" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </span>
+      <h1 class="success__title" id="perfil-title">Guardando tu perfil...</h1>
+      <p class="success__text" id="perfil-texto">Un momento, estamos registrando tus datos.</p>
+
+      <div class="summary-list" aria-label="Resumen del perfil">
+        <div class="summary-list__row"><span>Cuenta</span><span>Creada ✓</span></div>
+        <div class="summary-list__row"><span>Correo</span><span>Verificado ✓</span></div>
+        <div class="summary-list__row"><span>Clave</span><span>Creada ✓</span></div>
+        <div class="summary-list__row"><span>Productos</span><span>Registrados ✓</span></div>
+        <div class="summary-list__row"><span>Ubicación</span><span>Registrada ✓</span></div>
+      </div>
+    </div>
+
+    <div class="screen__footer" id="perfil-botones" style="background: transparent; visibility:hidden;">
+      <button class="btn btn--primary btn--block" type="button" data-testid="perfil-registrar-campana-button" onclick="goTo('../campana/01-registro.html')">Registrar mi primera campaña</button>
+      <button class="btn btn--secondary btn--block" type="button" data-testid="perfil-ir-inicio-button" onclick="goTo('../campana/home.html')">Ir a Inicio</button>
+      <p class="mock-note" id="fin-msg" style="color: var(--color-on-secondary);"></p>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    //crea el perfil en la api con lo reunido en los pasos anteriores (post /perfil)
+    Agro.proteger({ fase: "alta", paso: "09-perfil-listo" }).then(function (ctx) {
+      var d = ctx.flujo.datos;
+      var cuerpo = {
+        rol: "agricultor", nombres: d.nombres, apellidos: d.apellidos, tipoDoc: "DNI", documento: ctx.usuario.documento,
+        celular: d.celular, correoEs: d.correoEs || "mio", cultivos: d.cultivos,
+        departamento: d.departamento, provincia: d.provincia, distrito: d.distrito
+      };
+      if (d.correo) cuerpo.correo = d.correo;
+      return Agro.api("POST", "/perfil", cuerpo).catch(function (e) {
+        if (e.estado === 409) return null;
+        throw e;
+      }).then(function () {
+        return Agro.perfil(true);
+      }).then(function (p) {
+        document.getElementById("perfil-title").textContent = "¡Todo listo, " + p.nombres.split(" ")[0] + "!";
+        document.getElementById("perfil-texto").textContent = "Tu perfil está completo. Ya puedes registrar tu primera campaña y conectarte con compradores.";
+        document.getElementById("perfil-botones").style.visibility = "visible";
+      });
+    }).catch(function (e) {
+      document.getElementById("perfil-title").textContent = "No pudimos guardar tu perfil";
+      document.getElementById("perfil-texto").textContent = Agro.mensaje(e) + " Vuelve a intentarlo desde el paso de tus datos.";
+      document.getElementById("fin-msg").innerHTML = '<a href="02-datos-personales.html" style="color:inherit">Revisar mis datos</a>';
+      document.getElementById("perfil-botones").style.visibility = "visible";
+    });
+  </script>
+</body>
+</html>

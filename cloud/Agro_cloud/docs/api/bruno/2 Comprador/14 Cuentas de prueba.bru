@@ -1,0 +1,57 @@
+meta {
+  name: 14 Cuentas de prueba
+  type: http
+  seq: 14
+}
+
+get {
+  url: {{process.env.BASE_URL}}/cuentas-demo
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_COMPRADOR}}
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Cuentas de prueba
+
+  | | |
+  |---|---|
+  | API | `GET /cuentas-demo` |
+  | Token | comprador |
+  | Microservicio | Padron y catalogos |
+  | Tipo | lectura |
+  | Tabla o servicio | agro-datos |
+  | Operacion | Query PK=CUENTA_DEMO |
+  | Esperado | 200 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 200
+
+  ```json
+  [
+    {
+      "id": "cc-8830",
+      "titulo": "Cta. Cte. Soles ***-8830",
+      "descripcion": "Cuenta ficticia de prueba"
+    },
+    {
+      "id": "ahorro-2217",
+      "titulo": "Cta. Ahorros Soles ***-2217",
+      "descripcion": "Cuenta ficticia de prueba"
+    },
+    {
+      "id": "cc-usd-7044",
+      "titulo": "Cta. Cte. Dólares ***-7044",
+      "descripcion": "Cuenta ficticia de prueba"
+    }
+  ]
+  ```
+}

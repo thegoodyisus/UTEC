@@ -1,0 +1,196 @@
+/* ============================================================
+   Componentes: BottomSheetHeader y BottomSheetActionsHeader
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (sección headers)
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+/* ---- Base común a ambos headers ---- */
+.bsh {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 430px;
+  min-height: 56px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  box-sizing: border-box;
+}
+
+/* Regiones: leading (izq) / title (centro-flexible) / trailing (der) */
+.bsh__leading,
+.bsh__trailing {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+}
+
+.bsh__title {
+  flex: 1 1 auto;
+  margin: 0;
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Alineación configurable del título (BottomSheetActionsHeader) */
+.bsh__title--start  { text-align: left; }
+.bsh__title--center { text-align: center; }
+.bsh__title--end    { text-align: right; }
+
+/* ---- Botón icónico circular (close, search, edit, etc.) ---- */
+.bsh__icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-container-low);
+  color: var(--color-text);
+  flex: 0 0 auto;
+}
+.bsh__icon-button svg { width: 18px; height: 18px; }
+.bsh__icon-button:hover { background: var(--color-border); }
+.bsh__icon-button:active,
+.bsh__icon-button.is-active { background: var(--color-border); transform: scale(0.96); }
+.bsh__icon-button:focus-visible,
+.bsh__icon-button.is-focused { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.bsh__icon-button:disabled,
+.bsh__icon-button.is-disabled { background: var(--color-disabled-bg); color: var(--color-disabled-text); cursor: not-allowed; }
+
+/* Botón icónico sin fondo (acciones a la derecha tipo search/edit sueltos) */
+.bsh__icon-plain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  color: var(--color-text);
+  flex: 0 0 auto;
+}
+.bsh__icon-plain svg { width: 22px; height: 22px; }
+.bsh__icon-plain:hover { color: var(--color-primary); }
+.bsh__icon-plain:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-small); }
+
+/* ---- Acción de texto (Label / Cancel) ---- */
+.bsh__text-action {
+  border: none;
+  background: none;
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  flex: 0 0 auto;
+}
+.bsh__text-action--neutral { color: var(--color-text); }
+.bsh__text-action:active,
+.bsh__text-action.is-active { opacity: 0.7; }
+.bsh__text-action:focus-visible,
+.bsh__text-action.is-focused { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-small); }
+.bsh__text-action:disabled,
+.bsh__text-action.is-disabled { color: var(--color-disabled-text); cursor: not-allowed; }
+
+/* ---- Botón outline con icono (Edit) ---- */
+.bsh__outline-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-pill);
+  background: none;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-primary);
+  flex: 0 0 auto;
+}
+.bsh__outline-button svg { width: 16px; height: 16px; }
+.bsh__outline-button:hover { background: rgba(19, 92, 64, 0.06); }
+.bsh__outline-button:active,
+.bsh__outline-button.is-active { background: rgba(19, 92, 64, 0.12); }
+.bsh__outline-button:focus-visible,
+.bsh__outline-button.is-focused { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.bsh__outline-button:disabled,
+.bsh__outline-button.is-disabled { border-color: var(--color-disabled-border); color: var(--color-disabled-text); cursor: not-allowed; }
+
+/* ============================================================
+   BottomSheetHeader — título heading/heading-large-bold
+   ============================================================ */
+.bottom-sheet-header .bsh__title {
+  font-family: var(--font-family-titles);
+  font-size: var(--type-heading-large-bold-size);
+  line-height: var(--type-heading-large-bold-line);
+  font-weight: var(--type-heading-large-bold-weight);
+}
+
+/* ============================================================
+   BottomSheetActionsHeader — título body/body-large-medium
+   ============================================================ */
+.bottom-sheet-actions-header .bsh__title {
+  font-family: var(--font-family-base);
+  font-size: var(--type-body-large-medium-size);
+  line-height: var(--type-body-large-medium-line);
+  font-weight: var(--type-body-large-medium-weight);
+}
+
+/* ---- Selector (segmented control) ---- */
+.bsh__selector {
+  display: inline-flex;
+  flex: 1 1 auto;
+  padding: var(--space-1);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-container-low);
+}
+.bsh__selector-option {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: none;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.bsh__selector-option svg { width: 16px; height: 16px; }
+.bsh__selector-option.is-selected,
+.bsh__selector-option.is-active {
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+}
+.bsh__selector-option:active { color: var(--color-text); }
+.bsh__selector-option:focus-visible,
+.bsh__selector-option.is-focused { outline: 2px solid var(--color-primary); outline-offset: -2px; }
+.bsh__selector-option:disabled,
+.bsh__selector-option.is-disabled { color: var(--color-disabled-text); cursor: not-allowed; }
+
+/* ---- Skeleton ---- */
+.bsh--skeleton .bsh__skeleton-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-container-low);
+  flex: 0 0 auto;
+}
+.bsh--skeleton .bsh__skeleton-bar {
+  height: 10px;
+  width: 40%;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-container-low);
+}

@@ -1,0 +1,116 @@
+/* ============================================================
+   Design System — Tokens
+   Variables base compartidas por todos los componentes.
+   Se irán ajustando a los valores reales del archivo de Figma
+   (get_variable_defs) a medida que agreguemos componentes.
+   ============================================================ */
+
+:root {
+  /* ============================================================
+     Valores reales extraídos del archivo Figma
+     (get_variable_defs sobre "Bottom Bar Standard").
+     ============================================================ */
+
+  /* ---- Color: marca / primarios ---- */
+  /* paleta agrocredit v05 (decision 61): verdes de la marca propia, sin colores de banco */
+  --color-primary: #135c40;          /* verde bosque: botones y titulos */
+  --color-primary-dark: #0a3c37;     /* verde profundo: heroes de marca y texto Agro */
+  --color-leaf: #418e49;             /* hoja del logo */
+  --color-leaf-light: #75b175;       /* Credit del logo, segunda hoja */
+  --color-mint: #76d9a9;             /* acento menta */
+  --color-surface-soft: #a5d1c2;     /* superficie suave de iconos */
+  --color-on-primary: #ffffff;       /* schemes/on-primary */
+  --color-secondary: #418e49;        /* verde hoja: acentos, progreso, seleccion */
+  --color-on-secondary: #ffffff;     /* schemes/on-secondary */
+  --color-secondary-container: #d8f9e1;
+  --color-on-secondary-container: #135c40;
+
+  /* ---- Color: superficie / texto ---- */
+  --color-bg: #ffffff;                    /* schemes/surface */
+  --color-surface: #ffffff;               /* schemes/surface */
+  --color-surface-container-low: #eeeff1; /* schemes/surface-container-low */
+  --color-border: #d8dadd;                /* schemes/outline-high */
+  --color-text: #181a1d;                  /* schemes/on-surface */
+  --color-text-secondary: #494e56;        /* schemes/on-surface-variant */
+  --color-on-surface-inverse: #ffffff;    /* schemes/inverse-on-surface */
+  --color-surface-inverse: #000000;       /* schemes/inverse-surface */
+
+  /* ---- Estados: disabled (gris) ---- */
+  --color-disabled-bg: #eeeff1;           /* fondo gris deshabilitado */
+  --color-disabled-border: #d8dadd;       /* borde gris deshabilitado */
+  --color-disabled-text: #a1a5ab;         /* texto/ícono gris deshabilitado */
+  --opacity-disabled: 0.5;                /* opacidad para elementos deshabilitados */
+  --focus-ring: 0 0 0 3px rgba(19, 92, 64, 0.35); /* anillo de foco (verde marca) */
+
+  /* ---- Color: estados ---- */
+  --color-success: #2f7d3a;          /* schemes/success */
+  --color-success-container: #d8f9e1;
+  --color-danger: #e50619;           /* schemes/error */
+  --color-danger-container: #ffebed;
+
+  /* ---- State layers ---- */
+  --state-secondary-hover: #418e4914;
+  --state-secondary-press: #418e491f;
+
+  /* ---- Iconografía ---- */
+  --icon-default: #181a1d;
+  --icon-secondary: #494e56;
+  --icon-active: #418e49;
+
+  /* ---- Tipografía (Poppins según Figma) ---- */
+  --font-family-base: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-family-titles: "Poppins", sans-serif;
+  --font-size-label-large: 10px;   /* font/size/label-large */
+  --font-size-body-small: 12px;    /* font/size/body-small */
+  --font-size-body-large: 18px;    /* font/size/desktop/body-large */
+  --font-size-heading-large: 24px; /* heading/heading-large */
+  --font-size-sm: 0.875rem;        /* 14px */
+  --font-size-md: 1rem;            /* 16px */
+  --font-size-lg: 1.25rem;         /* 20px */
+  --font-size-xl: 1.5rem;          /* 24px */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --line-height-label: 12px;       /* font/line-height/xSmall */
+  --line-height-small: 16px;       /* font/line-height/Small */
+  --line-height-large: 26px;       /* font/line-height/desktop/large */
+  --line-height-heading: 32px;     /* heading/heading-large */
+  --line-height-base: 1.4;
+  --letter-spacing-1: 0.2px;       /* font/letter-spacing/1 */
+
+  /* ---- Estilos tipográficos compuestos ---- */
+  /* heading/heading-large-bold */
+  --type-heading-large-bold-size: var(--font-size-heading-large);
+  --type-heading-large-bold-line: var(--line-height-heading);
+  --type-heading-large-bold-weight: var(--font-weight-bold);
+  /* body/body-large-medium */
+  --type-body-large-medium-size: var(--font-size-body-large);
+  --type-body-large-medium-line: var(--line-height-large);
+  --type-body-large-medium-weight: var(--font-weight-medium);
+
+  /* ---- Espaciado (Figma Spacing scale) ---- */
+  --space-1: 4px;
+  --space-2: 8px;    /* Spacing/spacing2, Spacing/s */
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;  /* Spacing/spacing10 */
+  --space-14: 56px;  /* Spacing/spacing14 */
+  --space-15: 60px;  /* Spacing/spacing15 */
+
+  /* ---- Radios (Figma Radius scale) ---- */
+  --radius-xsmall: 4px;   /* Radius/xSmall */
+  --radius-small: 8px;    /* Radius/small */
+  --radius-large: 16px;   /* Radius/large */
+  --radius-xlarge: 24px;  /* Radius/xLarge */
+  --radius-3xlarge: 32px; /* Radius/3xLarge */
+  --radius-5xlarge: 40px; /* Radius/5xLarge */
+  --radius-pill: 1000px;  /* Radius/pill */
+
+  /* ---- Sombras (Figma elevations) ---- */
+  --shadow-elevated-strong-up: 0 -6px 14px rgba(24, 26, 29, 0.08); /* elevated-strong (-Y) */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
+}

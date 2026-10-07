@@ -1,0 +1,41 @@
+escenario,servicio,componente,calculadora,cantidad,unidad,precio_usd,costo_lista_usd,costo_con_gratis_usd
+moderado,AWS Fargate (ECS),vCPU ARM,"Linux, ARM, 4 tareas, 730 h, 0.25 vCPU",730.0,hours,0.03238,23.64,23.64
+moderado,AWS Fargate (ECS),memoria ARM,"0.5 GB por tarea, almacenamiento efimero 20 GB (incluido)",1460.0,hours,0.00356,5.2,5.2
+moderado,Elastic Load Balancing (ALB),hora de ALB,"1 Application Load Balancer, 730 h",730,Hrs,0.0225,16.43,16.43
+moderado,Elastic Load Balancing (ALB),LCU,"bytes procesados 20.9 GB/mes, 0.046 conexiones nuevas/s, duracion 30 s, 0.60 peticiones/s, 2 reglas",20.857,LCU-Hrs,0.008,0.17,0.17
+moderado,Amazon VPC,IPv4 publicas en uso,"6 IP (4 tareas + 2 del ALB), 730 h",4380,Hrs,0.005,21.9,21.9
+moderado,Amazon DynamoDB,lecturas on-demand,"1,125,000 unidades de lectura/mes (3 tablas, clase Standard)",1125000,ReadRequestUnits,1.25e-07,0.14,0.14
+moderado,Amazon DynamoDB,escrituras on-demand,"18,550 unidades de escritura/mes",18550,WriteRequestUnits,6.25e-07,0.01,0.01
+moderado,Amazon DynamoDB,almacenamiento,1 GB (los primeros 25 GB son gratis en la lista),0,GB-Mo,0.25,0.0,0.0
+moderado,Amazon SQS,peticiones estandar,"1,326,900 peticiones/mes (sondeo de Lambda en 2 colas + 4,300 mensajes x3)",1326900,Requests,4e-07,0.53,0.13
+moderado,AWS Lambda,peticiones ARM,"2 funciones arm64, 4,300 invocaciones/mes",4300,Requests,2e-07,0.0,0.0
+moderado,AWS Lambda,computo ARM,"256 MB, worker 0.2 s, etiquetar 1.5 s",897.5,Lambda-GB-Second,1.33334e-05,0.01,0.0
+moderado,Amazon S3,almacenamiento Standard,37 GB (fotos acumuladas a 12 meses),36.914,GB-Mo,0.023,0.85,0.85
+moderado,Amazon S3,"PUT, COPY, POST","4,200 peticiones/mes (subida + copia)",4200,Requests,5e-06,0.02,0.02
+moderado,Amazon S3,GET,"44,700 peticiones/mes (lectura + Rekognition)",44700,Requests,4e-07,0.02,0.02
+moderado,Amazon Rekognition,DetectLabels (grupo 2),"2,100 imagenes/mes",2100,Images Processed,0.001,2.1,2.1
+moderado,Amazon Cognito,MAU plan Essentials,"1,000 usuarios activos al mes",1000,CognitoUserPoolsMAU,0.015,15.0,0.0
+moderado,Amazon CloudWatch,ingesta de logs,0.78 GB/mes (incluye chequeos de salud cada 5 s),0.78,GB,0.5,0.39,0.0
+moderado,Amazon CloudWatch,almacenamiento de logs,retencion 1 dia,0.026,GB-Mo,0.03,0.0,0.0
+moderado,Amazon ECR,almacenamiento,0.7 GB (5 imagenes por repositorio),0.7,GB-Mo,0.1,0.07,0.07
+moderado,Transferencia de datos,salida a internet,"83 GB/mes (web 20, api 0.7, fotos 62)",83.259,GB,0.09,7.49,0.0
+alto,AWS Fargate (ECS),vCPU ARM,"Linux, ARM, 4 tareas, 730 h, 0.25 vCPU",730.0,hours,0.03238,23.64,23.64
+alto,AWS Fargate (ECS),memoria ARM,"0.5 GB por tarea, almacenamiento efimero 20 GB (incluido)",1460.0,hours,0.00356,5.2,5.2
+alto,Elastic Load Balancing (ALB),hora de ALB,"1 Application Load Balancer, 730 h",730,Hrs,0.0225,16.43,16.43
+alto,Elastic Load Balancing (ALB),LCU,"bytes procesados 62.7 GB/mes, 0.137 conexiones nuevas/s, duracion 30 s, 1.83 peticiones/s, 2 reglas",62.714,LCU-Hrs,0.008,0.5,0.5
+alto,Amazon VPC,IPv4 publicas en uso,"6 IP (4 tareas + 2 del ALB), 730 h",4380,Hrs,0.005,21.9,21.9
+alto,Amazon DynamoDB,lecturas on-demand,"3,600,000 unidades de lectura/mes (3 tablas, clase Standard)",3600000,ReadRequestUnits,1.25e-07,0.45,0.45
+alto,Amazon DynamoDB,escrituras on-demand,"54,650 unidades de escritura/mes",54650,WriteRequestUnits,6.25e-07,0.03,0.03
+alto,Amazon DynamoDB,almacenamiento,1 GB (los primeros 25 GB son gratis en la lista),0,GB-Mo,0.25,0.0,0.0
+alto,Amazon SQS,peticiones estandar,"1,352,700 peticiones/mes (sondeo de Lambda en 2 colas + 12,900 mensajes x3)",1352700,Requests,4e-07,0.54,0.14
+alto,AWS Lambda,peticiones ARM,"2 funciones arm64, 12,900 invocaciones/mes",12900,Requests,2e-07,0.0,0.0
+alto,AWS Lambda,computo ARM,"256 MB, worker 0.2 s, etiquetar 1.5 s",2920.0,Lambda-GB-Second,1.33334e-05,0.04,0.0
+alto,Amazon S3,almacenamiento Standard,123 GB (fotos acumuladas a 12 meses),123.047,GB-Mo,0.023,2.83,2.83
+alto,Amazon S3,"PUT, COPY, POST","14,000 peticiones/mes (subida + copia)",14000,Requests,5e-06,0.07,0.07
+alto,Amazon S3,GET,"284,000 peticiones/mes (lectura + Rekognition)",284000,Requests,4e-07,0.11,0.11
+alto,Amazon Rekognition,DetectLabels (grupo 2),"7,000 imagenes/mes",7000,Images Processed,0.001,7.0,7.0
+alto,Amazon Cognito,MAU plan Essentials,"1,000 usuarios activos al mes",1000,CognitoUserPoolsMAU,0.015,15.0,0.0
+alto,Amazon CloudWatch,ingesta de logs,1.58 GB/mes (incluye chequeos de salud cada 5 s),1.577,GB,0.5,0.79,0.0
+alto,Amazon CloudWatch,almacenamiento de logs,retencion 1 dia,0.053,GB-Mo,0.03,0.0,0.0
+alto,Amazon ECR,almacenamiento,0.7 GB (5 imagenes por repositorio),0.7,GB-Mo,0.1,0.07,0.07
+alto,Transferencia de datos,salida a internet,"468 GB/mes (web 60, api 2.3, fotos 406)",468.475,GB,0.09,42.16,33.16

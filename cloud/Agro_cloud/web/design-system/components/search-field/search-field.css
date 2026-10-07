@@ -1,0 +1,109 @@
+/* ============================================================
+   Componente: search-field, filter-chips, dashed-button
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (gestión de pagos)
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+/* ---- Search field ---- */
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-sizing: border-box;
+}
+.search-field:focus-within,
+.search-field.is-focused {
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+.search-field.is-active { border-color: var(--color-primary); }
+.search-field.is-disabled,
+.search-field:has(.search-field__input:disabled) {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-disabled-border);
+  cursor: not-allowed;
+}
+.search-field.is-disabled .search-field__input,
+.search-field .search-field__input:disabled { color: var(--color-disabled-text); }
+.search-field__icon { flex: 0 0 auto; color: var(--color-text-secondary); }
+.search-field__icon svg { width: 20px; height: 20px; }
+.search-field__input {
+  flex: 1 1 auto;
+  border: none;
+  outline: none;
+  background: none;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+}
+.search-field__input::placeholder { color: var(--color-text-secondary); }
+
+/* ---- Filter chips ---- */
+.filter-chips {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  padding-bottom: var(--space-1);
+}
+.filter-chip {
+  flex: 0 0 auto;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  white-space: nowrap;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.filter-chip:active { background: var(--color-surface-container-low); }
+.filter-chip.is-active {
+  background: var(--color-text);       /* chip activo negro */
+  color: var(--color-on-surface-inverse);
+  border-color: var(--color-text);
+}
+.filter-chip:focus-visible,
+.filter-chip.is-focused { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.filter-chip:disabled,
+.filter-chip.is-disabled {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-disabled-border);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+
+/* ---- Dashed button (agregar) ---- */
+.dashed-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-4);
+  border: 1.5px dashed var(--color-border);
+  border-radius: var(--radius-large);
+  background: none;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+.dashed-button svg { width: 18px; height: 18px; }
+.dashed-button:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.dashed-button:active,
+.dashed-button.is-active { border-color: var(--color-primary); color: var(--color-primary); background: rgba(19, 92, 64, 0.06); }
+.dashed-button:focus-visible,
+.dashed-button.is-focused { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.dashed-button:disabled,
+.dashed-button.is-disabled {
+  border-color: var(--color-disabled-border);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}

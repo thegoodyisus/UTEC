@@ -1,0 +1,47 @@
+/* ============================================================
+   Componente: progress-bar (flow header)
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (flujo de préstamo)
+   Header de flujo: botón atrás + barra de progreso segmentada verde.
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.flow-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 430px;
+  min-height: 56px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  box-sizing: border-box;
+}
+
+.flow-header__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  color: var(--color-secondary);
+  flex: 0 0 auto;
+}
+.flow-header__back svg { width: 22px; height: 22px; }
+.flow-header__back:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-small); }
+
+/* ---- Barra de progreso ---- */
+.progress-bar {
+  flex: 1 1 auto;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-secondary-container); /* verde claro (track) */
+  overflow: hidden;
+}
+.progress-bar__fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background: var(--color-secondary); /* verde relleno */
+  transition: width 0.3s ease;
+}

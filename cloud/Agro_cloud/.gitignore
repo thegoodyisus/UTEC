@@ -1,0 +1,33 @@
+#credenciales y entorno local
+Conexion/credenciales.txt
+Conexion/.venv/
+#terraform: estado y binarios locales
+cloud/.herramientas/
+cloud/terraform/.terraform/
+cloud/terraform/terraform.tfstate*
+cloud/terraform/estado-anterior-*
+cloud/terraform/.cuenta-estado
+cloud/terraform/.plan-*
+cloud/terraform/.token-demo
+#bruno: tokens y reportes crudos (pueden tener tokens y urls firmadas)
+docs/api/bruno/.env
+docs/api/bruno/.reportes/
+#salidas de tareas.py
+cloud/registros/
+cloud/.construccion/
+#varios
+__pycache__/
+.pytest_cache/
+.DS_Store
+#documentos de trabajo de los agentes (no hacen falta para operar el proyecto)
+AGENTS.md
+.kiro/
+docs/HANDOFF-agro-cloud.md
+docs/ACUERDOS-Y-APRENDIZAJES.md
+docs/PROMPTS.md
+docs/Inicio.txt
+#informacion duplicada en docs/PROYECTO-PARCIAL.md o en docs/base-datos/
+docs/api/evidencia-apis.md
+docs/modelo-datos.md
+#carpetas vacias o de trabajo
+docs/fotos/

@@ -1,0 +1,1189 @@
+{
+  "info": {
+    "_postman_id": "681f77b0-5ca3-5aa1-a0b0-965397403947",
+    "name": "AgroCredit API v1.6.0",
+    "description": "Generada desde cloud/api/openapi.yaml con cloud/api/coleccion.py. Datos ficticios.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "0 Plataforma (publico)",
+      "item": [
+        {
+          "name": "01 Chequeo de salud",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Microservicio: Plataforma. Tipo: lectura. Destino: memoria de la tarea ECS (sin tabla). Detalle: -. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/salud",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "salud"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 Configuracion de inicio de sesion",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Microservicio: Identidad y perfil. Tipo: lectura. Destino: variables de entorno de la tarea: ids de Cognito (sin tabla). Detalle: -. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/config",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "config"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "1 Agricultor",
+      "item": [
+        {
+          "name": "03 Crear mi perfil (agricultor)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Microservicio: Identidad y perfil. Tipo: escritura directa. Destino: agro-datos. Detalle: PutItem USER#<sub> / PROFILE (condicion attribute_not_exists); lee CATALOGO o CUENTA_DEMO para validar. Esperado: 201.",
+            "url": {
+              "raw": "{{baseUrl}}/perfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "perfil"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rol\": \"agricultor\",\n  \"nombres\": \"Rosa\",\n  \"apellidos\": \"Quispe Mamani\",\n  \"tipoDoc\": \"DNI\",\n  \"documento\": \"{{dniAgricultor}}\",\n  \"celular\": \"987654321\",\n  \"correo\": \"nombre@correo.example\",\n  \"correoEs\": \"mio\",\n  \"cultivos\": [\n    \"papa\"\n  ],\n  \"departamento\": \"Cusco\",\n  \"provincia\": \"Cusco\",\n  \"distrito\": \"Wanchaq\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAgricultor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 201\", function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 Consultar mi perfil",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Microservicio: Identidad y perfil. Tipo: lectura. Destino: agro-datos. Detalle: GetItem USER#<sub> / PROFILE. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/perfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "perfil"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAgricultor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 Catalogo de cultivos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Microservicio: Padron y catalogos. Tipo: lectura. Destino: agro-datos. Detalle: Query PK=CATALOGO, SK empieza con CULTIVO#. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/catalogo/cultivos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "catalogo",
+                "cultivos"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAgricultor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 Registrar campana (insert por cola)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Microservicio: Campanas y fotos. Tipo: escritura asincrona. Destino: SQS agro-insercion -> Lambda agro-worker -> agro-datos. Detalle: la api lee CATALOGO y PROFILE y encola; el worker hace PutItem CAMP#<id> / META con indices por-usuario y publicadas-por-cultivo. Esperado: 202.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"campaniaId\": \"{{$guid}}\",\n  \"cultivo\": \"papa\",\n  \"departamento\": \"Cusco\",\n  \"provincia\": \"Cusco\",\n  \"distrito\": \"Wanchaq\",\n  \"cosecha\": \"2027-06-15\",\n  \"volumenKg\": 2000,\n  \"logistica\": \"Recojo\",\n  \"capital\": \"5000.00\",\n  \"precioAhoraPorKg\": \"1.80\",\n  \"precioContraentregaPorKg\": \"2.10\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAgricultor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 202\", function () { pm.response.to.have.status(202); });",
+                  "if (pm.response.code === 202) { pm.environment.set(\"campaniaId\", pm.response.json().recursoId); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 Ver campana (repetir hasta 200)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Microservicio: Campanas y fotos. Tipo: lectura. Destino: agro-datos. Detalle: GetItem CAMP#<id> / META. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas/{{campaniaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas",
+                "{{campaniaId}}"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAgricultor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08 Mis campanas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Microservicio: Campanas y fotos. Tipo: lectura. Destino: agro-datos (indice por-usuario). Detalle: Query usuarioClave=USER#<sub>, usuarioOrden empieza con CAMP#. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAgricultor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "09 Actualizar campana (update directo, sin ofertas)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Microservicio: Campanas y fotos. Tipo: actualizacion directa. Destino: agro-datos. Detalle: UpdateItem CAMP#<id> / META con condicion attribute_exists(PK) AND propietarioSub = <sub> AND numeroOfertas = 0. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas/{{campaniaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas",
+                "{{campaniaId}}"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"volumenKg\": 1800,\n  \"precioAhoraPorKg\": \"1.95\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAgricultor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "10 Pedir URL para subir foto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Microservicio: Campanas y fotos. Tipo: escritura asincrona. Destino: S3 agro-fotos -> SQS agro-fotos -> Lambda agro-etiquetar -> Rekognition -> agro-datos. Detalle: la api firma un POST a entrada/<sub>/<campana>/<foto>; la lambda registra CAMP#<id> / FOTO#<fotoId>. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas/{{campaniaId}}/fotos/url",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas",
+                "{{campaniaId}}",
+                "fotos",
+                "url"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fotoId\": \"{{$guid}}\",\n  \"tipoContenido\": \"image/jpeg\",\n  \"tamanoBytes\": 245760\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAgricultor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });",
+                  "if (pm.response.code === 200) { pm.environment.set(\"fotoId\", pm.response.json().fotoId); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "11 Ver fotos de la campana",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Microservicio: Campanas y fotos. Tipo: lectura. Destino: agro-datos + S3 agro-fotos. Detalle: Query PK=CAMP#<id>, SK empieza con FOTO#; URL de lectura temporal. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas/{{campaniaId}}/fotos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas",
+                "{{campaniaId}}",
+                "fotos"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAgricultor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2 Comprador",
+      "item": [
+        {
+          "name": "12 Consultar padron (empresa por RUC)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Microservicio: Padron y catalogos. Tipo: escritura directa (transaccion). Destino: agro-padron-empresas o agro-padron-personas + agro-datos. Detalle: Scan consistente + TransactWriteItems: Delete del registro del padron + Put USER#<sub> / PADRON#<uso>#<tipoDoc>. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/padron/consulta",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "padron",
+                "consulta"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoDoc\": \"RUC\",\n  \"documento\": \"{{rucComprador}}\",\n  \"uso\": \"comprador\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "13 Consultar padron (representante por DNI)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Microservicio: Padron y catalogos. Tipo: escritura directa (transaccion). Destino: agro-padron-empresas o agro-padron-personas + agro-datos. Detalle: Scan consistente + TransactWriteItems: Delete del registro del padron + Put USER#<sub> / PADRON#<uso>#<tipoDoc>. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/padron/consulta",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "padron",
+                "consulta"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipoDoc\": \"DNI\",\n  \"documento\": \"{{dniRepresentante}}\",\n  \"uso\": \"representante\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "14 Cuentas de prueba",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Microservicio: Padron y catalogos. Tipo: lectura. Destino: agro-datos. Detalle: Query PK=CUENTA_DEMO. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/cuentas-demo",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "cuentas-demo"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "15 Crear mi perfil (comprador)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Microservicio: Identidad y perfil. Tipo: escritura directa. Destino: agro-datos. Detalle: PutItem USER#<sub> / PROFILE (condicion attribute_not_exists); lee CATALOGO o CUENTA_DEMO para validar. Esperado: 201.",
+            "url": {
+              "raw": "{{baseUrl}}/perfil",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "perfil"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rol\": \"comprador\",\n  \"tipoDoc\": \"RUC\",\n  \"documento\": \"{{rucComprador}}\",\n  \"razonSocial\": \"Agroindustrias Sierra Verde SAC\",\n  \"contactoNombre\": \"Marisol Quispe Huamán\",\n  \"contactoCelular\": \"987654321\",\n  \"contactoCorreo\": \"compras@correo.example\",\n  \"contactoCargo\": \"Jefa de compras\",\n  \"cuentaCargoId\": \"cc-8830\",\n  \"modalidadPago\": \"recibir\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 201\", function () { pm.response.to.have.status(201); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "16 Buscar campanas publicadas (papa, Cusco)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Microservicio: Campanas y fotos. Tipo: lectura. Destino: agro-datos (indice publicadas-por-cultivo). Detalle: Query publicadaClave=PUB#<cultivo>#<departamento>. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas/publicadas?cultivo=papa&departamento=Cusco",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas",
+                "publicadas"
+              ],
+              "query": [
+                {
+                  "key": "cultivo",
+                  "value": "papa"
+                },
+                {
+                  "key": "departamento",
+                  "value": "Cusco"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "17 Ver campana publicada",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Microservicio: Campanas y fotos. Tipo: lectura. Destino: agro-datos. Detalle: GetItem CAMP#<id> / META. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas/{{campaniaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas",
+                "{{campaniaId}}"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "18 Enviar oferta (insert por cola)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Microservicio: Ofertas. Tipo: escritura asincrona. Destino: SQS agro-insercion -> Lambda agro-worker -> agro-datos. Detalle: la api lee META y PROFILE y encola; el worker hace TransactWriteItems: Put CAMP#<id> / OFFER#<id> + Update META numeroOfertas. Esperado: 202.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas/{{campaniaId}}/ofertas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas",
+                "{{campaniaId}}",
+                "ofertas"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ofertaId\": \"{{$guid}}\",\n  \"volumenKg\": 1200,\n  \"precioPorKg\": \"1.85\",\n  \"modalidad\": \"Pago ahora\",\n  \"logistica\": \"Recojo\",\n  \"fechaEntrega\": \"2027-06-20\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 202\", function () { pm.response.to.have.status(202); });",
+                  "if (pm.response.code === 202) { pm.environment.set(\"ofertaId\", pm.response.json().recursoId); }"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "19 Mis ofertas (repetir hasta que aparezca)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Microservicio: Ofertas. Tipo: lectura. Destino: agro-datos (indice por-usuario). Detalle: Query usuarioClave=USER#<sub>, usuarioOrden empieza con OFFER#. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/ofertas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ofertas"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3 Agricultor ve lo recibido",
+      "item": [
+        {
+          "name": "20 Ofertas recibidas en mi campana",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Microservicio: Ofertas. Tipo: lectura. Destino: agro-datos. Detalle: Query PK=CAMP#<id>, SK empieza con OFFER#. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas/{{campaniaId}}/ofertas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas",
+                "{{campaniaId}}",
+                "ofertas"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAgricultor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "21 Ver campana (numeroOfertas = 1)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "description": "Microservicio: Campanas y fotos. Tipo: lectura. Destino: agro-datos. Detalle: GetItem CAMP#<id> / META. Esperado: 200.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas/{{campaniaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas",
+                "{{campaniaId}}"
+              ],
+              "query": []
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAgricultor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 200\", function () { pm.response.to.have.status(200); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "22 Actualizar campana con ofertas (debe dar 409)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Microservicio: Campanas y fotos. Tipo: actualizacion directa. Destino: agro-datos. Detalle: UpdateItem CAMP#<id> / META con condicion attribute_exists(PK) AND propietarioSub = <sub> AND numeroOfertas = 0. Esperado: 409.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas/{{campaniaId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas",
+                "{{campaniaId}}"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"volumenKg\": 1800,\n  \"precioAhoraPorKg\": \"1.95\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAgricultor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 409\", function () { pm.response.to.have.status(409); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4 Seguridad (deben fallar)",
+      "item": [
+        {
+          "name": "23 Registrar campana sin token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Microservicio: Campanas y fotos. Tipo: escritura asincrona. Destino: SQS agro-insercion -> Lambda agro-worker -> agro-datos. Detalle: la api lee CATALOGO y PROFILE y encola; el worker hace PutItem CAMP#<id> / META con indices por-usuario y publicadas-por-cultivo. Esperado: 401.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"campaniaId\": \"{{$guid}}\",\n  \"cultivo\": \"papa\",\n  \"departamento\": \"Cusco\",\n  \"provincia\": \"Cusco\",\n  \"distrito\": \"Wanchaq\",\n  \"cosecha\": \"2027-06-15\",\n  \"volumenKg\": 2000,\n  \"logistica\": \"Recojo\",\n  \"capital\": \"5000.00\",\n  \"precioAhoraPorKg\": \"1.80\",\n  \"precioContraentregaPorKg\": \"2.10\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 401\", function () { pm.response.to.have.status(401); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "24 Comprador intenta registrar campana",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Microservicio: Campanas y fotos. Tipo: escritura asincrona. Destino: SQS agro-insercion -> Lambda agro-worker -> agro-datos. Detalle: la api lee CATALOGO y PROFILE y encola; el worker hace PutItem CAMP#<id> / META con indices por-usuario y publicadas-por-cultivo. Esperado: 403.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"campaniaId\": \"{{$guid}}\",\n  \"cultivo\": \"papa\",\n  \"departamento\": \"Cusco\",\n  \"provincia\": \"Cusco\",\n  \"distrito\": \"Wanchaq\",\n  \"cosecha\": \"2027-06-15\",\n  \"volumenKg\": 2000,\n  \"logistica\": \"Recojo\",\n  \"capital\": \"5000.00\",\n  \"precioAhoraPorKg\": \"1.80\",\n  \"precioContraentregaPorKg\": \"2.10\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenComprador}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "25 Agricultor intenta ofertar",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "description": "Microservicio: Ofertas. Tipo: escritura asincrona. Destino: SQS agro-insercion -> Lambda agro-worker -> agro-datos. Detalle: la api lee META y PROFILE y encola; el worker hace TransactWriteItems: Put CAMP#<id> / OFFER#<id> + Update META numeroOfertas. Esperado: 403.",
+            "url": {
+              "raw": "{{baseUrl}}/campanas/{{campaniaId}}/ofertas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "campanas",
+                "{{campaniaId}}",
+                "ofertas"
+              ],
+              "query": []
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ofertaId\": \"{{$guid}}\",\n  \"volumenKg\": 1200,\n  \"precioPorKg\": \"1.85\",\n  \"modalidad\": \"Pago ahora\",\n  \"logistica\": \"Recojo\",\n  \"fechaEntrega\": \"2027-06-20\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAgricultor}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"codigo 403\", function () { pm.response.to.have.status(403); });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

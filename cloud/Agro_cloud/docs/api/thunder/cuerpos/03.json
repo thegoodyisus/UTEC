@@ -1,0 +1,16 @@
+{
+  "rol": "agricultor",
+  "nombres": "Rosa",
+  "apellidos": "Quispe Mamani",
+  "tipoDoc": "DNI",
+  "documento": "{{dniAgricultor}}",
+  "celular": "987654321",
+  "correo": "nombre@correo.example",
+  "correoEs": "mio",
+  "cultivos": [
+    "papa"
+  ],
+  "departamento": "Cusco",
+  "provincia": "Cusco",
+  "distrito": "Wanchaq"
+}

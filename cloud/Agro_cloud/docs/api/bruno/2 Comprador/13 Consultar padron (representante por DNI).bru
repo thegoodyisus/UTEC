@@ -1,0 +1,61 @@
+meta {
+  name: 13 Consultar padron (representante por DNI)
+  type: http
+  seq: 13
+}
+
+post {
+  url: {{process.env.BASE_URL}}/padron/consulta
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_COMPRADOR}}
+}
+
+body:json {
+  {
+    "tipoDoc": "DNI",
+    "documento": "{{process.env.DNI_REPRESENTANTE}}",
+    "uso": "representante"
+  }
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Consultar padron (representante por DNI)
+
+  | | |
+  |---|---|
+  | API | `POST /padron/consulta` |
+  | Token | comprador |
+  | Microservicio | Padron y catalogos |
+  | Tipo | escritura directa (transaccion) |
+  | Tabla o servicio | agro-padron-empresas o agro-padron-personas + agro-datos |
+  | Operacion | Scan consistente + TransactWriteItems: Delete del registro del padron + Put USER#<sub> / PADRON#<uso>#<tipoDoc> |
+  | Esperado | 200 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 200
+
+  ```json
+  {
+    "apellidos": "Quispe Huamán",
+    "celular": "951204387",
+    "correo": "marisol.quispe@correo.example",
+    "nombres": "Marisol",
+    "tipoDoc": "DNI",
+    "documento": "********",
+    "demo": true
+  }
+  ```
+}

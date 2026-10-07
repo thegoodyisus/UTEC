@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Crea tu cuenta</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <!-- Barra de estado simulada -->
+    <div class="status-sim" aria-hidden="true">
+      <span class="status-sim__time">9:41</span>
+      <span class="status-sim__net">4G · 100 %</span>
+    </div>
+
+    <!-- Top bar: Inscripción + volver -->
+    <header class="enroll-topbar">
+      <a class="flow-header__back" href="02-datos-personales.html" aria-label="Volver" data-testid="cuenta-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <span class="enroll-topbar__title">Inscripción</span>
+    </header>
+
+    <!-- Pasos de inscripción (Paso 4 de 5 · Tu cuenta) -->
+    <div class="step-header">
+      <p class="step-header__label">Paso 4 de 5 · Tu cuenta</p>
+      <div class="step-bar" role="progressbar" aria-valuenow="4" aria-valuemin="0" aria-valuemax="5" aria-label="Paso 4 de 5">
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg"></span>
+      </div>
+    </div>
+
+    <!-- ===================== ESTADO 1: consentimientos ===================== -->
+    <section id="estado-consent">
+      <div class="screen__body">
+        <div>
+          <h1 class="screen__title" style="color: var(--color-primary);">Crea tu cuenta AgroCredit</h1>
+          <p class="screen__subtitle">Aquí recibirás tu crédito y el pago de tu cosecha.</p>
+        </div>
+
+        <div class="consent-list">
+          <div class="consent-item">
+            <label class="consent-box">
+              <input class="consent-box__input" type="checkbox" id="c-datos" data-testid="cuenta-acepto-datos" />
+              <span class="consent-box__check" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              </span>
+              <span class="consent-box__label">Acepto el tratamiento de mis datos personales</span>
+            </label>
+            <button class="consent-item__link" type="button" data-testid="cuenta-info-datos" onclick="mostrarNota('¿Para qué usamos tus datos? Solo para crear tu cuenta, mostrar tus campañas a compradores y coordinar las entregas. Prototipo: no se envía nada.')">¿Para qué usamos tus datos?</button>
+          </div>
+
+          <div class="consent-item">
+            <label class="consent-box">
+              <input class="consent-box__input" type="checkbox" id="c-terminos" data-testid="cuenta-acepto-terminos" />
+              <span class="consent-box__check" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              </span>
+              <span class="consent-box__label">Acepto los términos de mi cuenta</span>
+            </label>
+            <button class="consent-item__link" type="button" data-testid="cuenta-ver-terminos" onclick="mostrarNota('Términos de la cuenta AgroCredit (demostración): tu perfil de agricultor para publicar campañas y recibir ofertas, sin costo. Prototipo ficticio.')">Ver términos</button>
+          </div>
+        </div>
+
+        <p class="mock-note" id="consent-msg" style="min-height:18px; text-align:left;"></p>
+      </div>
+
+      <div class="screen__footer">
+        <button class="btn btn--primary btn--block" type="button" id="btn-abrir" data-testid="cuenta-abrir-button">Crear mi cuenta</button>
+        <p class="mock-note">Prototipo · datos ficticios</p>
+      </div>
+    </section>
+
+    <!-- ===================== ESTADO 2: temporizador (creando) ===================== -->
+    <section id="estado-creando" style="display:none;">
+      <div class="creating">
+        <div class="creating__spinner" aria-hidden="true"></div>
+        <h2 class="creating__title">Creando tu cuenta AgroCredit…</h2>
+        <p class="creating__text">Estamos creando tu cuenta AgroCredit a tu nombre. Esto toma unos segundos.</p>
+        <div class="creating__bar" role="progressbar" aria-label="Creando cuenta"><span class="creating__bar-fill" id="creating-fill"></span></div>
+      </div>
+    </section>
+
+    <!-- ===================== ESTADO 3: cuenta creada ===================== -->
+    <section id="estado-creada" style="display:none;">
+      <div class="screen__body">
+        <div>
+          <h1 class="screen__title" style="color: var(--color-primary);">Crea tu cuenta AgroCredit</h1>
+          <p class="screen__subtitle">Aquí recibirás tu crédito y el pago de tu cosecha.</p>
+        </div>
+
+        <div class="account-card" aria-live="polite">
+          <span class="account-card__badge">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            Cuenta creada
+          </span>
+          <p class="account-card__label">Tu cuenta AgroCredit</p>
+          <p class="account-card__number">Código AC-4821</p>
+          <p class="account-card__note">Cuenta AgroCredit a tu nombre.</p>
+        </div>
+      </div>
+
+      <div class="screen__footer">
+        <button class="btn btn--primary btn--block" type="button" data-testid="cuenta-continuar-button" onclick="Agro.completar('04c-abrir-cuenta'); goTo('05-biometria.html')">Continuar</button>
+        <p class="mock-note">Prototipo · datos ficticios</p>
+      </div>
+    </section>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    var cDatos = document.getElementById("c-datos");
+    var cTerm = document.getElementById("c-terminos");
+    var btnAbrir = document.getElementById("btn-abrir");
+    var consentMsg = document.getElementById("consent-msg");
+
+    window.mostrarNota = function (texto) {
+      consentMsg.textContent = texto;
+      consentMsg.style.color = "var(--color-primary)";
+    };
+
+    // Habilita "Abrir mi cuenta" solo con ambos consentimientos marcados.
+    function evaluar() {
+      var ok = cDatos.checked && cTerm.checked;
+      btnAbrir.disabled = !ok;
+      btnAbrir.style.opacity = ok ? "" : "0.5";
+    }
+    cDatos.addEventListener("change", evaluar);
+    cTerm.addEventListener("change", evaluar);
+    evaluar();
+
+    // Al abrir la cuenta: mostrar temporizador (simula creación) y luego "cuenta creada".
+    btnAbrir.addEventListener("click", function () {
+      if (btnAbrir.disabled) return;
+      document.getElementById("estado-consent").style.display = "none";
+      document.getElementById("estado-creando").style.display = "block";
+
+      // Progreso del temporizador (ficticio, ~2.6s).
+      var fill = document.getElementById("creating-fill");
+      var pct = 0;
+      var timer = setInterval(function () {
+        pct += 8;
+        fill.style.width = Math.min(pct, 100) + "%";
+        if (pct >= 100) {
+          clearInterval(timer);
+          setTimeout(function () {
+            document.getElementById("estado-creando").style.display = "none";
+            document.getElementById("estado-creada").style.display = "block";
+          }, 250);
+        }
+      }, 200);
+    });
+  </script>
+<script>Agro.proteger({ fase: "alta", paso: "04c-abrir-cuenta" });</script>
+</body>
+</html>

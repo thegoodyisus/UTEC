@@ -1,0 +1,46 @@
+/* ============================================================
+   Design System — Base
+   Reset ligero + estilos globales compartidos.
+   Depende de tokens/tokens.css.
+   ============================================================ */
+
+/* Estados estándar (Default / Active / Focused / Disabled) para todos los componentes */
+@import url("./states.css");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-base);
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

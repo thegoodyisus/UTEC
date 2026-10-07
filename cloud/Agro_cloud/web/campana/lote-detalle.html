@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Detalle del lote</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="../design-system/components/select-field/select-field.css" />
+  <link rel="stylesheet" href="../design-system/components/text-field/text-field.css" />
+  <link rel="stylesheet" href="assets/campana.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <!-- Barra de estado simulada (verde de marca) -->
+    <div class="status-sim status-sim--brand" aria-hidden="true">
+      <span class="status-sim__time">9:41</span>
+      <span class="status-sim__net">4G · 100 %</span>
+    </div>
+
+    <!-- Top bar: Detalle del lote + etiqueta de empresa -->
+    <header class="flow-topbar">
+      <span class="flow-topbar__title">
+        <a class="flow-header__back" href="ofertas-cultivos.html" aria-label="Volver" data-testid="lote-back">
+          <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+        </a>
+        Detalle del lote
+      </span>
+      <span class="flow-topbar__tag" id="tag-empresa">Empresas</span>
+    </header>
+
+    <div class="screen__body">
+      <div>
+        <span class="chip chip--soft" id="lote-cultivo">Papa</span>
+        <h1 class="screen__title" style="color: var(--color-primary); margin-top: var(--space-2);" id="lote-productor">-</h1>
+        <p class="screen__subtitle" id="lote-zona"></p>
+      </div>
+
+      <!-- Métricas clave (volumen total, cosecha, calificación, histórico) -->
+      <div class="metric-grid">
+        <div class="metric-card metric-card--primary"><span class="metric-card__label">Volumen esperado</span><span class="metric-card__value" id="m-volumen">-</span></div>
+        <div class="metric-card"><span class="metric-card__label">Fecha de cosecha</span><span class="metric-card__value" id="m-cosecha">-</span></div>
+        <div class="metric-card"><span class="metric-card__label">Paga ahora</span><span class="metric-card__value" id="m-ahora">-</span></div>
+        <div class="metric-card"><span class="metric-card__label">Contraentrega</span><span class="metric-card__value" id="m-contra">-</span></div>
+      </div>
+
+      <!-- Datos del lote -->
+      <div class="review-list">
+        <div class="review-list__row"><span>Logística</span><span id="d-logistica">-</span></div>
+        <div class="review-list__row"><span>Ubicación</span><span id="d-ubicacion">-</span></div>
+        <div class="review-list__row"><span>Precio ref. (demo)</span><span id="d-ref">-</span></div>
+      </div>
+      <div class="photo-grid" id="d-fotos"></div>
+
+      <p class="info-note">Los datos de cada productor se comparten solo con quienes acepten tu oferta.</p>
+    </div>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="btn-ofertar" data-testid="lote-ofertar-button">Ofertar sobre este lote</button>
+      
+    </div>
+
+    <!-- ===================== Bottom sheet: confirmar oferta vinculante ===================== -->
+    <div class="sheet-overlay" id="sheet-overlay" aria-hidden="true"></div>
+    <section class="bottom-sheet" id="sheet-oferta" role="dialog" aria-modal="true" aria-labelledby="sheet-title" aria-hidden="true">
+      <span class="bottom-sheet__grip" aria-hidden="true"></span>
+      <h2 class="bottom-sheet__title" id="sheet-title" style="color: var(--color-primary);">Tu oferta</h2>
+
+      <div class="offer-summary" id="offer-summary" style="display:flex; flex-direction:column; gap: var(--space-3);">
+<div class="text-field"><label class="text-field__label" for="o-volumen">Volumen (kg)</label><input class="text-field__input no-spin" id="o-volumen" type="number" min="1" /></div>
+<div class="select-field"><label class="select-field__label" for="o-modalidad">Modalidad de pago</label><div class="select-field__control"><select class="select-field__select" id="o-modalidad"></select><span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div></div>
+<div class="text-field"><label class="text-field__label" for="o-precio">Precio por kg (S/)</label><input class="text-field__input" id="o-precio" type="number" min="0.01" step="0.01" /></div>
+<div class="select-field"><label class="select-field__label" for="o-logistica">Logística</label><div class="select-field__control"><select class="select-field__select" id="o-logistica"></select><span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span></div></div>
+<div class="text-field"><label class="text-field__label" for="o-fecha">Fecha de entrega</label><input class="text-field__input" id="o-fecha" type="date" /></div>
+<div class="offer-summary__main" id="os-main"></div>
+<p class="text-field__error" id="o-error" style="display:none;"></p>
+      </div>
+
+      <p class="offer-warn">Se registra como PENDIENTE. Aceptar ofertas está fuera del alcance de esta demo.</p>
+
+      <button class="btn btn--primary btn--block" type="button" id="btn-confirmar-publicar" data-testid="confirmar-publicar-button">Enviar oferta</button>
+      <button class="text-link" type="button" style="align-self:center;" id="btn-revisar" data-testid="revisar-button">Revisar</button>
+    </section>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/campana.js"></script>
+  <script>
+    var g = function (id) { return document.getElementById(id); };
+    var c = null, ofertaId = Agro.uuid();
+    var overlay = g("sheet-overlay"), sheet = g("sheet-oferta"), screenEl = document.querySelector(".screen");
+    function abrirSheet() { overlay.classList.add("is-visible"); sheet.classList.add("is-visible"); overlay.setAttribute("aria-hidden", "false"); sheet.setAttribute("aria-hidden", "false"); screenEl.scrollTop = screenEl.scrollHeight; }
+    function cerrarSheet() { overlay.classList.remove("is-visible"); sheet.classList.remove("is-visible"); overlay.setAttribute("aria-hidden", "true"); sheet.setAttribute("aria-hidden", "true"); }
+    function total() {
+      var v = Number(g("o-volumen").value), p = Number(g("o-precio").value);
+      g("os-main").textContent = v > 0 && p > 0 ? "Total: " + Agro.soles(v * p) + " por " + Agro.kg(v) : "";
+    }
+    Agro.proteger({ fase: "app", rol: "comprador" }).then(function (ctx) {
+      g("tag-empresa").textContent = ctx.perfil.razonSocial;
+      var id = Agro.parametro("id");
+      if (!id) { location.replace("home-comprador.html"); return; }
+      return Promise.all([Agro.api("GET", "/campanas/" + id), Agro.catalogo(), Agro.api("GET", "/campanas/" + id + "/fotos")]).then(function (r) {
+        c = r[0];
+        var cat = r[1], fotos = r[2];
+        g("lote-cultivo").textContent = Agro.nombreCultivo(cat, c.cultivo);
+        g("lote-productor").textContent = c.productorNombre;
+        g("lote-zona").textContent = c.distrito + ", " + c.provincia + ", " + c.departamento;
+        g("m-volumen").textContent = Agro.kg(c.volumenKg);
+        g("m-cosecha").textContent = c.cosecha;
+        g("m-ahora").textContent = Agro.soles(c.precioAhoraPorKg);
+        g("m-contra").textContent = Agro.soles(c.precioContraentregaPorKg);
+        g("d-logistica").textContent = c.logistica === "Envio" ? "Envío al comprador" : "Recojo en chacra";
+        g("d-ubicacion").textContent = c.departamento;
+        g("d-ref").textContent = Agro.soles(c.referenciaMercadoPorKg) + " / kg";
+        g("d-fotos").innerHTML = fotos.filter(function (f) { return f.url; }).map(function (f) {
+          return '<div class="photo-thumb" style="position:relative"><img src="' + f.url + '" alt="Foto del lote"/>' +
+            '<span class="mock-note" style="position:absolute;left:4px;bottom:2px;background:#fff;border-radius:6px;padding:0 4px;margin:0;">🌱 ' + Agro.escapar(f.label) + '</span></div>';
+        }).join("");
+        g("o-volumen").max = c.volumenKg;
+        g("o-volumen").value = c.volumenKg;
+        g("o-modalidad").innerHTML = '<option>Pago ahora</option><option>Pago contraentrega</option>';
+        g("o-logistica").innerHTML = '<option value="Recojo">Recojo en chacra</option><option value="Envio">Envío al comprador</option>';
+        g("o-logistica").value = c.logistica;
+        g("o-precio").value = c.precioAhoraPorKg;
+        g("o-fecha").value = c.cosecha;
+        g("o-fecha").min = new Date().toISOString().slice(0, 10);
+        total();
+      });
+    }).catch(function (e) { g("lote-productor").textContent = Agro.mensaje(e); });
+    g("o-modalidad").addEventListener("change", function () { if (c) g("o-precio").value = this.value === "Pago ahora" ? c.precioAhoraPorKg : c.precioContraentregaPorKg; total(); });
+    g("o-volumen").addEventListener("input", total);
+    g("o-precio").addEventListener("input", total);
+    g("btn-ofertar").addEventListener("click", function () { if (c) abrirSheet(); });
+    g("btn-revisar").addEventListener("click", cerrarSheet);
+    overlay.addEventListener("click", cerrarSheet);
+    g("btn-confirmar-publicar").addEventListener("click", function () {
+      var err = g("o-error"), btn = this;
+      var v = Math.round(Number(g("o-volumen").value)), p = Number(g("o-precio").value);
+      if (!(v > 0) || v > c.volumenKg) { err.textContent = "El volumen debe estar entre 1 y " + Agro.kg(c.volumenKg) + "."; err.style.display = "block"; return; }
+      if (!(p > 0)) { err.textContent = "El precio debe ser mayor a cero."; err.style.display = "block"; return; }
+      if (!g("o-fecha").value) { err.textContent = "Elige una fecha de entrega."; err.style.display = "block"; return; }
+      err.style.display = "none";
+      btn.disabled = true;
+      btn.textContent = "Enviando...";
+      var cuerpo = { ofertaId: ofertaId, volumenKg: v, precioPorKg: Agro.aDinero(p), modalidad: g("o-modalidad").value, logistica: g("o-logistica").value, fechaEntrega: g("o-fecha").value };
+      //202: se espera a que el worker la registre
+      Agro.api("POST", "/campanas/" + c.campaniaId + "/ofertas", cuerpo).then(function () {
+        return Agro.esperar(function () {
+          return Agro.api("GET", "/campanas/" + c.campaniaId + "/ofertas").then(function (r) {
+            return (r.items || []).filter(function (o) { return o.ofertaId === ofertaId; })[0] || null;
+          });
+        }, 25);
+      }).then(function () {
+        location.replace("mis-ofertas.html");
+      }).catch(function (e) {
+        btn.disabled = false;
+        btn.textContent = "Enviar oferta";
+        err.textContent = Agro.mensaje(e);
+        err.style.display = "block";
+      });
+    });
+  </script>
+</body>
+</html>

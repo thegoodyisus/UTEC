@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Inicio</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/app-bar/app-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/text-field/text-field.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/campana.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <header class="app-bar">
+      <span class="app-bar__icon-button" role="button" tabindex="0" title="Cerrar sesión" aria-label="Cerrar sesión" style="cursor:pointer" onclick="Agro.salir().then(function () { location.replace('/onboarding/00-inicio.html'); })">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </span>
+      <div class="app-bar__brand" role="img" aria-label="AgroCredit">
+        <span class="brand-mark brand-mark--on-green" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="hoja-a" d="M11.6 22C4.8 21.3 1.2 15.4 2.2 5.6c6.8.3 10.6 6.2 9.4 16.4Z" fill="currentColor"/><path class="hoja-b" d="M12.4 22c-.9-10.6 3.4-17.6 9.6-19.6 2 10-2.4 18.2-9.6 19.6Z" fill="var(--color-leaf-light, #75b175)"/><path d="M11.2 21C9.4 16 6.9 11.6 4 8.4M12.9 21c1.6-5.4 4.2-10.2 7.6-14.4" stroke="rgba(255,255,255,0.55)" stroke-width="0.9" stroke-linecap="round"/></svg>
+        </span>
+        <span>AgroCredit</span>
+      </div>
+      <span class="app-bar__icon-plain" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+      </span>
+    </header>
+
+    <div class="screen__body">
+      <p class="home-header__hello" style="padding:0;" id="home-hello">Hola 👋</p>
+
+      <!-- Perfil: productos del agricultor (visibles y editables desde el inicio) -->
+      <div class="profile-card" data-testid="home-perfil">
+        <div class="profile-card__head">
+          <span class="profile-card__label">Mis productos</span>
+          
+        </div>
+        <div class="chip-list" id="perfil-chips" aria-label="Productos del agricultor"></div>
+        
+      </div>
+
+      <div class="inapp" id="inapp-match" style="display:none;">
+        <span class="inapp__icon">🎉</span>
+        <div>
+          <p style="margin:0; font-weight: var(--font-weight-bold);">¡Encontramos un comprador!</p>
+          <p style="margin:0; font-size: var(--font-size-sm);" id="inapp-text">Tienes nuevas ofertas para tu campaña.</p>
+          <button class="btn btn--secondary" type="button" style="margin-top: var(--space-2);" data-testid="home-inapp-ver" id="inapp-ver">Ver ofertas</button>
+        </div>
+      </div>
+
+      <div class="section-title">
+        <h2>Mis campañas</h2>
+        <button class="icon-btn" type="button" data-testid="home-nueva-campana" aria-label="Registrar nueva campaña" onclick="goTo('01-registro.html')">＋</button>
+      </div>
+      <div id="mis-campanas" style="display:flex; flex-direction:column; gap: var(--space-3);"></div>
+
+      <div class="section-title"><h2>Ofertas de compra</h2></div>
+      <div id="ofertas-compra" style="display:flex; flex-direction:column; gap: var(--space-3);"></div>
+
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/campana.js"></script>
+  <script>
+    var camp = document.getElementById("mis-campanas");
+    var oc = document.getElementById("ofertas-compra");
+    function tarjeta(c, cat) {
+      var n = c.numeroOfertas || 0;
+      return '<div class="campaign-card" data-testid="home-campaign-card" style="cursor:pointer" onclick="goTo(\'ofertas-campana.html?id=' + c.campaniaId + '\')">' +
+        '<div class="campaign-card__head"><span class="campaign-card__title">' + Agro.escapar(Agro.nombreCultivo(cat, c.cultivo)) + '</span>' +
+        '<span class="badge badge--soft">' + c.estado + '</span></div>' +
+        '<span class="campaign-card__meta">' + Agro.kg(c.volumenKg) + ' · cosecha ' + c.cosecha + ' · ' + Agro.escapar(c.departamento) + '</span>' +
+        '<span class="campaign-card__meta"><span class="badge">' + n + (n === 1 ? ' oferta' : ' ofertas') + '</span></span></div>';
+    }
+    Agro.proteger({ fase: "app", rol: "agricultor" }).then(function (ctx) {
+      document.getElementById("home-hello").textContent = "Hola, " + ctx.perfil.nombres.split(" ")[0] + " 👋";
+      camp.innerHTML = '<p class="mock-note" style="text-align:left;">Cargando tus campañas...</p>';
+      return Promise.all([Agro.catalogo(), Agro.listarTodo("/campanas")]).then(function (r) {
+        var cat = r[0], lista = r[1];
+        document.getElementById("perfil-chips").innerHTML = (ctx.perfil.cultivos || []).map(function (s) {
+          return '<span class="chip">' + Agro.escapar(Agro.nombreCultivo(cat, s)) + '</span>';
+        }).join("");
+        //todas las campanas, una debajo de otra (de la mas reciente a la mas antigua)
+        camp.innerHTML = lista.length ? lista.map(function (c) { return tarjeta(c, cat); }).join("")
+          : '<p class="mock-note" style="text-align:left;">Aún no has publicado campañas. Usa el botón ＋ para registrar una.</p>';
+        var conOfertas = lista.filter(function (c) { return c.numeroOfertas > 0; });
+        oc.innerHTML = conOfertas.length ? conOfertas.map(function (c) {
+          return '<div class="offer-group" data-testid="home-offer-group"><div><div class="campaign-card__title">' + Agro.escapar(Agro.nombreCultivo(cat, c.cultivo)) + ' — Campaña ' + c.cosecha + '</div>' +
+            '<div class="campaign-card__meta"><span class="badge">' + c.numeroOfertas + (c.numeroOfertas === 1 ? ' oferta' : ' ofertas') + '</span></div></div>' +
+            '<button class="btn btn--secondary" type="button" onclick="goTo(\'ofertas-campana.html?id=' + c.campaniaId + '\')">Revisar ofertas</button></div>';
+        }).join("") : '<p class="mock-note" style="text-align:left;">Cuando un comprador oferte por tus campañas, aparecerá aquí.</p>';
+        var total = conOfertas.reduce(function (a, c) { return a + c.numeroOfertas; }, 0);
+        if (total) {
+          document.getElementById("inapp-match").style.display = "flex";
+          document.getElementById("inapp-text").textContent = "Tienes " + total + (total === 1 ? " oferta" : " ofertas") + " en " + conOfertas.length + (conOfertas.length === 1 ? " campaña." : " campañas.");
+          document.getElementById("inapp-ver").onclick = function () { goTo("ofertas-campana.html?id=" + conOfertas[0].campaniaId); };
+        }
+      });
+    }).catch(function (e) { camp.innerHTML = '<p class="text-field__error">' + Agro.escapar(Agro.mensaje(e)) + '</p>'; });
+  </script>
+</body>
+</html>

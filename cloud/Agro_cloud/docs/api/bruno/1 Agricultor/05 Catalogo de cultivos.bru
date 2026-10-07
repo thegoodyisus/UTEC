@@ -1,0 +1,72 @@
+meta {
+  name: 05 Catalogo de cultivos
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{process.env.BASE_URL}}/catalogo/cultivos
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_AGRICULTOR}}
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Catalogo de cultivos
+
+  | | |
+  |---|---|
+  | API | `GET /catalogo/cultivos` |
+  | Token | agricultor |
+  | Microservicio | Padron y catalogos |
+  | Tipo | lectura |
+  | Tabla o servicio | agro-datos |
+  | Operacion | Query PK=CATALOGO, SK empieza con CULTIVO# |
+  | Esperado | 200 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 200
+
+  ```json
+  [
+    {
+      "slug": "papa",
+      "nombre": "Papa",
+      "referenciaMercadoPorKg": "1.20"
+    },
+    {
+      "slug": "maiz",
+      "nombre": "Maíz",
+      "referenciaMercadoPorKg": "1.10"
+    },
+    {
+      "slug": "cafe",
+      "nombre": "Café",
+      "referenciaMercadoPorKg": "12.50"
+    },
+    {
+      "slug": "arroz",
+      "nombre": "Arroz",
+      "referenciaMercadoPorKg": "2.80"
+    },
+    {
+      "slug": "esparrago",
+      "nombre": "Espárrago",
+      "referenciaMercadoPorKg": "6.50"
+    },
+    {
+      "slug": "quinua",
+      "nombre": "Quinua",
+      "referenciaMercadoPorKg": "7.80"
+    }
+  ]
+  ```
+}

@@ -1,0 +1,48 @@
+/* ============================================================
+   Componente: info-card
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (modal fechas de pago)
+   Tarjeta informativa: ícono + título + descripción, fondo verde claro.
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.info-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-4);
+  border-radius: var(--radius-large);
+  background: var(--color-success-container); /* verde claro #e1fed2 */
+  box-sizing: border-box;
+}
+
+.info-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: var(--color-text);
+}
+.info-card__icon svg { width: 24px; height: 24px; }
+
+.info-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.info-card__title {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+.info-card__description {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}

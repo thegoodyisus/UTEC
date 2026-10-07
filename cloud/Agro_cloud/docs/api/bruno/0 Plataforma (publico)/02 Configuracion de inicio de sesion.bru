@@ -1,0 +1,41 @@
+meta {
+  name: 02 Configuracion de inicio de sesion
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{process.env.BASE_URL}}/config
+  body: none
+  auth: none
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Configuracion de inicio de sesion
+
+  | | |
+  |---|---|
+  | API | `GET /config` |
+  | Token | sin token |
+  | Microservicio | Identidad y perfil |
+  | Tipo | lectura |
+  | Tabla o servicio | variables de entorno de la tarea: ids de Cognito (sin tabla) |
+  | Operacion | - |
+  | Esperado | 200 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 200
+
+  ```json
+  {
+    "region": "us-east-1",
+    "userPoolId": "us-east-1_zEsjP681N",
+    "clientId": "v8r0fil034a1drnr6jcrg6jkp"
+  }
+  ```
+}

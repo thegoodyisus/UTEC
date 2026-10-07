@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Ofertas de esta campaña</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/campana.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <header class="flow-header">
+      <a class="flow-header__back" href="home.html" aria-label="Volver" data-testid="ofertas-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <span style="font-weight: var(--font-weight-bold);">Ofertas de esta campaña</span>
+    </header>
+
+    <div class="screen__body">
+      <h1 class="screen__title" id="titulo">Ofertas para tu campaña</h1>
+      <p class="screen__subtitle" id="subtitulo">Compradores interesados en tu producción.</p>
+      <div id="lista-ofertas"></div>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/campana.js"></script>
+  <script>
+    var lista = document.getElementById("lista-ofertas");
+    Agro.proteger({ fase: "app", rol: "agricultor" }).then(function () {
+      var id = Agro.parametro("id");
+      if (!id) { location.replace("home.html"); return; }
+      return Promise.all([Agro.api("GET", "/campanas/" + id), Agro.listarTodo("/campanas/" + id + "/ofertas"), Agro.catalogo()]).then(function (r) {
+        var c = r[0], ofertas = r[1], cat = r[2];
+        document.getElementById("titulo").textContent = "Ofertas · " + Agro.nombreCultivo(cat, c.cultivo);
+        document.getElementById("subtitulo").textContent = ofertas.length + (ofertas.length === 1 ? " oferta recibida" : " ofertas recibidas") + " para tu campaña de " + Agro.kg(c.volumenKg) + " (cosecha " + c.cosecha + ").";
+        lista.innerHTML = ofertas.length ? ofertas.map(function (o) {
+          return '<div class="offer-card">' +
+            '<div class="campaign-card__head"><span class="campaign-card__title">' + Agro.escapar(o.compradorNombre) + '</span>' +
+            '<span class="badge badge--soft">' + Agro.escapar(o.modalidad) + '</span></div>' +
+            '<div class="review-list" style="background:transparent; padding:0;">' +
+            '<div class="review-list__row"><span>Volumen solicitado</span><span>' + Agro.kg(o.volumenKg) + '</span></div>' +
+            '<div class="review-list__row"><span>Precio</span><span>' + Agro.soles(o.precioPorKg) + ' / kg</span></div>' +
+            '<div class="review-list__row"><span>Monto total</span><span>' + Agro.soles(o.total) + '</span></div>' +
+            '<div class="review-list__row"><span>Logística</span><span>' + (o.logistica === "Envio" ? "Envío" : "Recojo") + '</span></div>' +
+            '<div class="review-list__row"><span>Fecha propuesta</span><span>' + o.fechaEntrega + '</span></div>' +
+            '<div class="review-list__row"><span>Estado</span><span>' + o.estado + '</span></div>' +
+            '</div>' +
+            '<button class="btn btn--secondary btn--block" type="button" onclick="goTo(\'04-oportunidad.html\')">Revisar oportunidad (simulado)</button>' +
+            '</div>';
+        }).join("") : '<p class="mock-note" style="text-align:left;">Aún no hay ofertas para esta campaña.</p>';
+      });
+    }).catch(function (e) { lista.innerHTML = '<p class="text-field__error">' + Agro.escapar(Agro.mensaje(e)) + '</p>'; });
+  </script>
+</body>
+</html>

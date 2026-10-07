@@ -1,0 +1,72 @@
+[
+  {
+    "id": "e01",
+    "razonSocial": "Agroindustrias Sierra Verde SAC",
+    "direccionFiscal": "Av. Los Incas 845, Wanchaq, Cusco",
+    "actividad": "Procesamiento de papa",
+    "estado": "Activo · Habido"
+  },
+  {
+    "id": "e02",
+    "razonSocial": "Molinos del Valle Norte SAC",
+    "direccionFiscal": "Jr. Bolognesi 312, Chiclayo, Lambayeque",
+    "actividad": "Pilado de arroz",
+    "estado": "Activo · Habido"
+  },
+  {
+    "id": "e03",
+    "razonSocial": "Café Altura Andina EIRL",
+    "direccionFiscal": "Calle Real 128, La Merced, Junín",
+    "actividad": "Acopio y tostado de café",
+    "estado": "Activo · Habido"
+  },
+  {
+    "id": "e04",
+    "razonSocial": "Exportadora Costa Brava SAC",
+    "direccionFiscal": "Panamericana Sur km 302, Ica",
+    "actividad": "Exportación de espárrago",
+    "estado": "Activo · Habido"
+  },
+  {
+    "id": "e05",
+    "razonSocial": "Granos del Altiplano SAC",
+    "direccionFiscal": "Av. El Puerto 560, Puno",
+    "actividad": "Comercialización de quinua",
+    "estado": "Activo · Habido"
+  },
+  {
+    "id": "e06",
+    "razonSocial": "Distribuidora Maizal Peruano SAC",
+    "direccionFiscal": "Av. Industrial 2210, Trujillo, La Libertad",
+    "actividad": "Alimento balanceado a base de maíz",
+    "estado": "Activo · Habido"
+  },
+  {
+    "id": "e07",
+    "razonSocial": "Mercados Unidos del Sur SAC",
+    "direccionFiscal": "Av. Ejército 1190, Arequipa",
+    "actividad": "Mayorista de tubérculos",
+    "estado": "Activo · Habido"
+  },
+  {
+    "id": "e08",
+    "razonSocial": "Snacks Tierra Nuestra SAC",
+    "direccionFiscal": "Calle Las Begonias 455, Ate, Lima",
+    "actividad": "Elaboración de snacks de papa",
+    "estado": "Activo · Habido"
+  },
+  {
+    "id": "e09",
+    "razonSocial": "Cooperativa Agraria Nuevo Horizonte",
+    "direccionFiscal": "Jr. Amazonas 77, Jaén, Cajamarca",
+    "actividad": "Acopio de café y cacao",
+    "estado": "Activo · Habido"
+  },
+  {
+    "id": "e10",
+    "razonSocial": "Alimentos Andinos Integrados SAC",
+    "direccionFiscal": "Av. Universitaria 3401, Los Olivos, Lima",
+    "actividad": "Procesamiento de granos andinos",
+    "estado": "Activo · Habido"
+  }
+]

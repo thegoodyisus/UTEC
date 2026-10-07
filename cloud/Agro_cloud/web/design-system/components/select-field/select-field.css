@@ -1,0 +1,55 @@
+/* ============================================================
+   Componente: select-field
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (simula tu préstamo)
+   Dropdown con chevron.
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.select-field { display: flex; flex-direction: column; gap: var(--space-2); width: 100%; }
+.select-field__label {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+}
+.select-field__control {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.select-field__select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  padding: var(--space-4) var(--space-10) var(--space-4) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+.select-field__select:hover { border-color: var(--color-text-secondary); }
+.select-field__select:focus,
+.select-field__select.is-focused {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+.select-field__select.is-active,
+.select-field__select:active { border-color: var(--color-primary); }
+.select-field__select:disabled,
+.select-field__select.is-disabled {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-disabled-border);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+.select-field__chevron {
+  position: absolute;
+  right: var(--space-4);
+  pointer-events: none;
+  color: var(--color-secondary);
+}
+.select-field__chevron svg { width: 20px; height: 20px; }

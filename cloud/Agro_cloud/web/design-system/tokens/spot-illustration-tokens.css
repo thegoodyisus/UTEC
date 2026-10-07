@@ -1,0 +1,57 @@
+/* ============================================================
+   Spot Illustrations — Tokens
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (página "Spot illustrations")
+
+   ESTADO: valores base derivados de las variables reales ya extraídas del
+   archivo (get_variable_defs). Las familias/escala completas y los sizes
+   exactos se ajustarán cuando lleguen las capturas ampliadas o se recupere
+   el MCP de Figma. Marcados con TODO los que están pendientes de confirmar.
+   ============================================================ */
+
+:root {
+  /* ---- Tamaños del spot (contenedor cuadrado) ---- */
+  /* Tamaño estándar confirmado con Figma: 112px */
+  --spot-size: 112px;         /* base / default (confirmado) */
+  --spot-size-sm: 56px;       /* TODO confirmar (mitad del base) */
+  --spot-size-md: 112px;      /* base */
+  --spot-size-lg: 168px;      /* TODO confirmar */
+  --spot-size-xl: 224px;      /* TODO confirmar */
+
+  /* ---- Radio del contenedor ---- */
+  --spot-radius: var(--radius-large);   /* Radius/large = 16 (confirmado) */
+
+  /* ---- Familias de color (escala confirmada parcialmente) ---- */
+  /* Green (verde de marca) */
+  --spot-green-10: #d8f9e1;   /* secondary-container (confirmado) */
+  --spot-green-30: #76d9a9;   /* TODO confirmar */
+  --spot-green-50: #418e49;   /* secondary (confirmado) */
+  --spot-green-70: #0f8f3e;   /* usado en ilustraciones (confirmado en uso) */
+  --spot-green-90: #0a7a34;   /* usado en ilustraciones (confirmado en uso) */
+
+  /* Blue */
+  --spot-blue-10: #eef3ff;    /* TODO confirmar */
+  --spot-blue-50: #0071e3;    /* TODO confirmar */
+  --spot-blue-90: #135c40;    /* nodo-colors/blue/90 (confirmado) */
+
+  /* Purple */
+  --spot-purple-10: #f8f6fe;  /* nodo-colors/purple/10 (confirmado) */
+  --spot-purple-50: #633ce2;  /* nodo-colors/purple/50 (confirmado) */
+
+  /* Pink */
+  --spot-pink-60: #e0066f;    /* nodo-colors/pink/60 (confirmado) */
+
+  /* Red (estados de error) */
+  --spot-red-10: #ffebed;     /* error-container (confirmado) */
+  --spot-red-50: #e50619;     /* error (confirmado) */
+
+  /* Yellow / Gold */
+  --spot-yellow-30: #ffe27a;  /* TODO confirmar */
+  --spot-yellow-50: #f2b705;  /* TODO confirmar */
+
+  /* Orange */
+  --spot-orange-50: #ff8a00;  /* TODO confirmar */
+
+  /* Grayscale */
+  --spot-gray-10: #fafafa;    /* neutrals/10 (confirmado) */
+  --spot-gray-90: #31353a;    /* neutrals/90 (confirmado) */
+}

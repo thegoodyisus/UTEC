@@ -1,0 +1,62 @@
+meta {
+  name: 01 Chequeo de salud
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{process.env.BASE_URL}}/salud
+  body: none
+  auth: none
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Chequeo de salud
+
+  | | |
+  |---|---|
+  | API | `GET /salud` |
+  | Token | sin token |
+  | Microservicio | Plataforma |
+  | Tipo | lectura |
+  | Tabla o servicio | memoria de la tarea ECS (sin tabla) |
+  | Operacion | - |
+  | Esperado | 200 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 200
+
+  ```json
+  {
+    "estado": "ok",
+    "tareaId": "498be6c12dd141cab898716dbf0b2890",
+    "zona": "us-east-1b",
+    "version": "1215adaab3c4",
+    "trafico": {
+      "desde": "2026-10-06T21:43:09Z",
+      "peticiones": {
+        "GET /salud": 2101,
+        "GET /config": 7,
+        "POST /perfil": 3,
+        "GET /catalogo/cultivos": 16,
+        "POST /campanas": 3,
+        "GET /campanas/{campaniaId}": 5,
+        "GET /perfil": 2,
+        "GET /ofertas": 5,
+        "GET /campanas/publicadas": 3,
+        "GET /campanas/{campaniaId}/ofertas": 2,
+        "GET /campanas/{campaniaId}/fotos": 1,
+        "POST /padron/consulta": 2,
+        "GET /cuentas-demo": 2,
+        "POST /campanas/{campaniaId}/fotos/url": 1,
+        "POST /campanas/{campaniaId}/ofertas": 1
+      }
+    }
+  }
+  ```
+}

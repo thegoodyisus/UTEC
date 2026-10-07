@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Verificación de empresa</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <!-- Barra de estado simulada (verde de marca) -->
+    <div class="status-sim status-sim--brand" aria-hidden="true">
+      <span class="status-sim__time">9:41</span>
+      <span class="status-sim__net">4G · 100 %</span>
+    </div>
+
+    <!-- Top bar: Verificación + etiqueta "Empresas" -->
+    <header class="flow-topbar">
+      <span class="flow-topbar__title">Verificación</span>
+      <span class="flow-topbar__tag">Empresas</span>
+    </header>
+
+    <!-- Pasos del registro de empresa (Paso 5 de 5 · Verificación) -->
+    <div class="step-header">
+      <p class="step-header__label">Paso 5 de 5 · Verificación</p>
+      <div class="step-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="5" aria-label="Paso 5 de 5">
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+      </div>
+    </div>
+
+    <div class="screen__body">
+      <div class="verify-head">
+        <div class="creating__spinner" id="verify-spinner" aria-hidden="true"></div>
+        <h1 class="screen__title" style="color: var(--color-primary);">Estamos verificando tu empresa</h1>
+      </div>
+
+      <div class="verify-list" aria-live="polite">
+        <div class="verify-row">
+          <span class="verify-row__label">RUC</span>
+          <span class="verify-row__status verify-row__status--ok" id="st-ruc">✓ Verificado</span>
+        </div>
+        <div class="verify-row">
+          <span class="verify-row__label">Representante</span>
+          <span class="verify-row__status verify-row__status--ok" id="st-rep">✓ Verificado</span>
+        </div>
+        <div class="verify-row">
+          <span class="verify-row__label">Documentos</span>
+          <span class="verify-row__status verify-row__status--pending" id="st-docs">En revisión</span>
+        </div>
+        <div class="verify-row">
+          <span class="verify-row__label">Convenio de pago</span>
+          <span class="verify-row__status verify-row__status--ok" id="st-conv">✓ Aceptado</span>
+        </div>
+      </div>
+
+      <p class="mock-note" style="text-align:left;" id="verify-note">Estamos verificando tu empresa. Te avisaremos por correo y en la app.</p>
+    </div>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="btn-verify" data-testid="verify-continuar-button" disabled>Esperando verificación…</button>
+      <p class="mock-note">Verificación simulada · datos ficticios</p>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    // Verificación simulada: tras unos segundos, "Documentos" pasa a verificado
+    // y el botón se habilita para continuar al Home del comprador.
+    var btn = document.getElementById("btn-verify");
+    var stDocs = document.getElementById("st-docs");
+    var note = document.getElementById("verify-note");
+    var spinner = document.getElementById("verify-spinner");
+
+    //verificacion simulada; al final se crea el perfil real del comprador (post /perfil)
+    var listo = Agro.proteger({ fase: "alta", paso: "comprador-06-verificacion" }).then(function (ctx) {
+      var d = ctx.flujo.datos;
+      var cuerpo = { rol: "comprador", tipoDoc: d.tipoDoc, documento: ctx.usuario.documento, razonSocial: d.razonSocial,
+        contactoNombre: d.contactoNombre, contactoCelular: d.contactoCelular, contactoCargo: d.contactoCargo,
+        cuentaCargoId: d.cuentaCargoId, modalidadPago: d.modalidadPago };
+      if (d.contactoCorreo) cuerpo.contactoCorreo = d.contactoCorreo;
+      return Agro.api("POST", "/perfil", cuerpo).catch(function (e) { if (e.estado === 409) return null; throw e; })
+        .then(function () { return Agro.perfil(true); });
+    });
+    setTimeout(function () { listo.then(function () {
+      stDocs.textContent = "✓ Verificado";
+      stDocs.classList.remove("verify-row__status--pending");
+      stDocs.classList.add("verify-row__status--ok");
+      spinner.style.display = "none";
+      note.textContent = "¡Tu empresa fue verificada! Ya puedes empezar a comprar.";
+      note.style.color = "var(--color-on-secondary-container)";
+      btn.disabled = false;
+      btn.textContent = "Continuar";
+    }).catch(function (e) {
+      spinner.style.display = "none";
+      note.textContent = "No pudimos guardar tu perfil: " + Agro.mensaje(e);
+      note.style.color = "var(--color-danger)";
+    }); }, 2600);
+
+    btn.addEventListener("click", function () {
+      if (btn.disabled) return;
+      goTo("../campana/home-comprador.html");
+    });
+  </script>
+</body>
+</html>

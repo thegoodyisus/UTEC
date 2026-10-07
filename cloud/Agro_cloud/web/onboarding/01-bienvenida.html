@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Bienvenida</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/benefit-item/benefit-item.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen screen--brand">
+
+    <!-- Flujo aún no empieza: header solo con la flecha de regreso (sin barra de progreso) -->
+    <header class="flow-header flow-header--brand">
+      <a class="flow-header__back" href="00-rol.html" aria-label="Volver a elegir rol" data-testid="bienvenida-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+    </header>
+
+    <!-- Hero verde: "Bienvenido a" + logo AgroCredit  + selector de idioma -->
+    <section class="welcome">
+      <div class="welcome__greetings" aria-live="polite">
+        <p class="welcome__greeting welcome__greeting--main" data-i18n="hello">Bienvenido a</p>
+      </div>
+
+      <!-- Logo AgroCredit (variante para fondo verde) -->
+      <div class="brand-lockup brand-lockup--on-green" role="img" aria-label="AgroCredit">
+        <p class="brand-lockup__wordmark">
+          <span class="brand-lockup__agro">Agro</span><span class="brand-lockup__credit">Credit</span>
+          <span class="brand-lockup__leaf" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="hoja-a" d="M11.6 22C4.8 21.3 1.2 15.4 2.2 5.6c6.8.3 10.6 6.2 9.4 16.4Z" fill="currentColor"/><path class="hoja-b" d="M12.4 22c-.9-10.6 3.4-17.6 9.6-19.6 2 10-2.4 18.2-9.6 19.6Z" fill="var(--color-leaf-light, #75b175)"/><path d="M11.2 21C9.4 16 6.9 11.6 4 8.4M12.9 21c1.6-5.4 4.2-10.2 7.6-14.4" stroke="rgba(255,255,255,0.55)" stroke-width="0.9" stroke-linecap="round"/></svg>
+          </span>
+        </p>
+      </div>
+
+      <div class="lang-picker lang-picker--spaced" role="group" aria-label="Selector de idioma">
+        <span class="lang-picker__label" data-i18n="langLabel">Elige tu idioma</span>
+        <button class="lang-chip is-selected" type="button" data-lang-btn="es" data-testid="lang-es" onclick="setLang('es')">Español</button>
+        <button class="lang-chip" type="button" data-lang-btn="qu" data-testid="lang-qu" onclick="setLang('qu')">Runa Simi (Quechua)</button>
+        <button class="lang-chip" type="button" data-lang-btn="ay" data-testid="lang-ay" onclick="setLang('ay')">Aymara</button>
+      </div>
+    </section>
+
+    <!-- Sheet blanca inferior: 3 beneficios + acción principal + disclaimer -->
+    <section class="sheet sheet--lower">
+      <div class="benefit-list">
+        <div class="benefit-item">
+          <span class="benefit-item__icon">
+            <svg viewBox="0 0 48 48" fill="none"><rect x="8" y="10" width="32" height="28" rx="4" fill="#418e49"/><path d="M14 20h20M14 26h14" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+          </span>
+          <div class="benefit-item__content">
+            <p class="benefit-item__title" data-i18n="b1t">Publica tu producción</p>
+            <p class="benefit-item__description" data-i18n="b1d">Registra tus cultivos y hazlos visibles para compradores formales.</p>
+          </div>
+        </div>
+
+        <div class="benefit-item">
+          <span class="benefit-item__icon">
+            <svg viewBox="0 0 48 48" fill="none"><circle cx="20" cy="20" r="10" fill="#76d9a9"/><path d="M27 27l12 12" stroke="#418e49" stroke-width="4" stroke-linecap="round"/></svg>
+          </span>
+          <div class="benefit-item__content">
+            <p class="benefit-item__title" data-i18n="b2t">Encuentra compradores</p>
+            <p class="benefit-item__description" data-i18n="b2d">Empresas reservan tu volumen antes de la siembra, a precio de mercado.</p>
+          </div>
+        </div>
+
+        <div class="benefit-item">
+          <span class="benefit-item__icon">
+            <svg viewBox="0 0 48 48" fill="none"><path d="M24 6l18 7v9c0 11-8 19-18 22-10-3-18-11-18-22v-9l18-7z" fill="#418e49"/><path d="M24 18v12M18 24h12" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+          </span>
+          <div class="benefit-item__content">
+            <p class="benefit-item__title" data-i18n="b3t">Negocia directamente</p>
+            <p class="benefit-item__description" data-i18n="b3d">Acuerda condiciones con compradores verificados, sin intermediarios.</p>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn--primary btn--block btn--spaced-top" type="button" data-i18n="start" data-testid="bienvenida-empezar-button" onclick="Agro.completar('01-bienvenida'); goTo('cuenta.html')">Empezar</button>
+
+      <p class="mock-note" data-i18n="disclaimer">Prototipo de demostración · datos ficticios</p>
+    </section>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+<script>Agro.proteger({ fase: "registro", paso: "01-bienvenida" });</script>
+</body>
+</html>

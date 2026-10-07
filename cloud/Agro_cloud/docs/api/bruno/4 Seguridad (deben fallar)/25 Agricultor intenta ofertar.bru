@@ -1,0 +1,63 @@
+meta {
+  name: 25 Agricultor intenta ofertar
+  type: http
+  seq: 25
+}
+
+post {
+  url: {{process.env.BASE_URL}}/campanas/{{campaniaId}}/ofertas
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_AGRICULTOR}}
+}
+
+body:json {
+  {
+    "ofertaId": "{{$randomUUID}}",
+    "volumenKg": 1200,
+    "precioPorKg": "1.85",
+    "modalidad": "Pago ahora",
+    "logistica": "Recojo",
+    "fechaEntrega": "2027-06-20"
+  }
+}
+
+tests {
+  test("codigo 403", function () {
+    expect([403]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Agricultor intenta ofertar
+
+  | | |
+  |---|---|
+  | API | `POST /campanas/{campaniaId}/ofertas` |
+  | Token | agricultor |
+  | Microservicio | Ofertas |
+  | Tipo | escritura asincrona |
+  | Tabla o servicio | SQS agro-insercion -> Lambda agro-worker -> agro-datos |
+  | Operacion | la api lee META y PROFILE y encola; el worker hace TransactWriteItems: Put CAMP#<id> / OFFER#<id> + Update META numeroOfertas |
+  | Esperado | 403 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 403
+
+  ```json
+  {
+    "type": "about:blank",
+    "title": "Sin permiso",
+    "status": 403,
+    "instance": "/api/v1/campanas/7e19831b-fbbe-4a8e-bfb9-b8716848d1e5/ofertas",
+    "requestId": "de52f4f3-3285-48c3-9e8a-716331a7745f",
+    "detail": "esta operacion es solo para comprador"
+  }
+  ```
+}

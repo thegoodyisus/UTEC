@@ -1,0 +1,66 @@
+%% flujo tecnico: login, escritura asincrona de campana y oferta, y cadena de la foto (2026-10-05)
+%% sin el monitoreo del panel de resiliencia (decision 60)
+sequenceDiagram
+    autonumber
+    actor U as Navegador
+    participant C as Amazon Cognito
+    participant L as ALB agro-alb
+    participant A as API FastAPI en ECS
+    participant D as DynamoDB agro-datos
+    participant P as DynamoDB padron
+    participant Q as SQS agro-insercion
+    participant W as Lambda agro-worker
+    participant S as S3 agro-fotos
+    participant F as SQS agro-fotos
+    participant E as Lambda agro-etiquetar
+    participant R as Amazon Rekognition
+
+    rect rgba(46,115,184,0.08)
+    Note over U,C: 1. Inicio de sesion (sin pasar claves por nuestra API)
+    U->>L: GET /api/v1/config
+    L->>A: reenvia
+    A-->>U: region, userPoolId, clientId
+    U->>C: login SRP con documento + PIN
+    C-->>U: ID token JWT 60 min con custom:rol
+    end
+
+    rect rgba(237,113,0,0.08)
+    Note over U,P: 2. Lectura y consumo del padron (sincrono). Desde aqui toda llamada a /api/v1 pasa por el ALB
+    U->>A: POST /padron/consulta + Bearer token
+    A->>A: valida firma JWKS, emisor, audiencia, vencimiento y rol
+    A->>P: Scan consistente (maximo 10 registros)
+    A->>P: TransactWriteItems: Delete registro (attribute_exists)
+    A->>D: mismo TransactWriteItems: Put asignacion (attribute_not_exists)
+    A-->>U: 200 datos ficticios, o 503 si se agoto
+    end
+
+    rect rgba(1,168,141,0.08)
+    Note over U,R: 3. Foto: sube directo a S3 y se etiqueta en segundo plano
+    U->>A: POST /campanas/{id}/fotos/url
+    A-->>U: URL prefirmada POST (5 MB, jpeg o png, 5 min)
+    U->>S: POST entrada/sub/campania/foto.jpg
+    S-)F: evento ObjectCreated
+    F-)E: lote de hasta 5 mensajes
+    E->>R: DetectLabels sobre el objeto, confianza 70%
+    R-->>E: etiquetas, p. ej. Potato 99%
+    E->>D: lee catalogo y mapea a papa o sin-etiqueta
+    E->>S: copia a sub/papa_fecha_hora.jpg y borra el original
+    E->>D: PutItem FOTO con etiqueta y confianza
+    end
+
+    rect rgba(231,21,123,0.08)
+    Note over U,W: 4. Escritura asincrona de campana (igual para oferta)
+    U->>A: POST /campanas con campaniaId generado por el navegador
+    A->>D: lee perfil (debe existir)
+    A->>Q: SendMessage tipo campana + item completo
+    A-->>U: 202 PROCESANDO + ruta a consultar
+    Q-)W: lote de hasta 10 mensajes
+    W->>D: PutItem condicional attribute_not_exists (duplicado = exito)
+    Note over W,D: oferta: TransactWriteItems Put oferta + Update numeroOfertas +1
+    loop hasta que deje de dar 404 (1 a 2 s)
+        U->>A: GET /campanas/{id}
+        A->>D: GetItem
+        A-->>U: 404 procesando o 200 campana
+    end
+    Note over Q,W: si falla 3 veces el mensaje pasa a la DLQ y no se pierde
+    end

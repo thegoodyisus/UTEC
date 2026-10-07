@@ -1,0 +1,117 @@
+/* ============================================================
+   Componente: amount-slider + option-selector
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (simula tu préstamo)
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+/* ---- Amount slider ---- */
+.amount-slider { display: flex; flex-direction: column; gap: var(--space-3); width: 100%; }
+
+.amount-slider__value {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
+.amount-slider__amount {
+  font-family: var(--font-family-titles);
+  font-size: 40px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  border-bottom: 2px solid var(--color-secondary);
+  padding-bottom: var(--space-1);
+}
+.amount-slider__edit {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px;
+  border: none; background: none; color: var(--color-text);
+}
+.amount-slider__edit svg { width: 22px; height: 22px; }
+
+/* Track del slider (relleno verde con thumb) */
+.amount-slider__track {
+  position: relative;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-secondary-container);
+}
+.amount-slider__progress {
+  position: absolute;
+  left: 0; top: 0; height: 100%;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+}
+.amount-slider__thumb {
+  position: absolute;
+  top: 50%;
+  width: 24px; height: 24px;
+  transform: translate(-50%, -50%);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+}
+.amount-slider__limits {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ---- Option selector (chips seleccionables) ---- */
+.option-selector {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.option-selector--fill .option-selector__option { flex: 1 1 0; }
+
+.option-selector__option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 56px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.option-selector__option small { font-size: var(--font-size-body-small); color: var(--color-text-secondary); }
+
+/* Active / selected (verde outline + texto verde) */
+.option-selector__option.is-selected,
+.option-selector__option.is-active,
+.option-selector__option:active {
+  border-color: var(--color-secondary);
+  color: var(--color-secondary);
+  background: var(--color-secondary-container);
+}
+.option-selector__option.is-selected small,
+.option-selector__option.is-active small { color: var(--color-secondary); }
+/* Focused */
+.option-selector__option:focus-visible,
+.option-selector__option.is-focused { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+/* Disabled (gris) */
+.option-selector__option:disabled,
+.option-selector__option.is-disabled {
+  border-color: var(--color-disabled-border);
+  background: var(--color-disabled-bg);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+.option-selector__option:disabled small,
+.option-selector__option.is-disabled small { color: var(--color-disabled-text); }
+
+/* Variante pill (Ordinaria / Extraordinaria, fechas) */
+.option-selector--pill .option-selector__option {
+  flex-direction: row;
+  border-radius: var(--radius-pill);
+}

@@ -1,0 +1,5 @@
+{
+  "tipoDoc": "DNI",
+  "documento": "{{dniRepresentante}}",
+  "uso": "representante"
+}

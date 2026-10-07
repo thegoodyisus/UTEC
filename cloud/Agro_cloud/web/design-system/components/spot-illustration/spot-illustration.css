@@ -1,0 +1,50 @@
+/* ============================================================
+   Componente: spot-illustration
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (página "Spot illustrations")
+   Contenedor de ilustración "spot" con tamaños, familias de color y
+   variantes de contenedor.
+   Depende de tokens/tokens.css, tokens/spot-illustration-tokens.css y styles/base.css
+   ============================================================ */
+
+.spot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spot-size);   /* 112px estándar */
+  height: var(--spot-size);
+  border-radius: var(--spot-radius);
+  overflow: visible;
+}
+.spot svg,
+.spot img { width: 70%; height: 70%; overflow: visible; }
+
+/* ---- Tamaños ---- */
+.spot--sm { width: var(--spot-size-sm); height: var(--spot-size-sm); }
+.spot--md { width: var(--spot-size-md); height: var(--spot-size-md); }
+.spot--lg { width: var(--spot-size-lg); height: var(--spot-size-lg); }
+.spot--xl { width: var(--spot-size-xl); height: var(--spot-size-xl); }
+
+/* ---- Contenedores ---- */
+/* Sin fondo (default) */
+.spot--plain { background: transparent; }
+/* Con fondo tonal según familia */
+.spot--filled.spot--green  { background: var(--spot-green-10); }
+.spot--filled.spot--blue   { background: var(--spot-blue-10); }
+.spot--filled.spot--purple { background: var(--spot-purple-10); }
+.spot--filled.spot--red    { background: var(--spot-red-10); }
+.spot--filled.spot--gray   { background: var(--spot-gray-10); }
+/* Contenedor con borde punteado (placeholder / vacío) */
+.spot--dashed {
+  border: 1.5px dashed var(--color-border);
+  background: transparent;
+}
+
+/* ---- Color de la ilustración por familia (aplica a currentColor) ---- */
+.spot--green  { color: var(--spot-green-50); }
+.spot--blue   { color: var(--spot-blue-90); }
+.spot--purple { color: var(--spot-purple-50); }
+.spot--red    { color: var(--spot-red-50); }
+.spot--pink   { color: var(--spot-pink-60); }
+.spot--yellow { color: var(--spot-yellow-50); }
+.spot--orange { color: var(--spot-orange-50); }
+.spot--gray   { color: var(--spot-gray-90); }

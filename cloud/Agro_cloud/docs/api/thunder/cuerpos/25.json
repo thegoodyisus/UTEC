@@ -1,0 +1,8 @@
+{
+  "ofertaId": "{{#guid}}",
+  "volumenKg": 1200,
+  "precioPorKg": "1.85",
+  "modalidad": "Pago ahora",
+  "logistica": "Recojo",
+  "fechaEntrega": "2027-06-20"
+}

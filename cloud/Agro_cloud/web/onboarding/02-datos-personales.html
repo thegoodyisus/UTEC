@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Inscripción · Tus datos</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/text-field/text-field.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <!-- Barra de estado simulada (mockup 375x800) -->
+    <div class="status-sim" aria-hidden="true">
+      <span class="status-sim__time">9:41</span>
+      <span class="status-sim__net">4G · 100 %</span>
+    </div>
+
+    <!-- Top bar: Inscripción + volver -->
+    <header class="enroll-topbar">
+      <a class="flow-header__back" href="00-inicio.html" aria-label="Volver" data-testid="datos-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <span class="enroll-topbar__title">Inscripción</span>
+    </header>
+
+    <!-- Pasos de inscripción (Paso 1 de 5) -->
+    <div class="step-header">
+      <p class="step-header__label">Paso 1 de 5 · Tus datos</p>
+      <div class="step-bar" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="5" aria-label="Paso 1 de 5">
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg"></span>
+        <span class="step-bar__seg"></span>
+        <span class="step-bar__seg"></span>
+        <span class="step-bar__seg"></span>
+      </div>
+    </div>
+
+    <form class="screen__body" id="form-datos" novalidate>
+      <div>
+        <h1 class="screen__title">Cuéntanos quién eres</h1>
+        <p class="screen__subtitle">Con estos datos abrimos tu cuenta a tu nombre.</p>
+      </div>
+
+      <div class="field-group">
+        <!-- DNI: tope 8 dígitos, solo numérico -->
+        <div class="text-field" data-rule="dni" data-error="Tu DNI debe tener 8 números.">
+          <label class="text-field__label" for="documento">DNI</label>
+          <input class="text-field__input" id="documento" name="documento" type="text" inputmode="numeric" maxlength="8" placeholder="8 números" data-numeric readonly data-testid="datos-documento-input" />
+          <span class="text-field__hint">Es el documento con el que creaste tu cuenta.</span>
+        </div>
+
+        <!-- Celular: tope 9 dígitos, solo numérico -->
+        <div class="text-field" data-rule="celular" data-error="Ingresa un celular de 9 números.">
+          <label class="text-field__label" for="celular">Celular</label>
+          <input class="text-field__input" id="celular" name="celular" type="tel" inputmode="numeric" maxlength="9" placeholder="9 números" data-numeric data-testid="datos-celular-input" />
+          <span class="text-field__hint">No lo mostramos a otros usuarios.</span>
+        </div>
+
+        <!-- Nombres y Apellidos: sin placeholder -->
+        <div class="text-field" data-rule="requerido" data-error="Ingresa tus nombres.">
+          <label class="text-field__label" for="nombres">Nombres</label>
+          <input class="text-field__input" id="nombres" name="nombres" type="text" data-testid="datos-nombres-input" />
+        </div>
+        <div class="text-field" data-rule="requerido" data-error="Ingresa tus apellidos.">
+          <label class="text-field__label" for="apellidos">Apellidos</label>
+          <input class="text-field__input" id="apellidos" name="apellidos" type="text" data-testid="datos-apellidos-input" />
+        </div>
+
+        <!-- Correo: OPCIONAL, después de nombres/apellidos, con selector es-mío / familiar -->
+        <div class="text-field" data-rule="correo-opcional" data-error="Ingresa un correo con formato válido.">
+          <label class="text-field__label" for="correo">Correo <span class="text-field__optional">(opcional)</span></label>
+          <input class="text-field__input" id="correo" name="correo" type="email" placeholder="tucorreo@ejemplo.com" data-testid="datos-correo-input" />
+        </div>
+
+        <div class="choice-pair" role="group" aria-label="¿De quién es el correo?">
+          <button class="btn btn--secondary is-selected" type="button" id="correo-mio" data-testid="datos-correo-mio">Es mío</button>
+          <button class="btn btn--secondary" type="button" id="correo-familiar" data-testid="datos-correo-familiar">Es de un familiar</button>
+        </div>
+
+        <!-- Nombre del familiar: aparece solo si el correo es de un familiar -->
+        <div class="text-field" id="familiar-field" data-rule="requerido" data-error="Ingresa el nombre del familiar." style="display:none;">
+          <label class="text-field__label" for="familiar">Nombre del familiar</label>
+          <input class="text-field__input" id="familiar" name="familiar" type="text" data-testid="datos-familiar-input" />
+        </div>
+
+        <p class="info-note" id="familiar-note" style="display:none;">
+          A este correo no enviaremos información de tu cuenta.
+        </p>
+      </div>
+    </form>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="submit" form="form-datos" data-testid="datos-continuar-button">Continuar</button>
+      <p class="mock-note">No validamos contra RENIEC. Usa datos ficticios (Ley 29733).</p>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    // Solo dígitos + tope de longitud (además de maxlength) para celular y DNI.
+    document.querySelectorAll("input[data-numeric]").forEach(function (input) {
+      var max = parseInt(input.getAttribute("maxlength"), 10) || 999;
+      input.addEventListener("input", function () {
+        input.value = input.value.replace(/[^0-9]/g, "").slice(0, max);
+      });
+    });
+
+    // Selector de propietario del correo: es mío / es de un familiar.
+    var btnMio = document.getElementById("correo-mio");
+    var btnFam = document.getElementById("correo-familiar");
+    var famField = document.getElementById("familiar-field");
+    var famNote = document.getElementById("familiar-note");
+    var esFamiliar = false;
+
+    function setPropietario(familiar) {
+      esFamiliar = familiar;
+      btnFam.classList.toggle("is-selected", familiar);
+      btnMio.classList.toggle("is-selected", !familiar);
+      famField.style.display = familiar ? "" : "none";
+      famNote.style.display = familiar ? "" : "none";
+      if (!familiar) {
+        famField.classList.remove("text-field--error");
+        var famInput = document.getElementById("familiar");
+        if (famInput) famInput.value = "";
+      }
+    }
+    btnMio.addEventListener("click", function () { setPropietario(false); });
+    btnFam.addEventListener("click", function () { setPropietario(true); });
+
+    // Validación: correo es opcional; el nombre del familiar solo es obligatorio
+    // cuando el correo es de un familiar (y solo si se ingresó un correo).
+    var form = document.getElementById("form-datos");
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var ok = true;
+
+      function marcar(sel, valido, msg) {
+        var field = typeof sel === "string" ? document.querySelector(sel) : sel;
+        if (!field) return;
+        var input = field.querySelector(".text-field__input");
+        var err = field.querySelector(".text-field__error");
+        if (valido) {
+          field.classList.remove("text-field--error");
+          if (input) input.removeAttribute("aria-invalid");
+          if (err) err.textContent = "";
+        } else {
+          ok = false;
+          field.classList.add("text-field--error");
+          if (input) input.setAttribute("aria-invalid", "true");
+          if (!err) { err = document.createElement("span"); err.className = "text-field__error"; field.appendChild(err); }
+          err.textContent = msg || field.getAttribute("data-error") || "Revisa este dato.";
+        }
+      }
+
+      var dni = document.getElementById("documento").value.trim();
+      var cel = document.getElementById("celular").value.trim();
+      var nom = document.getElementById("nombres").value.trim();
+      var ape = document.getElementById("apellidos").value.trim();
+      var correo = document.getElementById("correo").value.trim();
+
+      marcar(document.getElementById("documento").closest(".text-field"), /^[0-9]{8}$/.test(dni));
+      marcar(document.getElementById("celular").closest(".text-field"), /^[0-9]{9}$/.test(cel));
+      marcar(document.getElementById("nombres").closest(".text-field"), nom.length > 0);
+      marcar(document.getElementById("apellidos").closest(".text-field"), ape.length > 0);
+
+      // Correo opcional: solo valida formato si se escribió algo.
+      var correoOk = correo.length === 0 || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+      marcar(document.getElementById("correo").closest(".text-field"), correoOk);
+
+      // Nombre del familiar requerido solo si es familiar y hay correo.
+      if (esFamiliar && correo.length > 0) {
+        var fam = document.getElementById("familiar").value.trim();
+        marcar(famField, fam.length > 0);
+      }
+
+      if (ok) {
+        var datos = { nombres: nom, apellidos: ape, celular: cel, correoEs: esFamiliar ? "familiar" : "mio" };
+        if (correo) datos.correo = correo;
+        Agro.completar("02-datos-personales", datos);
+        goTo(Agro.siguiente("agricultor", "02-datos-personales", "alta"));
+      }
+    });
+  </script>
+<script>
+    Agro.proteger({ fase: "alta", paso: "02-datos-personales" }).then(function (ctx) {
+      document.getElementById("documento").value = ctx.usuario.documento;
+      var d = ctx.flujo.datos;
+      ["nombres", "apellidos", "celular"].forEach(function (k) { if (d[k]) document.getElementById(k).value = d[k]; });
+      document.getElementById("correo").value = d.correo || ctx.usuario.correo || "";
+    });
+  </script>
+</body>
+</html>

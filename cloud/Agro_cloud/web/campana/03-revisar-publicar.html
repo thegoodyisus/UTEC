@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Revisar y publicar</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/campana.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <header class="flow-header">
+      <a class="flow-header__back" href="02-condiciones.html" aria-label="Volver" data-testid="camp-rev-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"><span class="progress-bar__fill" style="width: 100%"></span></div>
+    </header>
+
+    <div class="screen__body">
+      <span class="state-chip">BORRADOR</span>
+      <h1 class="screen__title">Revisa y publica</h1>
+      <p class="screen__subtitle">Confirma los datos antes de publicar tu campaña.</p>
+
+      <div class="review-list" id="review" aria-label="Resumen de la campaña">
+        <!-- filas del resumen (dinámicas) -->
+        <div id="review-rows"></div>
+        <!-- mosaico de fotos integrado en la ficha de resumen -->
+        <div id="fotos-box" style="display:none;">
+          <div class="review-list__row" style="border-top:1px solid var(--color-border); padding-top: var(--space-3); margin-top: var(--space-2);"><span>Fotos</span><span></span></div>
+          <div class="photo-grid" id="fotos-grid" style="margin-top: var(--space-2);"></div>
+        </div>
+      </div>
+
+      <h2 class="screen__subtitle" style="font-weight: var(--font-weight-bold); color: var(--color-text);">Monto total estimado</h2>
+      <div class="field-row">
+        <div class="price-card" style="flex:1;">
+          <span class="price-card__title">Si te pagan ahora</span>
+          <p class="price-card__hint" id="calc-ahora"></p>
+          <span id="total-ahora" style="font-family: var(--font-family-titles); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-secondary);"></span>
+        </div>
+        <div class="price-card" style="flex:1;">
+          <span class="price-card__title">Si te pagan contraentrega</span>
+          <p class="price-card__hint" id="calc-contra"></p>
+          <span id="total-contra" style="font-family: var(--font-family-titles); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-secondary);"></span>
+        </div>
+      </div>
+
+      <p class="text-field__error" id="pub-error" style="display:none;"></p>
+      <button class="text-link" type="button" data-testid="camp-editar" onclick="goTo('01-registro.html')">✎ Editar campaña</button>
+
+      <p class="mock-note" style="text-align:left;">Los precios mostrados no incluyen IGV.</p>
+    </div>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="publicar" data-testid="camp-publicar-button">Publicar campaña</button>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/campana.js"></script>
+  <script>
+    var err = document.getElementById("pub-error");
+    var b = null;
+    var fila = function (a, v) { return '<div class="review-list__row"><span>' + a + '</span><span>' + Agro.escapar(v) + '</span></div>'; };
+    function pintarFotos() {
+      //las fotos subidas y la etiqueta que puso rekognition (la campana aun no existe: el dueno ve las suyas)
+      return Agro.api("GET", "/campanas/" + b.campaniaId + "/fotos").then(function (lista) {
+        if (!lista.length && !(b.fotos || []).length) return;
+        document.getElementById("fotos-box").style.display = "block";
+        var pendientes = (b.fotos || []).length - lista.length;
+        document.getElementById("fotos-grid").innerHTML = lista.map(function (f) {
+          var etiqueta = f.estado === "ETIQUETADA" ? "🌱 " + f.label : (f.estado === "SIN_ETIQUETA" ? "sin cultivo reconocido" : f.estado.toLowerCase());
+          return '<div class="photo-thumb" style="position:relative">' + (f.url ? '<img src="' + f.url + '" alt="Foto"/>' : "") +
+            '<span class="mock-note" style="position:absolute;left:4px;bottom:2px;background:#fff;border-radius:6px;padding:0 4px;margin:0;">' + Agro.escapar(etiqueta) + '</span></div>';
+        }).join("") + (pendientes > 0 ? '<p class="mock-note">' + pendientes + ' foto(s) en proceso de reconocimiento...</p>' : "");
+        if (pendientes > 0) setTimeout(pintarFotos, 2500);
+      });
+    }
+    Agro.proteger({ fase: "app", rol: "agricultor" }).then(function () {
+      b = Agro.borrador();
+      if (!b.precioAhoraPorKg) { location.replace(b.cultivo ? "02-condiciones.html" : "01-registro.html"); return; }
+      return Agro.catalogo().then(function (cat) {
+        var rows = [
+          fila("Producto", Agro.nombreCultivo(cat, b.cultivo)), fila("Volumen", Agro.kg(b.volumenKg)),
+          fila("Ubicación", b.departamento + " · " + b.provincia + " · " + b.distrito), fila("Fecha de cosecha", b.cosecha),
+          fila("Logística", b.logistica === "Envio" ? "Envío al comprador" : "Recojo en chacra"),
+          fila("Precio paga ahora", Agro.soles(b.precioAhoraPorKg) + " / kg"), fila("Precio contraentrega", Agro.soles(b.precioContraentregaPorKg) + " / kg"),
+          fila("Referencia (demo)", Agro.soles(cat[b.cultivo] ? cat[b.cultivo].referenciaMercadoPorKg : 0) + " / kg")
+        ];
+        if (b.capital) rows.push(fila("Capital que necesitas", Agro.soles(b.capital)));
+        document.getElementById("review-rows").innerHTML = rows.join("");
+        document.getElementById("calc-ahora").textContent = Agro.kg(b.volumenKg) + " × " + Agro.soles(b.precioAhoraPorKg);
+        document.getElementById("total-ahora").textContent = "Recibirías: " + Agro.soles(b.volumenKg * Number(b.precioAhoraPorKg));
+        document.getElementById("calc-contra").textContent = Agro.kg(b.volumenKg) + " × " + Agro.soles(b.precioContraentregaPorKg);
+        document.getElementById("total-contra").textContent = "Recibirías: " + Agro.soles(b.volumenKg * Number(b.precioContraentregaPorKg));
+        return pintarFotos();
+      });
+    }).catch(function (e) { err.textContent = Agro.mensaje(e); err.style.display = "block"; });
+
+    document.getElementById("publicar").addEventListener("click", function () {
+      var btn = this;
+      btn.disabled = true;
+      btn.textContent = "Publicando...";
+      err.style.display = "none";
+      var cuerpo = {
+        campaniaId: b.campaniaId, cultivo: b.cultivo, departamento: b.departamento, provincia: b.provincia, distrito: b.distrito,
+        cosecha: b.cosecha, volumenKg: b.volumenKg, logistica: b.logistica, capital: Agro.aDinero(b.capital || 0),
+        precioAhoraPorKg: b.precioAhoraPorKg, precioContraentregaPorKg: b.precioContraentregaPorKg
+      };
+      //202: la cola y el worker la registran; se espera a que aparezca
+      Agro.api("POST", "/campanas", cuerpo).then(function () {
+        btn.textContent = "Registrando...";
+        return Agro.esperar(function () { return Agro.api("GET", "/campanas/" + b.campaniaId); }, 25);
+      }).then(function () {
+        Agro.borrarBorrador();
+        location.replace("campana-publicada.html?id=" + b.campaniaId);
+      }).catch(function (e) {
+        btn.disabled = false;
+        btn.textContent = "Publicar campaña";
+        err.textContent = Agro.mensaje(e);
+        err.style.display = "block";
+      });
+    });
+  </script>
+</body>
+</html>

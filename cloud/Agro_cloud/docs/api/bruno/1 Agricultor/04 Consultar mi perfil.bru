@@ -1,0 +1,58 @@
+meta {
+  name: 04 Consultar mi perfil
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{process.env.BASE_URL}}/perfil
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_AGRICULTOR}}
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Consultar mi perfil
+
+  | | |
+  |---|---|
+  | API | `GET /perfil` |
+  | Token | agricultor |
+  | Microservicio | Identidad y perfil |
+  | Tipo | lectura |
+  | Tabla o servicio | agro-datos |
+  | Operacion | GetItem USER#<sub> / PROFILE |
+  | Esperado | 200 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 200
+
+  ```json
+  {
+    "distrito": "Pisac",
+    "departamento": "Cusco",
+    "provincia": "Calca",
+    "apellidos": "********",
+    "rol": "agricultor",
+    "nombres": "********",
+    "correoEs": "mio",
+    "correo": "nombre@correo.example",
+    "documento": "********",
+    "celular": "9********",
+    "tipoDoc": "DNI",
+    "cultivos": [
+      "papa"
+    ],
+    "sub": "d4284488-10b1-7035-9797-1a365810ca8d",
+    "creadoEn": "2026-10-06T22:06:46Z"
+  }
+  ```
+}

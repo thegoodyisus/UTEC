@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Mis ofertas</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/campana.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <!-- Barra de estado simulada (verde de marca) -->
+    <div class="status-sim status-sim--brand" aria-hidden="true">
+      <span class="status-sim__time">9:41</span>
+      <span class="status-sim__net">4G · 100 %</span>
+    </div>
+
+    <!-- Top bar: Mis ofertas + etiqueta de empresa -->
+    <header class="flow-topbar">
+      <span class="flow-topbar__title">Mis ofertas</span>
+      <span class="flow-topbar__tag" id="tag-empresa">Empresas</span>
+    </header>
+
+    <div class="screen__body">
+      <div id="lista-ofertas" style="display:flex; flex-direction:column; gap: var(--space-4);"><p class="mock-note">Cargando...</p></div>
+    </div>
+
+    <!-- SOLO el botón "Volver al inicio" (lleva al inicio del comprador) -->
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" data-testid="misofertas-volver-button" onclick="goTo('home-comprador.html')">Volver al inicio</button>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/campana.js"></script>
+  <script>
+    var lista = document.getElementById("lista-ofertas");
+    Agro.proteger({ fase: "app", rol: "comprador" }).then(function (ctx) {
+      document.getElementById("tag-empresa").textContent = ctx.perfil.razonSocial;
+      return Promise.all([Agro.listarTodo("/ofertas"), Agro.catalogo()]).then(function (r) {
+        var ofertas = r[0], cat = r[1];
+        lista.innerHTML = ofertas.length ? ofertas.map(function (o) {
+          return '<div class="offer-card"><div class="campaign-card__head"><span class="campaign-card__title">' +
+            Agro.escapar(Agro.nombreCultivo(cat, o.cultivo) + " · " + (o.productorNombre || "")) + '</span>' +
+            '<span class="badge badge--soft">' + o.estado + '</span></div>' +
+            '<div class="review-list" style="background:transparent; padding:0;">' +
+            '<div class="review-list__row"><span>Volumen</span><span>' + Agro.kg(o.volumenKg) + '</span></div>' +
+            '<div class="review-list__row"><span>Precio</span><span>' + Agro.soles(o.precioPorKg) + ' / kg</span></div>' +
+            '<div class="review-list__row"><span>Total</span><span>' + Agro.soles(o.total) + '</span></div>' +
+            '<div class="review-list__row"><span>Modalidad</span><span>' + Agro.escapar(o.modalidad) + '</span></div>' +
+            '<div class="review-list__row"><span>Entrega</span><span>' + o.fechaEntrega + ' · ' + (o.logistica === "Envio" ? "Envío" : "Recojo") + '</span></div>' +
+            '<div class="review-list__row"><span>Zona</span><span>' + Agro.escapar(o.departamento || "") + '</span></div>' +
+            '</div></div>';
+        }).join("") : '<p class="mock-note" style="text-align:left;">Aún no registras ofertas.</p>';
+      });
+    }).catch(function (e) { lista.innerHTML = '<p class="text-field__error">' + Agro.escapar(Agro.mensaje(e)) + '</p>'; });
+  </script>
+</body>
+</html>

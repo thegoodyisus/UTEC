@@ -1,0 +1,61 @@
+meta {
+  name: 12 Consultar padron (empresa por RUC)
+  type: http
+  seq: 12
+}
+
+post {
+  url: {{process.env.BASE_URL}}/padron/consulta
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_COMPRADOR}}
+}
+
+body:json {
+  {
+    "tipoDoc": "RUC",
+    "documento": "{{process.env.RUC_COMPRADOR}}",
+    "uso": "comprador"
+  }
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Consultar padron (empresa por RUC)
+
+  | | |
+  |---|---|
+  | API | `POST /padron/consulta` |
+  | Token | comprador |
+  | Microservicio | Padron y catalogos |
+  | Tipo | escritura directa (transaccion) |
+  | Tabla o servicio | agro-padron-empresas o agro-padron-personas + agro-datos |
+  | Operacion | Scan consistente + TransactWriteItems: Delete del registro del padron + Put USER#<sub> / PADRON#<uso>#<tipoDoc> |
+  | Esperado | 200 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 200
+
+  ```json
+  {
+    "direccionFiscal": "Av. El Puerto 560, Puno",
+    "razonSocial": "Granos del Altiplano SAC",
+    "estado": "Activo · Habido",
+    "actividad": "Comercialización de quinua",
+    "tipoDoc": "RUC",
+    "documento": "********",
+    "demo": true
+  }
+  ```
+}

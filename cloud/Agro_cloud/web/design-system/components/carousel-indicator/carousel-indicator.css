@@ -1,0 +1,33 @@
+/* ============================================================
+   Componente: carousel-indicator
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (pantalla login)
+   Indicador de página tipo barras (una activa + inactivas).
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.carousel-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.carousel-indicator__dot {
+  height: 4px;
+  width: 16px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.5);
+  transition: width 0.2s ease, background 0.2s ease;
+}
+
+.carousel-indicator__dot.is-active {
+  width: 28px;
+  background: var(--color-on-secondary); /* blanco sobre verde */
+}
+
+/* Variante sobre fondo claro */
+.carousel-indicator--on-light .carousel-indicator__dot {
+  background: var(--color-border);
+}
+.carousel-indicator--on-light .carousel-indicator__dot.is-active {
+  background: var(--color-secondary);
+}

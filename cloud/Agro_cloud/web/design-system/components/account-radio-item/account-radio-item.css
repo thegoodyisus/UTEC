@@ -1,0 +1,124 @@
+/* ============================================================
+   Componente: account-radio-item + otp-input
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (elegir cuenta / clave dinámica)
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+/* ---- Account radio item ---- */
+.account-radio {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+/* Active / selected (verde) */
+.account-radio:has(.account-radio__input:checked),
+.account-radio.is-active {
+  border-color: var(--color-success);
+  box-shadow: 0 0 0 1px var(--color-success);
+}
+.account-radio:hover { border-color: var(--color-text-secondary); }
+/* Focused */
+.account-radio:has(.account-radio__input:focus-visible),
+.account-radio.is-focused {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+/* Disabled (gris) */
+.account-radio.is-disabled,
+.account-radio:has(.account-radio__input:disabled) {
+  opacity: var(--opacity-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+  background: var(--color-disabled-bg);
+  border-color: var(--color-disabled-border);
+}
+.account-radio__thumbnail {
+  width: 56px; height: 40px;
+  border-radius: var(--radius-small);
+  background: #6db4e8;
+  flex: 0 0 auto;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.account-radio__thumbnail svg { width: 34px; height: 34px; }
+.account-radio__content { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.account-radio__title { font-family: var(--font-family-base); font-size: var(--font-size-md); font-weight: var(--font-weight-bold); color: var(--color-text); }
+.account-radio__subtitle { font-family: var(--font-family-base); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.account-radio__link { font-size: var(--font-size-sm); color: var(--color-secondary); font-weight: var(--font-weight-medium); }
+
+/* Radio custom */
+.account-radio__input { position: absolute; opacity: 0; width: 0; height: 0; }
+.account-radio__radio {
+  width: 24px; height: 24px;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.15s ease;
+}
+.account-radio__input:checked + .account-radio__radio {
+  border-color: var(--color-success);
+}
+.account-radio__input:checked + .account-radio__radio::after {
+  content: "";
+  width: 14px; height: 14px;
+  border-radius: var(--radius-pill);
+  background: var(--color-success);
+}
+.account-radio__input:focus-visible + .account-radio__radio { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+/* Badge NUEVO */
+.account-radio__badge {
+  display: inline-block;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-xsmall);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  font-size: var(--font-size-label-large);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--letter-spacing-1);
+}
+
+/* ---- OTP input (clave dinámica) ---- */
+.otp-input {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+}
+.otp-input__cell {
+  width: 44px;
+  height: 56px;
+  text-align: center;
+  border: 1.5px solid var(--color-secondary);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  font-family: var(--font-family-titles);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+.otp-input__cell:focus,
+.otp-input__cell.is-focused {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+/* Active: casilla con valor */
+.otp-input__cell.is-active,
+.otp-input__cell:not(:placeholder-shown) { border-color: var(--color-primary); }
+/* Disabled (gris) */
+.otp-input__cell:disabled,
+.otp-input__cell.is-disabled {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-disabled-border);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Acceso biométrico</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <header class="flow-header">
+      <a class="flow-header__back" href="04c-abrir-cuenta.html" aria-label="Volver" data-testid="biometria-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <div class="progress-bar" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"><span class="progress-bar__fill" style="width: 50%"></span></div>
+    </header>
+
+    <div class="screen__body" style="align-items:center; text-align:center;">
+      <div class="hero__art" style="background: var(--color-secondary-container); color: var(--color-secondary);" role="img" aria-label="Ícono de huella">
+        <svg viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><path d="M48 20c16 0 28 12 28 28v10M20 48c0-16 12-28 28-28M28 60V48a20 20 0 0 1 40 0v16M40 72V48a8 8 0 0 1 16 0v20M48 48v24"/></svg>
+      </div>
+      <h1 class="screen__title">Entra más rápido con biometría</h1>
+      <p class="screen__subtitle">Activa el acceso con huella o rostro para ingresar sin escribir tu contraseña. Puedes activarlo después.</p>
+      <p class="mock-note" id="bio-status" role="status"></p>
+    </div>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="bio-activar" data-testid="biometria-activar-button">Activar ahora</button>
+      <button class="btn btn--secondary btn--block" type="button" data-testid="biometria-ahora-no-button" onclick="Agro.completar('05-biometria'); goTo('06-productos.html')">Ahora no</button>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    document.getElementById("bio-activar").addEventListener("click", function () {
+      // Biometría simulada: no invoca ningún mecanismo real del dispositivo.
+      simulatePermission("biometría", function (granted) {
+        var status = document.getElementById("bio-status");
+        status.textContent = granted ? "Biometría activada (simulada). Continuando..." : "No se pudo activar. Puedes continuar sin ella.";
+        setTimeout(function () { Agro.completar("05-biometria"); goTo("06-productos.html"); }, 700);
+      });
+    });
+  </script>
+<script>Agro.proteger({ fase: "alta", paso: "05-biometria" });</script>
+</body>
+</html>

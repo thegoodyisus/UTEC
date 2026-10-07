@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Productos cultivados</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/text-field/text-field.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <header class="flow-header">
+      <a class="flow-header__back" href="05-biometria.html" aria-label="Volver" data-testid="productos-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"><span class="progress-bar__fill" style="width: 60%"></span></div>
+    </header>
+
+    <form class="screen__body" id="form-productos" novalidate>
+      <h1 class="screen__title">¿Qué cultivas?</h1>
+      <p class="screen__subtitle">Elige uno o más productos. Podrás editarlos después.</p>
+
+      <div class="choice-grid" role="group" aria-label="Catálogo de cultivos" id="catalogo">
+        <p class="mock-note">Cargando catálogo...</p>
+      </div>
+
+      <p class="text-field__error" id="productos-error" style="display:none;">Selecciona al menos un producto.</p>
+    </form>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="productos-continuar" data-testid="productos-continuar-button">Continuar</button>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    //el catalogo sale de la base (decision 51); solo se pueden elegir cultivos del catalogo
+    var EMOJI = { papa: "🥔", cafe: "☕", maiz: "🌽", esparrago: "🌿", arroz: "🌾", quinua: "🌱" };
+    var err = document.getElementById("productos-error");
+    Agro.proteger({ fase: "alta", paso: "06-productos" }).then(function (ctx) {
+      var elegidos = ctx.flujo.datos.cultivos || [];
+      return Agro.api("GET", "/catalogo/cultivos").then(function (lista) {
+        document.getElementById("catalogo").innerHTML = lista.map(function (c) {
+          return '<label class="choice-card"><input class="choice-card__input" type="checkbox" name="cultivo" value="' + c.slug + '"' +
+            (elegidos.indexOf(c.slug) >= 0 ? " checked" : "") + ' data-testid="producto-' + c.slug + '" />' +
+            '<span class="choice-card__emoji" aria-hidden="true">' + (EMOJI[c.slug] || "🌱") + '</span>' +
+            '<span class="choice-card__label">' + c.nombre + '</span></label>';
+        }).join("");
+      });
+    }).catch(function (e) {
+      err.textContent = Agro.mensaje(e);
+      err.style.display = "block";
+    });
+
+    document.getElementById("productos-continuar").addEventListener("click", function () {
+      var cultivos = Array.prototype.map.call(document.querySelectorAll('input[name="cultivo"]:checked'), function (el) { return el.value; });
+      if (cultivos.length === 0) {
+        err.textContent = "Selecciona al menos un producto.";
+        err.style.display = "block";
+        return;
+      }
+      err.style.display = "none";
+      Agro.completar("06-productos", { cultivos: cultivos });
+      goTo("07-ubicacion.html");
+    });
+  </script>
+</body>
+</html>

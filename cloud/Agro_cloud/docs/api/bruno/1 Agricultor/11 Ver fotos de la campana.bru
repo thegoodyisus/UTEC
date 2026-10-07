@@ -1,0 +1,41 @@
+meta {
+  name: 11 Ver fotos de la campana
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{process.env.BASE_URL}}/campanas/{{campaniaId}}/fotos
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_AGRICULTOR}}
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Ver fotos de la campana
+
+  | | |
+  |---|---|
+  | API | `GET /campanas/{campaniaId}/fotos` |
+  | Token | agricultor |
+  | Microservicio | Campanas y fotos |
+  | Tipo | lectura |
+  | Tabla o servicio | agro-datos + S3 agro-fotos |
+  | Operacion | Query PK=CAMP#<id>, SK empieza con FOTO#; URL de lectura temporal |
+  | Esperado | 200 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 200
+
+  ```json
+  []
+  ```
+}

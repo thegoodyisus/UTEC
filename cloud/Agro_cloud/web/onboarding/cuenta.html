@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Crea tu cuenta</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/text-field/text-field.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <div class="status-sim" aria-hidden="true">
+      <span class="status-sim__time">9:41</span>
+      <span class="status-sim__net">4G · 100 %</span>
+    </div>
+
+    <header class="enroll-topbar">
+      <a class="flow-header__back" href="00-rol.html" aria-label="Volver" data-testid="cuenta-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <span class="enroll-topbar__title">Crea tu cuenta</span>
+    </header>
+
+    <div class="step-header">
+      <p class="step-header__label">Paso 1 de 3 · Tu cuenta</p>
+      <div class="step-bar" role="progressbar" aria-valuenow="1" aria-valuemin="0" aria-valuemax="3" aria-label="Paso 1 de 3">
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg"></span>
+        <span class="step-bar__seg"></span>
+      </div>
+    </div>
+
+    <form class="screen__body" id="form-cuenta" novalidate>
+      <div>
+        <h1 class="screen__title">Crea tu cuenta</h1>
+        <p class="screen__subtitle">Tu documento será tu usuario. Te enviaremos un código a tu correo para verificarla.</p>
+      </div>
+
+      <div class="field-group">
+        <div id="tipo-wrap" style="display:none;">
+          <label class="text-field__label" style="display:block; margin-bottom: var(--space-2);">Tipo de documento</label>
+          <div class="doc-toggle">
+            <input class="doc-toggle__radio" type="radio" name="tipo-doc" id="tipo-ruc" value="RUC" data-testid="cuenta-tipo-ruc" />
+            <label class="doc-toggle__option" for="tipo-ruc">RUC</label>
+            <input class="doc-toggle__radio" type="radio" name="tipo-doc" id="tipo-dni" value="DNI" checked data-testid="cuenta-tipo-dni" />
+            <label class="doc-toggle__option" for="tipo-dni">DNI</label>
+          </div>
+        </div>
+
+        <div class="text-field" id="doc-field">
+          <label class="text-field__label" for="documento" id="doc-label">DNI</label>
+          <input class="text-field__input" id="documento" type="text" inputmode="numeric" maxlength="8" placeholder="8 números" autocomplete="username" data-testid="cuenta-documento" />
+          <span class="text-field__error"></span>
+        </div>
+
+        <div class="text-field" id="correo-field">
+          <label class="text-field__label" for="correo">Correo</label>
+          <input class="text-field__input" id="correo" type="email" placeholder="tucorreo@ejemplo.com" autocomplete="email" data-testid="cuenta-correo" />
+          <span class="text-field__hint">Llegará un código real de 6 dígitos a este correo.</span>
+          <span class="text-field__error"></span>
+        </div>
+      </div>
+    </form>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="submit" form="form-cuenta" data-testid="cuenta-continuar-button">Continuar</button>
+      <p class="mock-note">Demo académica: usa datos ficticios (Ley 29733). El correo sí debe ser tuyo para recibir el código.</p>
+    </div>
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    var doc = document.getElementById("documento");
+    var correo = document.getElementById("correo");
+    var rol = null;
+
+    function tipoActual() {
+      var t = document.querySelector('input[name="tipo-doc"]:checked');
+      return rol === "comprador" && t ? t.value : "DNI";
+    }
+    function ajustar() {
+      var largo = tipoActual() === "RUC" ? 11 : 8;
+      document.getElementById("doc-label").textContent = tipoActual();
+      doc.maxLength = largo;
+      doc.placeholder = largo + " números";
+      doc.value = doc.value.slice(0, largo);
+    }
+    function marcar(id, ok, texto) {
+      var f = document.getElementById(id);
+      f.classList.toggle("text-field--error", !ok);
+      f.querySelector(".text-field__error").textContent = ok ? "" : texto;
+      return ok;
+    }
+
+    Agro.proteger({ fase: "registro", paso: "cuenta" }).then(function (ctx) {
+      rol = ctx.flujo.rol;
+      //el comprador puede registrarse con ruc o dni; el agricultor solo con dni
+      if (rol === "comprador") {
+        document.getElementById("tipo-wrap").style.display = "";
+        document.getElementById("tipo-ruc").checked = true;
+      }
+      var c = ctx.flujo.cuenta;
+      if (c && !c.registrada) {
+        doc.value = c.documento || "";
+        correo.value = c.correo || "";
+        if (rol === "comprador" && c.tipoDoc) document.getElementById(c.tipoDoc === "RUC" ? "tipo-ruc" : "tipo-dni").checked = true;
+      }
+      ajustar();
+    });
+
+    document.querySelectorAll('input[name="tipo-doc"]').forEach(function (r) { r.addEventListener("change", ajustar); });
+    doc.addEventListener("input", function () { doc.value = doc.value.replace(/[^0-9]/g, "").slice(0, doc.maxLength); });
+
+    document.getElementById("form-cuenta").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var largo = tipoActual() === "RUC" ? 11 : 8;
+      var ok1 = marcar("doc-field", new RegExp("^[0-9]{" + largo + "}$").test(doc.value), "Tu " + tipoActual() + " debe tener " + largo + " números.");
+      var ok2 = marcar("correo-field", /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.value.trim()), "Ingresa un correo válido.");
+      if (!ok1 || !ok2) return;
+      var f = Agro.flujo();
+      f.cuenta = { tipoDoc: tipoActual(), documento: doc.value, correo: correo.value.trim(), registrada: false };
+      Agro.guardarFlujo(f);
+      Agro.completar("cuenta");
+      goTo("04-contrasena.html");
+    });
+  </script>
+</body>
+</html>

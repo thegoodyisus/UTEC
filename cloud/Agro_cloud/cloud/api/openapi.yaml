@@ -1,0 +1,1057 @@
+openapi: 3.1.0
+info:
+  title: AgroCredit API
+  version: 1.6.0
+  description: |
+    Contrato del corte vertical de AgroCredit en AWS (demo de cloud computing).
+    Todos los datos de la demo son ficticios.
+
+    **Convenciones**
+    - Autenticacion: `Authorization: Bearer <ID token de Cognito>`. El rol sale del claim `custom:rol`.
+    - Dinero: texto con 2 decimales (ej. `"1.80"`), en soles. Volumen: kg enteros.
+    - Los identificadores de campana, oferta y foto son UUID generados por el cliente; sirven de clave de idempotencia.
+    - Los `POST` de campana y oferta responden `202`: el registro se procesa por cola. Un `GET` inmediato puede dar `404`; reintentar hasta que aparezca.
+    - Errores en formato `application/problem+json` con `requestId`.
+    - Esta demo no tiene HTTPS ni limite de tasa (limitaciones documentadas).
+servers:
+  - url: /api/v1
+tags:
+  - name: Sistema
+  - name: Perfil
+  - name: Catalogo
+  - name: Campanas
+  - name: Fotos
+  - name: Ofertas
+  - name: Padron
+  - name: Demo
+security:
+  - bearerAuth: []
+paths:
+  /salud:
+    get:
+      tags: [Sistema]
+      summary: Estado del servicio y de la tarea que responde
+      description: |
+        Sin autenticacion. Devuelve el id de la tarea para evidenciar el balanceo entre replicas.
+        v1.5.0: incluye `trafico`, el numero de peticiones por API que atendio esta tarea desde que arranco
+        (panel de resiliencia). Solo metodo y ruta del contrato: nunca identificadores, usuarios ni datos personales.
+      operationId: obtenerSalud
+      security: []
+      responses:
+        "200":
+          description: Servicio operativo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Salud"
+  /demo/caer:
+    post:
+      tags: [Demo]
+      summary: Provoca la caida brusca de la tarea que atiende (solo demo de resiliencia)
+      description: |
+        Solo para la demo de resiliencia del curso. Termina el proceso de la tarea sin apagado ordenado,
+        como un fallo real. Protegido con un token que genera tareas.py en cada despliegue (cabecera X-Demo-Token).
+        Limitacion documentada: viaja por HTTP sin cifrar. No existiria en produccion.
+      operationId: demoCaer
+      security: []
+      parameters:
+        - name: X-Demo-Token
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        "202":
+          description: La tarea terminara en menos de un segundo
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [estado, tareaId]
+                properties:
+                  estado:
+                    type: string
+                    enum: [cayendo]
+                  tareaId:
+                    type: string
+        "403":
+          description: Token invalido
+        "404":
+          description: Demo desactivada (sin token configurado)
+  /config:
+    get:
+      tags: [Sistema]
+      summary: Configuracion publica para el login del navegador
+      description: |
+        Sin autenticacion. Devuelve los identificadores de Cognito que el navegador necesita para el login SRP,
+        para que la misma imagen web funcione en cualquier cuenta. No son secretos.
+      operationId: obtenerConfig
+      security: []
+      responses:
+        "200":
+          description: Configuracion vigente del despliegue
+          headers:
+            Cache-Control:
+              description: Se puede cachear 5 minutos.
+              schema:
+                type: string
+                example: "public, max-age=300"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Config"
+  /perfil:
+    get:
+      tags: [Perfil]
+      summary: Obtener mi perfil
+      operationId: obtenerPerfil
+      x-roles: [agricultor, comprador]
+      responses:
+        "200":
+          description: Perfil del usuario autenticado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Perfil"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+    post:
+      tags: [Perfil]
+      summary: Crear mi perfil
+      description: Sincrono (el login lo necesita de inmediato). El `rol` del cuerpo debe coincidir con el claim `custom:rol` del token.
+      operationId: crearPerfil
+      x-roles: [agricultor, comprador]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PerfilCrear"
+      responses:
+        "201":
+          description: Perfil creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Perfil"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+        "422":
+          $ref: "#/components/responses/Invalido"
+  /catalogo/cultivos:
+    get:
+      tags: [Catalogo]
+      summary: Catalogo de cultivos
+      operationId: listarCultivos
+      x-roles: [agricultor, comprador]
+      responses:
+        "200":
+          description: Cultivos disponibles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Cultivo"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+  /padron/consulta:
+    post:
+      tags: [Padron]
+      summary: Consulta ficticia de documento (simula RENIEC o SUNAT)
+      description: |
+        Solo compradores. El usuario escribe su RUC o DNI y el servicio devuelve datos de un padron de demostracion
+        (10 empresas y 10 personas ficticias en DynamoDB). Cada registro se entrega una sola vez y se borra del padron;
+        el usuario conserva su asignacion por `uso` y `tipoDoc` (repetir la consulta devuelve lo mismo).
+        Cuando el padron se agota responde `503` (sistema no disponible).
+      operationId: consultarPadron
+      x-roles: [comprador]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PadronConsulta"
+      responses:
+        "200":
+          description: Datos ficticios asignados al usuario
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PadronResultado"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "422":
+          $ref: "#/components/responses/Invalido"
+        "503":
+          $ref: "#/components/responses/NoDisponible"
+  /cuentas-demo:
+    get:
+      tags: [Padron]
+      summary: Cuentas de cargo de prueba
+      description: Las mismas 3 cuentas ficticias para todo comprador; viven en DynamoDB y no se consumen.
+      operationId: listarCuentasDemo
+      x-roles: [comprador]
+      responses:
+        "200":
+          description: Cuentas de prueba
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CuentaDemo"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+  /campanas:
+    get:
+      tags: [Campanas]
+      summary: Listar mis campanas
+      operationId: listarMisCampanas
+      x-roles: [agricultor]
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limite"
+      responses:
+        "200":
+          description: Campanas del agricultor, de la mas reciente a la mas antigua
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListaCampanas"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+    post:
+      tags: [Campanas]
+      summary: Crear y publicar una campana
+      description: |
+        Crea la campana ya publicada (los pasos previos del formulario son solo del cliente).
+        Idempotente: repetir el mismo `campaniaId` con el mismo cuerpo devuelve `202` sin duplicar;
+        con otro propietario devuelve `409`.
+      operationId: crearCampana
+      x-roles: [agricultor]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampanaCrear"
+      responses:
+        "202":
+          $ref: "#/components/responses/Aceptado"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+        "422":
+          $ref: "#/components/responses/Invalido"
+  /campanas/publicadas:
+    get:
+      tags: [Campanas]
+      summary: Listar campanas publicadas por cultivo y departamento
+      operationId: listarCampanasPublicadas
+      x-roles: [comprador]
+      parameters:
+        - name: cultivo
+          in: query
+          required: true
+          schema:
+            $ref: "#/components/schemas/CultivoSlug"
+        - name: departamento
+          in: query
+          required: true
+          schema:
+            type: string
+            examples: [Cusco]
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limite"
+      responses:
+        "200":
+          description: Campanas publicadas, por fecha de cosecha. No incluye el capital que necesita el agricultor.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListaCampanasPublicas"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "422":
+          $ref: "#/components/responses/Invalido"
+  /campanas/{campaniaId}:
+    get:
+      tags: [Campanas]
+      summary: Obtener una campana
+      description: El dueno recibe `Campana` completa; un comprador recibe `CampanaPublica`, solo si esta publicada.
+      operationId: obtenerCampana
+      x-roles: [agricultor, comprador]
+      parameters:
+        - $ref: "#/components/parameters/CampaniaId"
+      responses:
+        "200":
+          description: Campana
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Campana"
+                  - $ref: "#/components/schemas/CampanaPublica"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+    patch:
+      tags: [Campanas]
+      summary: Actualizar una campana (volumen y precios de lo que se vende)
+      description: |
+        Solo el agricultor dueno. Envia al menos uno de los campos; los demas no cambian.
+        Escritura directa (UpdateItem condicional en `agro-datos`), no por cola: responde la campana ya actualizada.
+        Solo se permite mientras la campana **no tenga ofertas** (`numeroOfertas = 0`); con ofertas responde `409`, para no cambiar las condiciones de una oferta ya enviada.
+        Cultivo, ubicacion y cosecha no se editan (cambiarian el indice de busqueda del comprador).
+      operationId: actualizarCampana
+      x-roles: [agricultor]
+      parameters:
+        - $ref: "#/components/parameters/CampaniaId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CampanaActualizar"
+      responses:
+        "200":
+          description: Campana actualizada
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campana"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+        "422":
+          $ref: "#/components/responses/Invalido"
+  /campanas/{campaniaId}/fotos/url:
+    post:
+      tags: [Fotos]
+      summary: Pedir URL prefirmada para subir una foto
+      description: |
+        Devuelve una URL prefirmada (POST) para subir directo a S3 en `entrada/<sub>/`, con tipo y tamano limitados
+        (maximo 5 MB, jpeg o png). La campana puede no existir todavia: la foto se asocia al publicarse y las fotos
+        cuyo propietario no coincide con el de la campana se ignoran. El archivo se etiqueta y renombra de forma asincrona.
+      operationId: pedirUrlFoto
+      x-roles: [agricultor]
+      parameters:
+        - $ref: "#/components/parameters/CampaniaId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FotoUrlSolicitud"
+      responses:
+        "200":
+          description: URL prefirmada de subida
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FotoUrl"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "422":
+          $ref: "#/components/responses/Invalido"
+  /campanas/{campaniaId}/fotos:
+    get:
+      tags: [Fotos]
+      summary: Listar las fotos de una campana
+      description: Incluye URL de lectura temporal solo cuando la foto ya fue procesada. Un comprador solo ve fotos de campanas publicadas.
+      operationId: listarFotos
+      x-roles: [agricultor, comprador]
+      parameters:
+        - $ref: "#/components/parameters/CampaniaId"
+      responses:
+        "200":
+          description: Fotos de la campana
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Foto"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+  /campanas/{campaniaId}/ofertas:
+    get:
+      tags: [Ofertas]
+      summary: Listar ofertas de una campana
+      description: El agricultor dueno ve todas; un comprador ve solo las suyas.
+      operationId: listarOfertasDeCampana
+      x-roles: [agricultor, comprador]
+      parameters:
+        - $ref: "#/components/parameters/CampaniaId"
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limite"
+      responses:
+        "200":
+          description: Ofertas
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListaOfertas"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+    post:
+      tags: [Ofertas]
+      summary: Crear una oferta sobre una campana publicada
+      description: |
+        Solo compradores, solo sobre campanas publicadas y nunca sobre la propia.
+        El volumen no puede superar el de la campana. Idempotente por `ofertaId`.
+        El total lo calcula el servidor.
+      operationId: crearOferta
+      x-roles: [comprador]
+      parameters:
+        - $ref: "#/components/parameters/CampaniaId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OfertaCrear"
+      responses:
+        "202":
+          $ref: "#/components/responses/Aceptado"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+        "404":
+          $ref: "#/components/responses/NoEncontrado"
+        "409":
+          $ref: "#/components/responses/Conflicto"
+        "422":
+          $ref: "#/components/responses/Invalido"
+  /ofertas:
+    get:
+      tags: [Ofertas]
+      summary: Listar mis ofertas
+      operationId: listarMisOfertas
+      x-roles: [comprador]
+      parameters:
+        - $ref: "#/components/parameters/Cursor"
+        - $ref: "#/components/parameters/Limite"
+      responses:
+        "200":
+          description: Ofertas del comprador, de la mas reciente a la mas antigua
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListaOfertas"
+        "401":
+          $ref: "#/components/responses/NoAutenticado"
+        "403":
+          $ref: "#/components/responses/SinPermiso"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: ID token de Amazon Cognito (se valida firma, audiencia y vencimiento).
+  parameters:
+    CampaniaId:
+      name: campaniaId
+      in: path
+      required: true
+      schema:
+        $ref: "#/components/schemas/Uuid"
+    Cursor:
+      name: cursor
+      in: query
+      required: false
+      description: Valor de `siguienteCursor` de la respuesta anterior.
+      schema:
+        type: string
+    Limite:
+      name: limite
+      in: query
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 50
+        default: 20
+  responses:
+    Aceptado:
+      description: Recibido y encolado. Consultar el recurso hasta que deje de dar 404.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Aceptado"
+    NoAutenticado:
+      description: Token ausente, vencido o invalido
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+    SinPermiso:
+      description: El rol o el propietario no permiten la operacion
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+    NoEncontrado:
+      description: No existe, aun no se procesa o no es visible para el rol
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+    Conflicto:
+      description: El identificador ya existe con otro propietario o con otro contenido
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+    Invalido:
+      description: Datos que no cumplen el contrato o las reglas de negocio
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+    NoDisponible:
+      description: Sistema no disponible (por ejemplo, padron de demostracion agotado)
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problema"
+  schemas:
+    Uuid:
+      type: string
+      format: uuid
+      examples: ["6f1c2a0e-1b7d-4a53-9c1e-2f0d3a7b9e11"]
+    Dinero:
+      type: string
+      pattern: '^[0-9]{1,9}\.[0-9]{2}$'
+      description: Soles con exactamente 2 decimales.
+      examples: ["1.80"]
+    VolumenKg:
+      type: integer
+      minimum: 1
+      maximum: 10000000
+      examples: [2000]
+    CultivoSlug:
+      type: string
+      pattern: '^[a-z]+$'
+      description: Slug del catalogo de cultivos.
+      examples: [papa]
+    Logistica:
+      type: string
+      enum: [Recojo, Envio]
+    Modalidad:
+      type: string
+      enum: [Pago ahora, Pago contraentrega]
+    Salud:
+      type: object
+      required: [estado, tareaId]
+      properties:
+        estado:
+          type: string
+          enum: [ok]
+        tareaId:
+          type: string
+          description: Identificador de la tarea o contenedor que respondio.
+        zona:
+          type: string
+          description: Zona de disponibilidad donde corre el contenedor (ej. us-east-1a).
+        version:
+          type: string
+        trafico:
+          $ref: "#/components/schemas/Trafico"
+    Trafico:
+      type: object
+      description: Contador en memoria de la tarea; se reinicia si la tarea se reemplaza.
+      required: [desde, peticiones]
+      properties:
+        desde:
+          type: string
+          format: date-time
+          description: Hora UTC en que arranco el contador (inicio de la tarea).
+        peticiones:
+          type: object
+          description: Clave `METODO ruta` del contrato (ej. `POST /campanas`, `GET /campanas/{campaniaId}`); valor, numero de peticiones. `otras` agrupa rutas inexistentes.
+          additionalProperties:
+            type: integer
+            minimum: 0
+          example:
+            "GET /salud": 120
+            "POST /campanas": 2
+            "GET /campanas/{campaniaId}": 5
+    Config:
+      type: object
+      required: [region, userPoolId, clientId]
+      additionalProperties: false
+      properties:
+        region:
+          type: string
+          example: us-east-1
+        userPoolId:
+          type: string
+          pattern: "^[a-z]{2}-[a-z]+-[0-9]_[A-Za-z0-9]+$"
+          example: us-east-1_AbCdEfGhI
+        clientId:
+          type: string
+          description: Cliente publico de Cognito (sin secreto).
+          example: 1example23456789abcdefghij
+    Aceptado:
+      type: object
+      required: [recursoId, estado, consultar]
+      properties:
+        recursoId:
+          $ref: "#/components/schemas/Uuid"
+        estado:
+          type: string
+          enum: [PROCESANDO]
+        consultar:
+          type: string
+          description: Ruta para consultar el recurso.
+          examples: ["/api/v1/campanas/6f1c2a0e-1b7d-4a53-9c1e-2f0d3a7b9e11"]
+    Problema:
+      type: object
+      required: [title, status]
+      properties:
+        type:
+          type: string
+          default: about:blank
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        instance:
+          type: string
+        requestId:
+          type: string
+    Cultivo:
+      type: object
+      required: [slug, nombre, referenciaMercadoPorKg]
+      properties:
+        slug:
+          $ref: "#/components/schemas/CultivoSlug"
+        nombre:
+          type: string
+          examples: [Papa]
+        referenciaMercadoPorKg:
+          $ref: "#/components/schemas/Dinero"
+          description: Precio referencial de demostracion definido en el catalogo. No es un dato de mercado real.
+    PerfilAgricultorCrear:
+      type: object
+      required: [rol, nombres, apellidos, tipoDoc, documento, celular, cultivos, departamento, provincia, distrito]
+      properties:
+        rol:
+          type: string
+          enum: [agricultor]
+        nombres:
+          type: string
+          minLength: 1
+        apellidos:
+          type: string
+          minLength: 1
+        tipoDoc:
+          type: string
+          enum: [DNI]
+        documento:
+          type: string
+          pattern: '^[0-9]{8}$'
+          description: Debe ser el usuario de la cuenta de Cognito.
+        celular:
+          type: string
+          pattern: '^[0-9]{9}$'
+        correo:
+          type: string
+          format: email
+          description: Opcional.
+        correoEs:
+          type: string
+          enum: [mio, familiar]
+        cultivos:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/CultivoSlug"
+        departamento:
+          type: string
+        provincia:
+          type: string
+        distrito:
+          type: string
+    PerfilCompradorCrear:
+      type: object
+      description: |
+        v1.4.0: el comprador puede registrarse con RUC (empresa) o DNI (persona). Con DNI, razonSocial es el nombre de la persona.
+        El documento debe ser el usuario de la cuenta de Cognito.
+      required: [rol, tipoDoc, documento, razonSocial, contactoNombre, contactoCelular]
+      properties:
+        rol:
+          type: string
+          enum: [comprador]
+        tipoDoc:
+          type: string
+          enum: [RUC, DNI]
+        documento:
+          type: string
+          pattern: '^([0-9]{8}|[0-9]{11})$'
+          description: 11 numeros si es RUC, 8 si es DNI.
+        razonSocial:
+          type: string
+          minLength: 1
+        contactoNombre:
+          type: string
+          minLength: 1
+        contactoCelular:
+          type: string
+          pattern: '^[0-9]{9}$'
+        contactoCorreo:
+          type: string
+          format: email
+        contactoCargo:
+          type: string
+        cuentaCargoId:
+          type: string
+          description: Id de una cuenta de GET /cuentas-demo.
+        modalidadPago:
+          type: string
+          enum: [recibir, confirming]
+    PerfilCrear:
+      oneOf:
+        - $ref: "#/components/schemas/PerfilAgricultorCrear"
+        - $ref: "#/components/schemas/PerfilCompradorCrear"
+      discriminator:
+        propertyName: rol
+        mapping:
+          agricultor: "#/components/schemas/PerfilAgricultorCrear"
+          comprador: "#/components/schemas/PerfilCompradorCrear"
+    PerfilAgricultor:
+      allOf:
+        - $ref: "#/components/schemas/PerfilAgricultorCrear"
+        - type: object
+          required: [sub, creadoEn]
+          properties:
+            sub:
+              $ref: "#/components/schemas/Uuid"
+            creadoEn:
+              type: string
+              format: date-time
+    PerfilComprador:
+      allOf:
+        - $ref: "#/components/schemas/PerfilCompradorCrear"
+        - type: object
+          required: [sub, creadoEn]
+          properties:
+            sub:
+              $ref: "#/components/schemas/Uuid"
+            creadoEn:
+              type: string
+              format: date-time
+    Perfil:
+      oneOf:
+        - $ref: "#/components/schemas/PerfilAgricultor"
+        - $ref: "#/components/schemas/PerfilComprador"
+      discriminator:
+        propertyName: rol
+        mapping:
+          agricultor: "#/components/schemas/PerfilAgricultor"
+          comprador: "#/components/schemas/PerfilComprador"
+    CampanaCrear:
+      type: object
+      required: [campaniaId, cultivo, departamento, provincia, distrito, cosecha, volumenKg, logistica, capital, precioAhoraPorKg, precioContraentregaPorKg]
+      properties:
+        campaniaId:
+          $ref: "#/components/schemas/Uuid"
+        cultivo:
+          $ref: "#/components/schemas/CultivoSlug"
+        departamento:
+          type: string
+        provincia:
+          type: string
+        distrito:
+          type: string
+        cosecha:
+          type: string
+          format: date
+          description: Debe ser una fecha futura.
+        volumenKg:
+          $ref: "#/components/schemas/VolumenKg"
+        logistica:
+          $ref: "#/components/schemas/Logistica"
+        capital:
+          $ref: "#/components/schemas/Dinero"
+        precioAhoraPorKg:
+          $ref: "#/components/schemas/Dinero"
+        precioContraentregaPorKg:
+          $ref: "#/components/schemas/Dinero"
+    CampanaActualizar:
+      type: object
+      description: Campos editables de una campana sin ofertas. Al menos uno.
+      minProperties: 1
+      additionalProperties: false
+      properties:
+        volumenKg:
+          $ref: "#/components/schemas/VolumenKg"
+        capital:
+          $ref: "#/components/schemas/Dinero"
+        precioAhoraPorKg:
+          $ref: "#/components/schemas/Dinero"
+        precioContraentregaPorKg:
+          $ref: "#/components/schemas/Dinero"
+    Campana:
+      allOf:
+        - $ref: "#/components/schemas/CampanaCrear"
+        - type: object
+          required: [propietarioSub, productorNombre, referenciaMercadoPorKg, estado, creadoEn]
+          properties:
+            propietarioSub:
+              $ref: "#/components/schemas/Uuid"
+            productorNombre:
+              type: string
+            referenciaMercadoPorKg:
+              $ref: "#/components/schemas/Dinero"
+            estado:
+              type: string
+              enum: [PUBLICADA]
+            numeroOfertas:
+              type: integer
+              minimum: 0
+              description: Ofertas recibidas; lo actualiza el worker al registrar cada oferta.
+            creadoEn:
+              type: string
+              format: date-time
+    CampanaPublica:
+      type: object
+      description: Vista para compradores. No incluye capital, documento ni celular del productor.
+      required: [campaniaId, productorNombre, cultivo, departamento, provincia, distrito, cosecha, volumenKg, logistica, precioAhoraPorKg, precioContraentregaPorKg, referenciaMercadoPorKg]
+      properties:
+        campaniaId:
+          $ref: "#/components/schemas/Uuid"
+        productorNombre:
+          type: string
+        cultivo:
+          $ref: "#/components/schemas/CultivoSlug"
+        departamento:
+          type: string
+        provincia:
+          type: string
+        distrito:
+          type: string
+        cosecha:
+          type: string
+          format: date
+        volumenKg:
+          $ref: "#/components/schemas/VolumenKg"
+        logistica:
+          $ref: "#/components/schemas/Logistica"
+        precioAhoraPorKg:
+          $ref: "#/components/schemas/Dinero"
+        precioContraentregaPorKg:
+          $ref: "#/components/schemas/Dinero"
+        referenciaMercadoPorKg:
+          $ref: "#/components/schemas/Dinero"
+    ListaCampanas:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Campana"
+        siguienteCursor:
+          type: [string, "null"]
+    ListaCampanasPublicas:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CampanaPublica"
+        siguienteCursor:
+          type: [string, "null"]
+    FotoUrlSolicitud:
+      type: object
+      required: [fotoId, tipoContenido, tamanoBytes]
+      properties:
+        fotoId:
+          $ref: "#/components/schemas/Uuid"
+        tipoContenido:
+          type: string
+          enum: [image/jpeg, image/png]
+        tamanoBytes:
+          type: integer
+          minimum: 1
+          maximum: 5242880
+    FotoUrl:
+      type: object
+      required: [fotoId, url, campos, expiraEn]
+      properties:
+        fotoId:
+          $ref: "#/components/schemas/Uuid"
+        url:
+          type: string
+          format: uri
+        campos:
+          type: object
+          description: Campos del formulario que se envian junto al archivo, tal cual.
+          additionalProperties:
+            type: string
+        expiraEn:
+          type: string
+          format: date-time
+    Foto:
+      type: object
+      required: [fotoId, campaniaId, estado, creadoEn]
+      properties:
+        fotoId:
+          $ref: "#/components/schemas/Uuid"
+        campaniaId:
+          $ref: "#/components/schemas/Uuid"
+        estado:
+          type: string
+          enum: [SUBIDA, ETIQUETADA, SIN_ETIQUETA, ERROR]
+        label:
+          type: string
+          description: Slug del catalogo o `sin-etiqueta`.
+        url:
+          type: [string, "null"]
+          format: uri
+          description: URL de lectura temporal; solo cuando la foto ya fue procesada.
+        creadoEn:
+          type: string
+          format: date-time
+    OfertaCrear:
+      type: object
+      required: [ofertaId, volumenKg, precioPorKg, modalidad, logistica, fechaEntrega]
+      properties:
+        ofertaId:
+          $ref: "#/components/schemas/Uuid"
+        volumenKg:
+          $ref: "#/components/schemas/VolumenKg"
+        precioPorKg:
+          $ref: "#/components/schemas/Dinero"
+        modalidad:
+          $ref: "#/components/schemas/Modalidad"
+        logistica:
+          $ref: "#/components/schemas/Logistica"
+        fechaEntrega:
+          type: string
+          format: date
+    Oferta:
+      allOf:
+        - $ref: "#/components/schemas/OfertaCrear"
+        - type: object
+          required: [campaniaId, compradorNombre, total, estado, creadoEn]
+          properties:
+            campaniaId:
+              $ref: "#/components/schemas/Uuid"
+            compradorNombre:
+              type: string
+            total:
+              $ref: "#/components/schemas/Dinero"
+            estado:
+              type: string
+              enum: [PENDIENTE]
+            creadoEn:
+              type: string
+              format: date-time
+            cultivo:
+              $ref: "#/components/schemas/CultivoSlug"
+            productorNombre:
+              type: string
+            departamento:
+              type: string
+    ListaOfertas:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Oferta"
+        siguienteCursor:
+          type: [string, "null"]
+    PadronConsulta:
+      type: object
+      required: [tipoDoc, documento, uso]
+      properties:
+        tipoDoc:
+          type: string
+          enum: [RUC, DNI]
+        documento:
+          type: string
+          pattern: '^([0-9]{8}|[0-9]{11})$'
+          description: 11 numeros si es RUC, 8 si es DNI. Lo escribe el usuario; no se valida contra un registro real.
+        uso:
+          type: string
+          enum: [comprador, representante]
+          description: comprador = pantalla de empresa; representante = pantalla de representante.
+    PadronResultado:
+      type: object
+      required: [tipoDoc, documento, demo]
+      properties:
+        tipoDoc:
+          type: string
+          enum: [RUC, DNI]
+        documento:
+          type: string
+        demo:
+          type: boolean
+          description: Siempre true; los datos son ficticios.
+        razonSocial:
+          type: string
+        direccionFiscal:
+          type: string
+        actividad:
+          type: string
+        estado:
+          type: string
+          examples: ["Activo · Habido"]
+        nombres:
+          type: string
+        apellidos:
+          type: string
+        celular:
+          type: string
+        correo:
+          type: string
+    CuentaDemo:
+      type: object
+      required: [id, titulo, descripcion]
+      properties:
+        id:
+          type: string
+        titulo:
+          type: string
+        descripcion:
+          type: string

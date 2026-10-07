@@ -1,0 +1,1113 @@
+/* ============================================================
+   Prototipo AgroCredit — Onboarding del Agricultor
+   Estilos de LAYOUT del prototipo (contenedor móvil, secciones).
+   NO redefine tokens: consume design-system/tokens/tokens.css
+   y design-system/styles/base.css.
+   ============================================================ */
+
+/* Escritorio: fondo neutro que centra el mockup del celular */
+body {
+  background: #c7ccd4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: var(--space-6) 0;
+}
+
+/* Mockup de celular: 375 x 800, marco, sombra y scroll interno */
+.screen {
+  display: flex;
+  flex-direction: column;
+  box-sizing: content-box;   /* 375x800 = área de pantalla; el marco va por fuera */
+  width: 375px;
+  height: 800px;
+  max-width: 100%;
+  margin: 0 auto;
+  background: var(--color-surface);
+  border-radius: 40px;
+  border: 10px solid #111418;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
+.screen::-webkit-scrollbar { width: 0; background: transparent; }
+
+/* Variante con hero verde (bienvenida/éxito) */
+.screen--brand { background: var(--color-secondary); }
+
+/* Cuerpo scrollable de la pantalla */
+.screen__body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+}
+
+/* Encabezado de texto de pantalla */
+.screen__title {
+  margin: 0;
+  font-family: var(--font-family-titles);
+  font-size: var(--font-size-heading-large);
+  line-height: var(--line-height-heading);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+.screen__subtitle {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+/* Footer con acción principal fija abajo */
+.screen__footer {
+  padding: var(--space-4) var(--space-6) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  background: var(--color-surface);
+}
+
+/* Sheet inferior redondeado (sobre fondo verde) */
+.sheet {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6) var(--space-6) var(--space-8);
+  background: var(--color-surface);
+  border-top-left-radius: var(--radius-3xlarge);
+  border-top-right-radius: var(--radius-3xlarge);
+}
+
+/* Hero (bienvenida) */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-8) var(--space-6);
+  text-align: center;
+}
+.hero__title {
+  margin: 0;
+  max-width: 24ch;
+  font-family: var(--font-family-titles);
+  font-size: var(--font-size-xl);
+  line-height: 1.2;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-on-secondary);
+}
+.hero__lead {
+  margin: 0;
+  max-width: 30ch;
+  font-size: var(--font-size-md);
+  color: var(--color-on-secondary);
+  opacity: 0.95;
+}
+.hero__art {
+  width: 150px;
+  height: 150px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.hero__art svg { width: 82px; height: 82px; }
+
+/* Lista de beneficios (usa .benefit-item del design-system) */
+.benefit-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
+}
+
+/* Grupo de campos */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.field-row {
+  display: flex;
+  gap: var(--space-3);
+}
+.field-row > * { flex: 1 1 0; }
+
+/* Segmento DNI/RUC y selección tipo chips */
+.doc-toggle { display: flex; gap: var(--space-3); }
+.doc-toggle__option {
+  flex: 1 1 0;
+  padding: var(--space-3);
+  text-align: center;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.doc-toggle__radio { position: absolute; opacity: 0; width: 0; height: 0; }
+.doc-toggle__radio:checked + .doc-toggle__option {
+  border-color: var(--color-secondary);
+  color: var(--color-on-secondary-container);
+  background: var(--color-secondary-container);
+}
+.doc-toggle__radio:focus-visible + .doc-toggle__option {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Reglas de contraseña */
+.rule-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.rule-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+.rule-item__icon {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: var(--radius-pill);
+  background: var(--color-disabled-bg); color: var(--color-disabled-text);
+  flex: 0 0 auto;
+}
+.rule-item__icon svg { width: 12px; height: 12px; }
+.rule-item.is-valid { color: var(--color-success); }
+.rule-item.is-valid .rule-item__icon { background: var(--color-success-container); color: var(--color-success); }
+
+/* Catálogo de productos / permisos: rejilla de tarjetas seleccionables */
+.choice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+.choice-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.choice-card__emoji { font-size: 32px; line-height: 1; }
+.choice-card__label { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-text); }
+.choice-card__input { position: absolute; opacity: 0; width: 0; height: 0; }
+.choice-card__input:checked + .choice-card__label,
+.choice-card:has(.choice-card__input:checked) {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 1px var(--color-secondary);
+}
+.choice-card:has(.choice-card__input:checked) { background: var(--color-secondary-container); }
+.choice-card:has(.choice-card__input:focus-visible) { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+/* Tarjeta de permiso (fila con ícono + texto + acciones) */
+.permission-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+}
+.permission-card__head { display: flex; align-items: center; gap: var(--space-3); }
+.permission-card__actions { display: flex; gap: var(--space-3); }
+.permission-card__actions .btn { flex: 1 1 0; padding: var(--space-3) var(--space-4); }
+.permission-card.is-granted { border-color: var(--color-success); background: var(--color-success-container); }
+
+/* Enlaces de texto (reenviar / cambiar número / manual) */
+.text-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-secondary);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+.text-link:hover { text-decoration: underline; }
+
+/* Mensaje de éxito centrado */
+.success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+  padding: var(--space-10) var(--space-6);
+  flex: 1 1 auto;
+  justify-content: center;
+}
+.success__icon {
+  width: 96px; height: 96px; border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  display: flex; align-items: center; justify-content: center;
+}
+.success__icon svg { width: 56px; height: 56px; }
+.success__title {
+  margin: 0;
+  font-family: var(--font-family-titles);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-on-secondary);
+}
+.success__text { margin: 0; color: var(--color-on-secondary); opacity: 0.95; max-width: 28ch; }
+
+.summary-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  background: var(--color-surface);
+  border-radius: var(--radius-large);
+  padding: var(--space-4);
+}
+.summary-list__row { display: flex; justify-content: space-between; gap: var(--space-4); font-size: var(--font-size-sm); }
+.summary-list__row span:first-child { color: var(--color-text-secondary); }
+.summary-list__row span:last-child { color: var(--color-text); font-weight: var(--font-weight-medium); }
+
+/* Aviso de prototipo */
+.mock-note {
+  font-size: var(--font-size-body-small);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+/* Índice del prototipo */
+.index-list { display: flex; flex-direction: column; gap: var(--space-3); }
+.index-link {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+}
+.index-link__num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: var(--radius-pill);
+  background: var(--color-primary); color: var(--color-on-primary);
+  font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);
+  flex: 0 0 auto;
+}
+.index-link:hover { border-color: var(--color-secondary); }
+
+/* ---- Bienvenida multilingüe + selector de idioma ---- */
+.welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6) var(--space-6);
+  text-align: center;
+  flex: 1 1 auto;
+  /* Anclar el contenido arriba (posición fija) para que el bloque de marca
+     quede a la MISMA altura en 00-rol y en ambas bienvenidas, sin importar
+     el tamaño de la sheet inferior. */
+  justify-content: flex-start;
+}
+.welcome__greetings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  color: var(--color-on-secondary);
+}
+.welcome__greeting { margin: 0; font-size: var(--font-size-md); opacity: 0.9; }
+.welcome__greeting--main {
+  font-family: var(--font-family-titles);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  opacity: 0.95;
+}
+/* Marca destacada en el saludo (Bienvenido a → AgroCredit) */
+.welcome__brand {
+  margin: 0;
+  font-family: var(--font-family-titles);
+  font-size: 34px;
+  line-height: 1.1;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.3px;
+  color: var(--color-on-secondary);
+}
+.welcome__lead { margin: 0; max-width: 32ch; color: var(--color-on-secondary); opacity: 0.95; }
+
+.lang-picker {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.lang-picker__label {
+  width: 100%;
+  text-align: center;
+  color: var(--color-on-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-1);
+  opacity: 0.9;
+}
+.lang-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  border: 1.5px solid rgba(255,255,255,0.6);
+  background: transparent;
+  color: var(--color-on-secondary);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+}
+.lang-chip.is-selected {
+  background: var(--color-on-secondary);
+  color: var(--color-secondary);
+  border-color: var(--color-on-secondary);
+}
+.lang-chip:focus-visible { outline: 2px solid var(--color-on-secondary); outline-offset: 2px; }
+
+.brand-endorsement {
+  text-align: center;
+  padding: var(--space-4) var(--space-6) var(--space-8);
+  color: var(--color-on-secondary);
+}
+.brand-endorsement__text { font-size: var(--font-size-sm); opacity: 0.9; margin: 0 0 var(--space-2); }
+.brand-endorsement__logo {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  font-family: var(--font-family-titles); font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);
+}
+.brand-endorsement__logo svg { width: 22px; height: 22px; }
+
+/* ---- Teclado numérico dinámico (contraseña) ---- */
+.pin-display {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: center;
+  margin: var(--space-4) 0;
+}
+.pin-dot {
+  width: 18px; height: 18px;
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--color-border);
+  background: var(--color-surface);
+}
+.pin-dot.is-filled { background: var(--color-secondary); border-color: var(--color-secondary); }
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+  max-width: 300px;
+  margin: 0 auto;
+  width: 100%;
+}
+.keypad__key {
+  padding: var(--space-4);
+  border: none;
+  border-radius: var(--radius-large);
+  background: var(--color-surface-container-low);
+  font-family: var(--font-family-titles);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  cursor: pointer;
+}
+.keypad__key:active { transform: scale(0.97); background: var(--color-secondary-container); }
+.keypad__key--action { background: transparent; font-size: var(--font-size-md); color: var(--color-secondary); }
+.keypad__key:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+/* ---- Switch / toggle de permisos (compuesto con tokens del design-system) ---- */
+.permission-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+}
+.permission-row__icon {
+  width: 40px; height: 40px; flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--color-secondary);
+}
+.permission-row__icon svg { width: 28px; height: 28px; }
+.permission-row__text { flex: 1 1 auto; min-width: 0; }
+.permission-row__title { margin: 0; font-weight: var(--font-weight-bold); color: var(--color-text); }
+.permission-row__desc { margin: 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+
+.switch { position: relative; display: inline-flex; flex: 0 0 auto; }
+.switch__input { position: absolute; opacity: 0; width: 0; height: 0; }
+.switch__track {
+  width: 48px; height: 28px; border-radius: var(--radius-pill);
+  background: var(--color-disabled-border);
+  transition: background 0.2s ease;
+  display: inline-flex; align-items: center; padding: 3px;
+}
+.switch__thumb {
+  width: 22px; height: 22px; border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease;
+}
+.switch__input:checked + .switch__track { background: var(--color-secondary); }
+.switch__input:checked + .switch__track .switch__thumb { transform: translateX(20px); }
+.switch__input:focus-visible + .switch__track { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+/* ---- Ajustes de espaciado pantalla 01-bienvenida ---- */
+/* 48px entre el logo y el selector de idioma */
+.lang-picker--spaced { margin-top: 48px; }
+/* 48px entre las descripciones (beneficios) y el botón Empezar */
+.btn--spaced-top { margin-top: 48px; }
+/* Bottom sheet posicionado más abajo (hero ocupa más alto) */
+.sheet--lower { flex: 0 0 auto; margin-top: auto; }
+
+/* ============================================================
+   Logo AgroCredit (lockup de marca)
+   ============================================================ */
+.brand-lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+.brand-lockup__wordmark {
+  margin: 0;
+  font-family: var(--font-family-titles);
+  font-size: 40px;
+  line-height: 1;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.5px;
+  display: inline-flex;
+  align-items: flex-start;
+}
+.brand-lockup__agro { color: var(--color-primary); }      
+.brand-lockup__credit { color: var(--color-secondary); }  
+.brand-lockup__leaf { width: 18px; height: 18px; margin-left: 1px; margin-top: 4px; color: var(--color-secondary); }
+.brand-lockup__leaf svg { width: 100%; height: 100%; display: block; }
+
+
+/* ---- Variante sobre fondo de marca ---- */
+.brand-lockup--on-green .brand-lockup__agro,
+.brand-lockup--on-green .brand-lockup__credit,
+.brand-lockup--on-green .brand-lockup__leaf { color: #ffffff; }
+.brand-lockup--on-green .brand-lockup__backing,
+
+/* ============================================================
+   Isotipo AgroCredit (solo la hojita) — para espacios donde NO
+   cabe el logo completo. Por defecto verde; --on-green en blanco.
+   ============================================================ */
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-pill);
+  background: var(--color-secondary-container);
+  color: var(--color-secondary);
+  flex: 0 0 auto;
+}
+.brand-mark svg { width: 62%; height: 62%; display: block; }
+.brand-mark--on-green { background: rgba(255, 255, 255, 0.22); color: #ffffff; }
+
+/* ============================================================
+   Pantalla de selección de rol (Agricultor / Comprador)
+   ============================================================ */
+.role-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+}
+.role-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding: var(--space-5);
+  border: 1.5px solid rgba(255, 255, 255, 0.6);
+  border-radius: var(--radius-large);
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--color-on-secondary);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+.role-card:hover { background: rgba(255, 255, 255, 0.2); }
+.role-card:active { transform: scale(0.99); }
+.role-card:focus-visible { outline: 2px solid var(--color-on-secondary); outline-offset: 2px; }
+.role-card__icon {
+  width: 56px; height: 56px; flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.22);
+}
+.role-card__icon svg { width: 30px; height: 30px; }
+.role-card__body { flex: 1 1 auto; min-width: 0; }
+.role-card__title { margin: 0; font-family: var(--font-family-titles); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); }
+.role-card__desc { margin: 2px 0 0; font-size: var(--font-size-sm); opacity: 0.92; }
+.role-card__chevron { flex: 0 0 auto; opacity: 0.9; }
+.role-card__chevron svg { width: 22px; height: 22px; }
+/* Variante deshabilitada / próximamente */
+.role-card--soon { opacity: 0.7; }
+
+/* Variante sobre fondo claro (sheet blanca): borde gris y texto oscuro */
+.role-picker--light .role-card {
+  border-color: var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+.role-picker--light .role-card:hover { background: var(--color-surface-container-low); }
+.role-picker--light .role-card:focus-visible { outline: 2px solid var(--color-primary); }
+.role-picker--light .role-card__icon {
+  background: var(--color-secondary-container);
+  color: var(--color-secondary);
+}
+.role-picker--light .role-card__desc { color: var(--color-text-secondary); }
+.role-picker--light .role-card__chevron { color: var(--color-secondary); }
+.role-card__badge {
+  display: inline-block; margin-top: var(--space-1);
+  padding: 2px var(--space-2); border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.25); color: var(--color-on-secondary);
+  font-size: var(--font-size-body-small); font-weight: var(--font-weight-bold);
+}
+
+/* ---- Botón de regreso: contenedor 24x24, flecha 8x14 (todo el prototipo v02) ---- */
+.flow-header__back { width: 24px; height: 24px; }
+.flow-header__back svg { width: 8px; height: 14px; }
+
+/* ---- Header de flujo sobre fondo verde (bienvenida): transparente, flecha blanca ---- */
+/* Padding mayor para mantener la flecha dentro de la zona segura del mockup
+   (lejos de la esquina redondeada de 40px del marco del celular). */
+.flow-header--brand {
+  background: transparent;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-height: 64px;   /* altura fija: igual con o sin flecha (00-rol vs bienvenidas) */
+  padding: var(--space-5) var(--space-5) var(--space-3);
+}
+.flow-header--brand .flow-header__back { color: var(--color-on-secondary); }
+
+/* ============================================================
+   Flujo del comprador — registro de empresa
+   ============================================================ */
+/* Header de flujo con etiqueta a la derecha (ej. "Empresas") */
+.flow-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-4) var(--space-1);
+  background: var(--color-surface);
+}
+.flow-topbar__title { display: inline-flex; align-items: center; gap: var(--space-3); font-family: var(--font-family-titles); font-weight: var(--font-weight-bold); color: var(--color-primary); font-size: var(--font-size-lg); }
+.flow-topbar__title .flow-header__back { color: var(--color-primary); }
+.flow-topbar__tag { color: var(--color-secondary); font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); }
+
+/* Barra de pasos segmentada (Paso X de N) */
+.step-header { padding: 0 var(--space-4) var(--space-3); background: var(--color-surface); }
+.step-header__label { font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); color: var(--color-text); margin: 0 0 var(--space-2); }
+.step-bar { display: flex; gap: var(--space-2); }
+.step-bar__seg { flex: 1 1 0; height: 6px; border-radius: var(--radius-pill); background: var(--color-secondary-container); overflow: hidden; }
+.step-bar__seg.is-done { background: var(--color-secondary); }
+
+/* Tarjeta de datos consultados (golpe ficticio de RUC/DNI) */
+.lookup-card {
+  display: none;
+  flex-direction: column;
+  border: 1.5px solid var(--color-secondary);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  overflow: hidden;
+}
+.lookup-card.is-visible { display: flex; }
+.lookup-card__row { display: flex; flex-direction: column; gap: 2px; padding: var(--space-4); border-bottom: 1px solid var(--color-border); }
+.lookup-card__row:last-child { border-bottom: none; }
+.lookup-card__label { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.lookup-card__value { font-size: var(--font-size-md); font-weight: var(--font-weight-bold); color: var(--color-text); }
+.lookup-card__value--row { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.state-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px var(--space-3); border-radius: var(--radius-pill);
+  background: var(--color-secondary-container); color: var(--color-on-secondary-container);
+  font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);
+}
+
+/* Aviso informativo (poderes del representante) */
+.info-note {
+  padding: var(--space-4);
+  border-radius: var(--radius-large);
+  background: #e6f4ec;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ============================================================
+   Comprador — Paso 3: Documentos y declaraciones
+   ============================================================ */
+.doc-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+}
+.doc-card__head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.doc-card__title { margin: 0; font-family: var(--font-family-titles); font-size: var(--font-size-md); font-weight: var(--font-weight-bold); color: var(--color-text); }
+.doc-card__question { margin: 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.doc-card__meta { margin: 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+.doc-card__actions { display: flex; gap: var(--space-3); }
+.doc-card__actions .btn { flex: 1 1 0; padding: var(--space-3) var(--space-4); }
+
+/* Badge de estado (Pendiente / Cargado) */
+.status-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px var(--space-3); border-radius: var(--radius-pill);
+  font-size: var(--font-size-body-small); font-weight: var(--font-weight-bold);
+  flex: 0 0 auto;
+}
+.status-badge--pending { background: #fdecd3; color: #a9640a; }
+.status-badge--done { background: var(--color-secondary-container); color: var(--color-on-secondary-container); }
+
+/* Toggle Sí / No (usa botones; el activo se pinta con .is-selected) */
+.choice-pair { display: flex; gap: var(--space-3); }
+.choice-pair .btn { flex: 1 1 0; padding: var(--space-3) var(--space-4); }
+.choice-pair .btn.is-selected { background: var(--color-secondary); color: var(--color-on-secondary); border-color: var(--color-secondary); }
+
+/* ============================================================
+   Comprador — Paso 4: Cómo pagarás los lotes
+   ============================================================ */
+.pay-section { display: flex; flex-direction: column; gap: var(--space-3); }
+.pay-section__label { font-size: var(--font-size-md); font-weight: var(--font-weight-bold); color: var(--color-text); margin: 0; }
+
+/* Opción seleccionable (modalidad / cuenta) reutilizando patrón account-radio */
+.pay-option {
+  display: flex; align-items: flex-start; gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.pay-option:has(input:checked) { border-color: var(--color-secondary); box-shadow: 0 0 0 1px var(--color-secondary); }
+.pay-option:has(input:focus-visible) { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.pay-option__input { position: absolute; opacity: 0; width: 0; height: 0; }
+.pay-option__radio {
+  width: 24px; height: 24px; flex: 0 0 auto; margin-top: 1px;
+  border: 2px solid var(--color-border); border-radius: var(--radius-pill);
+  display: flex; align-items: center; justify-content: center;
+}
+.pay-option__input:checked + .pay-option__radio { border-color: var(--color-secondary); }
+.pay-option__input:checked + .pay-option__radio::after { content: ""; width: 12px; height: 12px; border-radius: var(--radius-pill); background: var(--color-secondary); }
+.pay-option__body { flex: 1 1 auto; min-width: 0; }
+.pay-option__title { font-weight: var(--font-weight-bold); color: var(--color-text); }
+.pay-option__desc { margin: 2px 0 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+
+/* Aviso bloqueante / estado de fondos (Cash In o préstamo pendiente) */
+.gate-note {
+  display: flex; gap: var(--space-3); align-items: flex-start;
+  padding: var(--space-4); border-radius: var(--radius-large);
+  font-size: var(--font-size-sm); font-weight: var(--font-weight-medium);
+}
+.gate-note--warn { background: #fdecd3; color: #a9640a; }
+.gate-note--ok { background: var(--color-secondary-container); color: var(--color-on-secondary-container); }
+.gate-note__icon { flex: 0 0 auto; font-size: 18px; line-height: 1.2; }
+
+/* Enlace de acción tipo "Solicitar cuenta nueva" */
+.pay-link { align-self: flex-start; color: var(--color-secondary); font-weight: var(--font-weight-bold); background: none; border: none; padding: 0; cursor: pointer; font-size: var(--font-size-md); }
+.pay-link:hover { text-decoration: underline; }
+
+/* ============================================================
+   Comprador — Preferencias (chips seleccionables: cultivos / zonas)
+   ============================================================ */
+.pref-group { display: flex; flex-direction: column; gap: var(--space-3); }
+.pref-group__label { margin: 0; font-size: var(--font-size-md); font-weight: var(--font-weight-bold); color: var(--color-text); }
+.chip-choices { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.chip-choice {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.chip-choice input { position: absolute; opacity: 0; width: 0; height: 0; }
+.chip-choice:has(input:checked) {
+  background: var(--color-secondary);
+  border-color: var(--color-secondary);
+  color: var(--color-on-secondary);
+}
+.chip-choice:has(input:focus-visible) { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+
+/* Zonas dependientes por cultivo (preferencias del comprador) */
+.zone-block {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+}
+.zone-block__title { margin: 0; font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); color: var(--color-text); }
+.zone-block__hint { margin: 0 0 var(--space-1); font-size: var(--font-size-body-small); color: var(--color-text-secondary); }
+
+/* ============================================================
+   v03 — Inscripción (flujo agricultor): pasos, ayudas, cuenta
+   Estilos de LAYOUT del prototipo. No redefine tokens.
+   ============================================================ */
+
+/* Barra de estado simulada (hora / red) del mockup */
+.status-sim {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5) 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+/* Top bar de inscripción: flecha + título verde de marca */
+.enroll-topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-5) var(--space-2);
+  background: var(--color-surface);
+}
+.enroll-topbar__title {
+  font-family: var(--font-family-titles);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-lg);
+  color: var(--color-primary);
+}
+.enroll-topbar .flow-header__back { color: var(--color-primary); }
+
+/* Texto de ayuda bajo un campo (plomo/gris) */
+.text-field__hint {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+/* Etiqueta "(opcional)" atenuada junto al label */
+.text-field__optional {
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-regular);
+}
+
+/* ---- Pantalla: Abre tu cuenta AgroCredit (consentimientos) ---- */
+.consent-list { display: flex; flex-direction: column; gap: var(--space-5); }
+.consent-item { display: flex; flex-direction: column; gap: var(--space-2); }
+.consent-box {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  cursor: pointer;
+}
+.consent-box:has(.consent-box__input:checked) {
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 1px var(--color-secondary);
+}
+.consent-box:has(.consent-box__input:focus-visible) { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.consent-box__input { position: absolute; opacity: 0; width: 0; height: 0; }
+.consent-box__check {
+  width: 26px; height: 26px; flex: 0 0 auto;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-small);
+  display: flex; align-items: center; justify-content: center;
+  color: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.consent-box__check svg { width: 16px; height: 16px; }
+.consent-box__input:checked + .consent-box__check {
+  background: var(--color-secondary);
+  border-color: var(--color-secondary);
+  color: #ffffff;
+}
+.consent-box__label { flex: 1 1 auto; font-weight: var(--font-weight-bold); color: var(--color-text); }
+.consent-item__link {
+  align-self: flex-start;
+  background: none; border: none; padding: 0 0 0 var(--space-2);
+  color: var(--color-secondary);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+.consent-item__link:hover { text-decoration: underline; }
+
+/* ---- Temporizador de creación de cuenta ---- */
+.creating {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  text-align: center;
+  padding: var(--space-8) var(--space-6);
+}
+.creating__spinner {
+  width: 72px; height: 72px;
+  border-radius: var(--radius-pill);
+  border: 6px solid var(--color-secondary-container);
+  border-top-color: var(--color-secondary);
+  animation: creating-spin 0.9s linear infinite;
+}
+@keyframes creating-spin { to { transform: rotate(360deg); } }
+.creating__title {
+  margin: 0;
+  font-family: var(--font-family-titles);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+.creating__text { margin: 0; color: var(--color-text-secondary); max-width: 28ch; }
+
+/* Progreso lineal del temporizador */
+.creating__bar {
+  width: 100%; max-width: 240px; height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-secondary-container);
+  overflow: hidden;
+}
+.creating__bar-fill {
+  height: 100%; width: 0%;
+  background: var(--color-secondary);
+  transition: width 0.2s linear;
+}
+
+/* ---- Tarjeta de cuenta creada (verde de marca) ---- */
+.account-card {
+  border-radius: var(--radius-large);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.account-card__badge {
+  align-self: flex-start;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-secondary);
+  color: var(--color-on-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+}
+.account-card__label { margin: var(--space-2) 0 0; font-size: var(--font-size-sm); opacity: 0.9; }
+.account-card__number {
+  margin: 0;
+  font-family: var(--font-family-titles);
+  font-size: 30px;
+  letter-spacing: 1px;
+  font-weight: var(--font-weight-bold);
+}
+.account-card__note { margin: var(--space-1) 0 0; font-size: var(--font-size-sm); opacity: 0.85; }
+
+/* ============================================================
+   v03 — Comprador: barra de estado verde, cuenta estática, verificación
+   ============================================================ */
+
+/* Barra de estado simulada sobre franja verde de marca (flujo comprador) */
+.status-sim--brand {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  padding: var(--space-3) var(--space-5);
+}
+
+/* Opción de cuenta en modo resumen (no seleccionable): refleja la cuenta elegida */
+.pay-option--static {
+  cursor: default;
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 1px var(--color-secondary);
+  align-items: center;
+}
+
+/* ---- Pantalla de verificación de empresa (comprador) ---- */
+.verify-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.verify-head .creating__spinner { width: 56px; height: 56px; border-width: 5px; }
+
+.verify-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  overflow: hidden;
+}
+.verify-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+.verify-row:last-child { border-bottom: none; }
+.verify-row__label { color: var(--color-text); font-weight: var(--font-weight-medium); }
+.verify-row__status { font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); }
+.verify-row__status--ok { color: var(--color-on-secondary-container); }
+.verify-row__status--pending { color: #a9640a; }
+
+/* ============================================================
+   v03 — Pantalla de inicio (landing) + Iniciar sesión
+   Marca AgroCredit. No redefine tokens.
+   ============================================================ */
+
+/* Barra de estado sobre fondo verde (texto blanco) */
+.status-sim--on-hero { color: #ffffff; }
+
+/* ---- Landing: hero verde superior (solo el fondo de la pantalla) ---- */
+.landing-hero {
+  background: var(--color-secondary);
+  padding: 0 0 var(--space-6);
+  position: relative;
+  flex: 0 0 auto;
+}
+.landing-hero__topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-2) var(--space-5) var(--space-5);
+}
+.landing-hero__menu {
+  width: 36px; height: 36px; border-radius: var(--radius-pill);
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(255,255,255,0.18); color: #ffffff;
+}
+.landing-hero__menu svg { width: 20px; height: 20px; }
+
+/* Tarjeta blanca de acciones (saludo + botones + accesos) */
+.landing-card {
+  margin: 0 var(--space-5);
+  background: var(--color-surface);
+  border-radius: var(--radius-xlarge);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-6);
+  display: flex; flex-direction: column; gap: var(--space-3);
+}
+.landing-card__hello {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-family-titles);
+  font-size: var(--font-size-heading-large);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+.landing-card__hint { margin: var(--space-2) 0 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+
+/* Accesos rápidos (3 columnas) */
+.quick-row {
+  display: flex; justify-content: space-between; gap: var(--space-3);
+  margin-top: var(--space-4); padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+.quick-item { flex: 1 1 0; display: flex; flex-direction: column; align-items: center; gap: var(--space-2); text-align: center; }
+.quick-item__icon {
+  width: 44px; height: 44px; border-radius: var(--radius-pill);
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--color-secondary-container); color: var(--color-secondary);
+}
+.quick-item__icon svg { width: 22px; height: 22px; }
+.quick-item__label { font-size: var(--font-size-body-small); font-weight: var(--font-weight-medium); color: var(--color-text); line-height: 1.25; }
+
+/* ---- Landing: promo inferior "Abre tu cuenta" ---- */
+.landing-promo { padding: var(--space-6) var(--space-5) var(--space-8); display: flex; flex-direction: column; gap: var(--space-3); }
+.landing-promo__title { margin: 0; font-family: var(--font-family-titles); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-text); }
+.landing-promo__card {
+  display: flex; align-items: center; gap: var(--space-4);
+  padding: var(--space-4); border: 1px solid var(--color-border);
+  border-radius: var(--radius-large); background: var(--color-surface);
+}
+.landing-promo__art { width: 64px; height: 64px; flex: 0 0 auto; }
+.landing-promo__art svg { width: 100%; height: 100%; }
+.landing-promo__lead { margin: 0; font-weight: var(--font-weight-bold); color: var(--color-text); }
+.landing-promo__meta { margin: 2px 0 0; font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+
+/* ============================================================
+   Iniciar sesión: fondo verde + tarjeta blanca centrada arriba
+   ============================================================ */
+.screen--login { background: var(--color-secondary); }
+.login-card {
+  margin: var(--space-6) var(--space-4) 0;
+  background: var(--color-surface);
+  border-radius: var(--radius-xlarge);
+  box-shadow: var(--shadow-md);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.login-card__head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: var(--space-5) var(--space-5) var(--space-3);
+}
+.login-card__title { margin: 0; font-family: var(--font-family-titles); font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-primary); }
+.login-card__close { width: 24px; height: 24px; color: var(--color-primary); display: inline-flex; }
+.login-card__close svg { width: 20px; height: 20px; }
+
+.login-form { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-2) var(--space-5) var(--space-5); }
+.login-card__footer { padding: var(--space-4) var(--space-5) var(--space-6); display: flex; flex-direction: column; gap: var(--space-2); border-top: 1px solid var(--color-border); }
+
+/* Campo con íconos a la derecha (limpiar / mostrar) */
+.field-affix { position: relative; display: flex; align-items: center; }
+.field-affix .text-field__input { padding-right: 44px; }
+/* La contraseña tiene dos botones: más espacio a la derecha */
+.field-affix:has(#pass-toggle) .text-field__input { padding-right: 76px; }
+.field-affix__btn {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 28px; height: 28px; border: none; background: transparent;
+  color: var(--color-text-secondary); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.field-affix__btn svg { width: 20px; height: 20px; }
+.field-affix__btn:hover { color: var(--color-text); }
+.field-affix__btn.is-active { color: var(--color-secondary); }
+/* Documento: un solo botón (limpiar) a la derecha */
+.field-affix #doc-clear { right: 12px; }
+/* Contraseña: dos botones (limpiar + mostrar) alineados a la derecha */
+.field-affix #pass-clear { right: 44px; }
+.field-affix #pass-toggle { right: 12px; }
+
+/* ============================================================
+   v05 (decision 61): heroes de marca en verde profundo y logo de dos hojas.
+   ============================================================ */
+.screen--brand, .landing-hero, .screen--login { background: var(--color-primary-dark); }
+.brand-lockup__agro { color: var(--color-primary-dark); }
+.brand-lockup__credit { color: var(--color-leaf-light); }
+.brand-lockup__leaf { color: var(--color-leaf); width: 0.72em; height: 0.72em; margin: -0.08em 0 0 0.04em; }
+.brand-lockup--on-green .brand-lockup__agro { color: #ffffff; }
+.brand-lockup--on-green .brand-lockup__credit { color: var(--color-mint); }
+.brand-lockup--on-green .brand-lockup__leaf { color: var(--color-leaf-light); }
+.brand-lockup--on-green .brand-lockup__leaf .hoja-b { fill: var(--color-mint); }

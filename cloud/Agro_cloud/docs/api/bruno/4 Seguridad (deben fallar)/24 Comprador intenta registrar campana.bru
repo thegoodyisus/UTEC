@@ -1,0 +1,68 @@
+meta {
+  name: 24 Comprador intenta registrar campana
+  type: http
+  seq: 24
+}
+
+post {
+  url: {{process.env.BASE_URL}}/campanas
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_COMPRADOR}}
+}
+
+body:json {
+  {
+    "campaniaId": "{{$randomUUID}}",
+    "cultivo": "papa",
+    "departamento": "Cusco",
+    "provincia": "Cusco",
+    "distrito": "Wanchaq",
+    "cosecha": "2027-06-15",
+    "volumenKg": 2000,
+    "logistica": "Recojo",
+    "capital": "5000.00",
+    "precioAhoraPorKg": "1.80",
+    "precioContraentregaPorKg": "2.10"
+  }
+}
+
+tests {
+  test("codigo 403", function () {
+    expect([403]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Comprador intenta registrar campana
+
+  | | |
+  |---|---|
+  | API | `POST /campanas` |
+  | Token | comprador |
+  | Microservicio | Campanas y fotos |
+  | Tipo | escritura asincrona |
+  | Tabla o servicio | SQS agro-insercion -> Lambda agro-worker -> agro-datos |
+  | Operacion | la api lee CATALOGO y PROFILE y encola; el worker hace PutItem CAMP#<id> / META con indices por-usuario y publicadas-por-cultivo |
+  | Esperado | 403 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 403
+
+  ```json
+  {
+    "type": "about:blank",
+    "title": "Sin permiso",
+    "status": 403,
+    "instance": "/api/v1/campanas",
+    "requestId": "e4ecfb53-cb04-4356-a910-f4c8e7de49e3",
+    "detail": "esta operacion es solo para agricultor"
+  }
+  ```
+}

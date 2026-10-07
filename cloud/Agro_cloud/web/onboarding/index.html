@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Prototipo de Onboarding</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body>
+  <div class="screen">
+    <div class="screen__body">
+      <h1 class="screen__title">AgroCredit</h1>
+      <p class="screen__subtitle">Prototipo del onboarding del agricultor. Todas las pantallas son de demostración: datos, validaciones, OTP, biometría y permisos son ficticios.</p>
+
+      <nav class="index-list" aria-label="Pantallas del prototipo">
+        <a class="index-link" href="00-inicio.html" data-testid="index-link-inicio"><span class="index-link__num">▶</span> Inicio (Iniciar sesión / Usuario nuevo)</a>
+        <a class="index-link" href="00b-login.html" data-testid="index-link-login"><span class="index-link__num">🔑</span> Iniciar sesión (DNI/RUC + contraseña)</a>
+        <a class="index-link" href="00-rol.html" data-testid="index-link-00"><span class="index-link__num">0</span> Elegir rol (Agricultor / Comprador)</a>
+        <a class="index-link" href="01-bienvenida.html" data-testid="index-link-01"><span class="index-link__num">1</span> Bienvenida</a>
+        <a class="index-link" href="02-datos-personales.html" data-testid="index-link-02"><span class="index-link__num">2</span> Datos personales</a>
+        <a class="index-link" href="03-otp.html" data-testid="index-link-03"><span class="index-link__num">3</span> Validación por SMS (OTP)</a>
+        <a class="index-link" href="04-contrasena.html" data-testid="index-link-04"><span class="index-link__num">4</span> Crear clave numérica</a>
+        <a class="index-link" href="05-biometria.html" data-testid="index-link-05"><span class="index-link__num">5</span> Biometría</a>
+        <a class="index-link" href="06-productos.html" data-testid="index-link-06"><span class="index-link__num">6</span> Productos cultivados</a>
+        <a class="index-link" href="07-ubicacion.html" data-testid="index-link-07"><span class="index-link__num">7</span> Ubicación productiva</a>
+        <a class="index-link" href="08-permisos.html" data-testid="index-link-08"><span class="index-link__num">8</span> Permisos</a>
+        <a class="index-link" href="09-perfil-listo.html" data-testid="index-link-09"><span class="index-link__num">9</span> Perfil listo</a>
+        <a class="index-link" href="../campana/home.html" data-testid="index-link-home"><span class="index-link__num">🏠</span> Home (gestión de campañas)</a>
+      </nav>
+
+      <p class="screen__subtitle" style="margin-top: var(--space-6);">Flujo del comprador (empresa)</p>
+      <nav class="index-list" aria-label="Pantallas del comprador">
+        <a class="index-link" href="comprador-01-bienvenida.html" data-testid="index-link-c01"><span class="index-link__num">C</span> Bienvenida comprador</a>
+        <a class="index-link" href="comprador-02-empresa.html" data-testid="index-link-c02"><span class="index-link__num">1</span> Registro de empresa</a>
+        <a class="index-link" href="comprador-03-representante.html" data-testid="index-link-c03"><span class="index-link__num">2</span> Representante</a>
+        <a class="index-link" href="comprador-04-preferencias.html" data-testid="index-link-c04"><span class="index-link__num">4</span> Preferencias</a>
+        <a class="index-link" href="comprador-06-verificacion.html" data-testid="index-link-c06"><span class="index-link__num">5</span> Verificación de empresa</a>
+        <a class="index-link" href="../campana/home-comprador.html" data-testid="index-link-c-home"><span class="index-link__num">🏠</span> Home del comprador</a>
+      </nav>
+
+      <p class="mock-note">AgroCredit v05 · design-system propio · sin datos reales.</p>
+    </div>
+  </div>
+</body>
+</html>

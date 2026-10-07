@@ -1,0 +1,63 @@
+/* ============================================================
+   Componente: primary-button
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh
+   Botón primario full-width (pill verde).
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: none;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  padding: var(--space-4) var(--space-6);
+  transition: background 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
+}
+
+/* Variante primaria */
+.btn--primary {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.btn--primary:hover { background: #0a3c37; }
+.btn--primary:active,
+.btn--primary.is-active { background: #0a3c37; transform: scale(0.99); }
+.btn--primary:focus-visible,
+.btn--primary.is-focused { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.btn--primary:disabled,
+.btn--primary.is-disabled {
+  background: var(--color-disabled-bg);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+
+/* Variante secundaria (outline pill verde) */
+.btn--secondary {
+  background: var(--color-surface);
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+}
+.btn--secondary:hover { background: rgba(19, 92, 64, 0.06); }
+.btn--secondary:active,
+.btn--secondary.is-active { background: rgba(19, 92, 64, 0.12); transform: scale(0.99); }
+.btn--secondary:focus-visible,
+.btn--secondary.is-focused { outline: 2px solid var(--color-primary); outline-offset: 2px; }
+.btn--secondary:disabled,
+.btn--secondary.is-disabled {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-disabled-border);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+
+/* Modificador full-width */
+.btn--block {
+  display: flex;
+  width: 100%;
+}

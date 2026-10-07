@@ -1,0 +1,77 @@
+/* ============================================================
+   Componente: app-bar
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (pantalla login)
+   Barra de aplicación sobre fondo verde: menú + logo + notificación.
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.app-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: 430px;
+  min-height: 56px;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-secondary); /* verde de marca */
+  color: var(--color-on-secondary);
+  box-sizing: border-box;
+}
+
+/* Botón icónico circular sobre verde */
+.app-bar__icon-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: rgba(0, 0, 0, 0.12);
+  color: var(--color-on-secondary);
+  flex: 0 0 auto;
+}
+.app-bar__icon-button svg { width: 20px; height: 20px; }
+.app-bar__icon-button:hover { background: rgba(0, 0, 0, 0.2); }
+.app-bar__icon-button:active,
+.app-bar__icon-button.is-active { background: rgba(0, 0, 0, 0.28); transform: scale(0.96); }
+.app-bar__icon-button:focus-visible,
+.app-bar__icon-button.is-focused { outline: 2px solid var(--color-on-secondary); outline-offset: 2px; }
+.app-bar__icon-button:disabled,
+.app-bar__icon-button.is-disabled { opacity: var(--opacity-disabled); cursor: not-allowed; }
+
+/* Campana sin fondo */
+.app-bar__icon-plain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: none;
+  color: var(--color-on-secondary);
+  flex: 0 0 auto;
+}
+.app-bar__icon-plain svg { width: 22px; height: 22px; }
+.app-bar__icon-plain:hover { opacity: 0.85; }
+.app-bar__icon-plain:active,
+.app-bar__icon-plain.is-active { opacity: 0.7; }
+.app-bar__icon-plain:focus-visible,
+.app-bar__icon-plain.is-focused { outline: 2px solid var(--color-on-secondary); outline-offset: 2px; border-radius: var(--radius-small); }
+.app-bar__icon-plain:disabled,
+.app-bar__icon-plain.is-disabled { opacity: var(--opacity-disabled); cursor: not-allowed; }
+
+/* Logo / marca centrada */
+.app-bar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex: 1 1 auto;
+  justify-content: center;
+  font-family: var(--font-family-titles);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-on-secondary);
+}
+.app-bar__brand svg { width: 24px; height: 24px; }

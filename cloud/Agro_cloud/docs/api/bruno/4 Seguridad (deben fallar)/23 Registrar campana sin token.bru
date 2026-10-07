@@ -1,0 +1,64 @@
+meta {
+  name: 23 Registrar campana sin token
+  type: http
+  seq: 23
+}
+
+post {
+  url: {{process.env.BASE_URL}}/campanas
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "campaniaId": "{{$randomUUID}}",
+    "cultivo": "papa",
+    "departamento": "Cusco",
+    "provincia": "Cusco",
+    "distrito": "Wanchaq",
+    "cosecha": "2027-06-15",
+    "volumenKg": 2000,
+    "logistica": "Recojo",
+    "capital": "5000.00",
+    "precioAhoraPorKg": "1.80",
+    "precioContraentregaPorKg": "2.10"
+  }
+}
+
+tests {
+  test("codigo 401", function () {
+    expect([401]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Registrar campana sin token
+
+  | | |
+  |---|---|
+  | API | `POST /campanas` |
+  | Token | sin token |
+  | Microservicio | Campanas y fotos |
+  | Tipo | escritura asincrona |
+  | Tabla o servicio | SQS agro-insercion -> Lambda agro-worker -> agro-datos |
+  | Operacion | la api lee CATALOGO y PROFILE y encola; el worker hace PutItem CAMP#<id> / META con indices por-usuario y publicadas-por-cultivo |
+  | Esperado | 401 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 401
+
+  ```json
+  {
+    "type": "about:blank",
+    "title": "No autenticado",
+    "status": 401,
+    "instance": "/api/v1/campanas",
+    "requestId": "2443119c-213c-42be-ad0c-d098f6cbc0b8",
+    "detail": "falta el token bearer"
+  }
+  ```
+}

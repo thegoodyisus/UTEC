@@ -1,0 +1,23 @@
+/* ============================================================
+   Componente: hero-illustration
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh
+   Contenedor de ilustración destacada (fondo verde claro + arte).
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.hero-illustration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 180px;
+  height: 150px;
+  border-radius: var(--radius-large);
+  background: var(--color-secondary-container); /* verde claro #d8f9e1 */
+  overflow: visible;
+}
+
+.hero-illustration svg {
+  width: 120px;
+  height: auto;
+  overflow: visible;
+}

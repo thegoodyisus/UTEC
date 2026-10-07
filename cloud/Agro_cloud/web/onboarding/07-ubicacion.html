@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Inscripción · Tu producción</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/select-field/select-field.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <!-- Barra de estado simulada -->
+    <div class="status-sim" aria-hidden="true">
+      <span class="status-sim__time">9:41</span>
+      <span class="status-sim__net">4G · 100 %</span>
+    </div>
+
+    <!-- Top bar: Inscripción + volver -->
+    <header class="enroll-topbar">
+      <a class="flow-header__back" href="06-productos.html" aria-label="Volver" data-testid="ubicacion-back">
+        <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+      </a>
+      <span class="enroll-topbar__title">Inscripción</span>
+    </header>
+
+    <!-- Pasos de inscripción (Paso 5 de 5 · Tu producción) -->
+    <div class="step-header">
+      <p class="step-header__label">Paso 5 de 5 · Tu producción</p>
+      <div class="step-bar" role="progressbar" aria-valuenow="5" aria-valuemin="0" aria-valuemax="5" aria-label="Paso 5 de 5">
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+      </div>
+    </div>
+
+    <div class="screen__body">
+      <div>
+        <h1 class="screen__title">¿Dónde produces?</h1>
+        <p class="screen__subtitle">Usamos tu ubicación para mostrarte compradores de tu zona.</p>
+      </div>
+
+      <div class="field-group">
+        <div class="select-field">
+          <label class="select-field__label" for="departamento">Departamento</label>
+          <div class="select-field__control">
+            <select class="select-field__select" id="departamento" data-testid="ubicacion-departamento">
+              <option value="">Selecciona</option>
+              <option value="Cusco">Cusco</option>
+              <option value="La Libertad">La Libertad</option>
+            </select>
+            <span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+        </div>
+
+        <div class="select-field">
+          <label class="select-field__label" for="provincia">Provincia</label>
+          <div class="select-field__control">
+            <select class="select-field__select" id="provincia" data-testid="ubicacion-provincia" disabled>
+              <option value="">Selecciona</option>
+            </select>
+            <span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+        </div>
+
+        <div class="select-field">
+          <label class="select-field__label" for="distrito">Distrito</label>
+          <div class="select-field__control">
+            <select class="select-field__select" id="distrito" data-testid="ubicacion-distrito" disabled>
+              <option value="">Selecciona</option>
+            </select>
+            <span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+        </div>
+      </div>
+      <p class="text-field__error" id="ubicacion-error" style="display:none;">Completa departamento, provincia y distrito.</p>
+    </div>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="ubicacion-continuar" data-testid="ubicacion-continuar-button">Confirmar ubicación</button>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    // Árbol ficticio: 2 departamentos → 3 provincias cada uno → 2 distritos por provincia.
+    var UBIGEO = {
+      "Cusco": {
+        "Quispicanchi": ["Andahuaylillas", "Urcos"],
+        "Calca": ["Pisac", "Lamay"],
+        "Urubamba": ["Ollantaytambo", "Maras"]
+      },
+      "La Libertad": {
+        "Trujillo": ["Laredo", "Moche"],
+        "Virú": ["Chao", "Guadalupito"],
+        "Sánchez Carrión": ["Huamachuco", "Sanagorán"]
+      }
+    };
+
+    var depSel = document.getElementById("departamento");
+    var provSel = document.getElementById("provincia");
+    var distSel = document.getElementById("distrito");
+    var err = document.getElementById("ubicacion-error");
+
+    function fill(select, items, placeholder) {
+      select.innerHTML = '<option value="">' + placeholder + '</option>' +
+        items.map(function (i) { return '<option value="' + i + '">' + i + '</option>'; }).join("");
+    }
+
+    depSel.addEventListener("change", function () {
+      var dep = depSel.value;
+      if (dep && UBIGEO[dep]) {
+        fill(provSel, Object.keys(UBIGEO[dep]), "Selecciona");
+        provSel.disabled = false;
+      } else {
+        fill(provSel, [], "Selecciona");
+        provSel.disabled = true;
+      }
+      fill(distSel, [], "Selecciona");
+      distSel.disabled = true;
+    });
+
+    provSel.addEventListener("change", function () {
+      var dep = depSel.value, prov = provSel.value;
+      if (dep && prov && UBIGEO[dep] && UBIGEO[dep][prov]) {
+        fill(distSel, UBIGEO[dep][prov], "Selecciona");
+        distSel.disabled = false;
+      } else {
+        fill(distSel, [], "Selecciona");
+        distSel.disabled = true;
+      }
+    });
+
+    document.getElementById("ubicacion-continuar").addEventListener("click", function () {
+      var dep = depSel.value, prov = provSel.value, dist = distSel.value;
+      if (!dep || !prov || !dist) { err.style.display = "block"; return; }
+      err.style.display = "none";
+      Agro.completar("07-ubicacion", { departamento: dep, provincia: prov, distrito: dist });
+      goTo("08-permisos.html");
+    });
+  </script>
+<script>Agro.proteger({ fase: "alta", paso: "07-ubicacion" });</script>
+</body>
+</html>

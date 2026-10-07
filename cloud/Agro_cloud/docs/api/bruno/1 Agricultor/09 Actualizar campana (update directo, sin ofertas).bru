@@ -1,0 +1,48 @@
+meta {
+  name: 09 Actualizar campana (update directo, sin ofertas)
+  type: http
+  seq: 9
+}
+
+patch {
+  url: {{process.env.BASE_URL}}/campanas/{{campaniaId}}
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_AGRICULTOR}}
+}
+
+body:json {
+  {
+    "volumenKg": 1800,
+    "precioAhoraPorKg": "1.95"
+  }
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Actualizar campana (update directo, sin ofertas)
+
+  | | |
+  |---|---|
+  | API | `PATCH /campanas/{campaniaId}` |
+  | Token | agricultor |
+  | Microservicio | Campanas y fotos |
+  | Tipo | actualizacion directa |
+  | Tabla o servicio | agro-datos |
+  | Operacion | UpdateItem CAMP#<id> / META con condicion attribute_exists(PK) AND propietarioSub = <sub> AND numeroOfertas = 0 |
+  | Esperado | 200 |
+
+  Respuesta real: aun no se ha corrido contra AWS (`python evidencia.py`).
+}

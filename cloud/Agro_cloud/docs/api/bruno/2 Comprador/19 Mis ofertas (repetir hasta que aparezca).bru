@@ -1,0 +1,77 @@
+meta {
+  name: 19 Mis ofertas (repetir hasta que aparezca)
+  type: http
+  seq: 19
+}
+
+get {
+  url: {{process.env.BASE_URL}}/ofertas
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_COMPRADOR}}
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Mis ofertas (repetir hasta que aparezca)
+
+  | | |
+  |---|---|
+  | API | `GET /ofertas` |
+  | Token | comprador |
+  | Microservicio | Ofertas |
+  | Tipo | lectura |
+  | Tabla o servicio | agro-datos (indice por-usuario) |
+  | Operacion | Query usuarioClave=USER#<sub>, usuarioOrden empieza con OFFER# |
+  | Esperado | 200 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 200
+
+  ```json
+  {
+    "items": [
+      {
+        "ofertaId": "2a232c64-1569-4bf5-9dd0-53b700fe05c0",
+        "campaniaId": "7e19831b-fbbe-4a8e-bfb9-b8716848d1e5",
+        "compradorNombre": "Granos del Altiplano SAC",
+        "volumenKg": 1200,
+        "precioPorKg": "1.85",
+        "modalidad": "Pago ahora",
+        "logistica": "Recojo",
+        "fechaEntrega": "2027-06-20",
+        "total": "2220.00",
+        "estado": "PENDIENTE",
+        "creadoEn": "2026-10-06T23:07:13Z",
+        "cultivo": "papa",
+        "productorNombre": "Productor de prueba",
+        "departamento": "Cusco"
+      },
+      {
+        "ofertaId": "285952ee-783a-4b71-90d8-0415899d4d3f",
+        "campaniaId": "a3047fea-c61f-4131-9176-9b842a34322a",
+        "compradorNombre": "Granos del Altiplano SAC",
+        "volumenKg": 100,
+        "precioPorKg": "2.00",
+        "modalidad": "Pago ahora",
+        "logistica": "Recojo",
+        "fechaEntrega": "2027-01-04",
+        "total": "200.00",
+        "estado": "PENDIENTE",
+        "creadoEn": "2026-10-06T22:58:27Z",
+        "cultivo": "papa",
+        "productorNombre": "Productor de prueba",
+        "departamento": "Cusco"
+      }
+    ],
+    "siguienteCursor": null
+  }
+  ```
+}

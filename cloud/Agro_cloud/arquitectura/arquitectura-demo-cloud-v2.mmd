@@ -1,0 +1,61 @@
+%% arquitectura logica de agrocredit en aws (v2, 2026-10-05): lo que despliega cloud/terraform
+%% reemplaza a arquitectura-demo-cloud-v1.mmd (decia vpc por defecto y /docs; no tenia padron, scheduler ni lambdas actuales)
+%% sin el monitoreo del panel de resiliencia (decision 60)
+flowchart LR
+    usr["Usuario en el navegador<br/>agricultor o comprador<br/>celular o PC"]
+
+    subgraph identidad["Identidad"]
+        cog["Amazon Cognito<br/>user pool agro-usuarios<br/>usuario = DNI o RUC, clave = PIN<br/>rol inmutable custom:rol"]
+    end
+
+    subgraph entrada["Entrada unica - HTTP 80"]
+        alb["Application Load Balancer agro-alb<br/>/api/* -> servicios<br/>/* -> aplicacion"]
+    end
+
+    subgraph computo["Computo en contenedores - ECS Fargate ARM64, 2 zonas, activo-activo"]
+        web["Aplicacion web<br/>nginx: pantallas, estilos, scripts<br/>2 tareas"]
+        api["Servicios de negocio<br/>FastAPI, contrato OpenAPI v1.5.0<br/>2 tareas"]
+    end
+
+    subgraph datos["Datos - DynamoDB on-demand"]
+        tabla[("agro-datos<br/>perfiles, campanas, fotos, ofertas,<br/>catalogo, cuentas de prueba, asignaciones<br/>indices por-usuario y publicadas-por-cultivo")]
+        padron[("agro-padron-personas<br/>agro-padron-empresas<br/>padron ficticio que se consume")]
+    end
+
+    subgraph asincrono["Escrituras asincronas"]
+        qins["SQS agro-insercion<br/>+ DLQ"]
+        worker["Lambda agro-worker<br/>escritura idempotente"]
+    end
+
+    subgraph fotos["Fotos y reconocimiento"]
+        s3[("S3 agro-fotos-cuenta<br/>privado, cifrado<br/>entrada/ expira en 1 dia")]
+        qfot["SQS agro-fotos<br/>+ DLQ"]
+        etiq["Lambda agro-etiquetar"]
+        rek["Amazon Rekognition<br/>DetectLabels"]
+    end
+
+    subgraph operacion["Operacion y costo"]
+        ecr["Amazon ECR<br/>imagenes web y api"]
+        logs["CloudWatch Logs<br/>retencion 1 dia"]
+        sch["EventBridge Scheduler<br/>apaga tareas a las 2 h"]
+        ssm["SSM Parameter Store<br/>registro de recursos"]
+    end
+
+    usr -->|"HTTP"| alb
+    usr <-->|"login SRP, recibe ID token"| cog
+    alb --> web
+    alb --> api
+    api -.->|"valida firma del token (JWKS)"| cog
+    api -->|"lecturas y perfil"| tabla
+    api -->|"consumo del padron en una transaccion"| padron
+    api -->|"campana u oferta: responde 202"| qins
+    qins --> worker --> tabla
+    api -->|"URL prefirmada"| usr
+    usr -->|"sube la foto directo"| s3
+    s3 -->|"ObjectCreated"| qfot --> etiq
+    etiq --> rek
+    etiq -->|"copia renombrada, borra original"| s3
+    etiq -->|"registra foto y etiqueta"| tabla
+    ecr -.->|"imagenes"| computo
+    computo -.-> logs
+    sch -.->|"desiredCount = 0"| computo

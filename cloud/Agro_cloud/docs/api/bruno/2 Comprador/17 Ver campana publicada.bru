@@ -1,0 +1,54 @@
+meta {
+  name: 17 Ver campana publicada
+  type: http
+  seq: 17
+}
+
+get {
+  url: {{process.env.BASE_URL}}/campanas/{{campaniaId}}
+  body: none
+  auth: bearer
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_COMPRADOR}}
+}
+
+tests {
+  test("codigo 200", function () {
+    expect([200]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Ver campana publicada
+
+  | | |
+  |---|---|
+  | API | `GET /campanas/{campaniaId}` |
+  | Token | comprador |
+  | Microservicio | Campanas y fotos |
+  | Tipo | lectura |
+  | Tabla o servicio | agro-datos |
+  | Operacion | GetItem CAMP#<id> / META |
+  | Esperado | 200 |
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 200
+
+  ```json
+  {
+    "campaniaId": "7e19831b-fbbe-4a8e-bfb9-b8716848d1e5",
+    "productorNombre": "Productor de prueba",
+    "cultivo": "papa",
+    "departamento": "Cusco",
+    "provincia": "Cusco",
+    "distrito": "Wanchaq",
+    "cosecha": "2027-06-15",
+    "volumenKg": 2000,
+    "logistica": "Recojo",
+    "precioAhoraPorKg": "1.80",
+    "precioContraentregaPorKg": "2.10",
+    "referenciaMercadoPorKg": "1.20"
+  }
+  ```
+}

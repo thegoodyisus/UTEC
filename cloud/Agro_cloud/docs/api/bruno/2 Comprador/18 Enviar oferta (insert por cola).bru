@@ -1,0 +1,68 @@
+meta {
+  name: 18 Enviar oferta (insert por cola)
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{process.env.BASE_URL}}/campanas/{{campaniaId}}/ofertas
+  body: json
+  auth: bearer
+}
+
+headers {
+  Content-Type: application/json
+}
+
+auth:bearer {
+  token: {{process.env.TOKEN_COMPRADOR}}
+}
+
+body:json {
+  {
+    "ofertaId": "{{$randomUUID}}",
+    "volumenKg": 1200,
+    "precioPorKg": "1.85",
+    "modalidad": "Pago ahora",
+    "logistica": "Recojo",
+    "fechaEntrega": "2027-06-20"
+  }
+}
+
+script:post-response {
+  if (res.getStatus() === 202) {
+    bru.setVar("ofertaId", res.getBody().recursoId);
+  }
+}
+
+tests {
+  test("codigo 202", function () {
+    expect([202]).to.include(res.getStatus());
+  });
+}
+
+docs {
+  # Enviar oferta (insert por cola)
+
+  | | |
+  |---|---|
+  | API | `POST /campanas/{campaniaId}/ofertas` |
+  | Token | comprador |
+  | Microservicio | Ofertas |
+  | Tipo | escritura asincrona |
+  | Tabla o servicio | SQS agro-insercion -> Lambda agro-worker -> agro-datos |
+  | Operacion | la api lee META y PROFILE y encola; el worker hace TransactWriteItems: Put CAMP#<id> / OFFER#<id> + Update META numeroOfertas |
+  | Esperado | 202 |
+
+  Guarda `ofertaId` (de `recursoId` en la respuesta) para las peticiones siguientes.
+
+  ## Respuesta real en AWS (2026-10-06 18:07 hora de Lima): 202
+
+  ```json
+  {
+    "recursoId": "2a232c64-1569-4bf5-9dd0-53b700fe05c0",
+    "estado": "PROCESANDO",
+    "consultar": "/api/v1/campanas/7e19831b-fbbe-4a8e-bfb9-b8716848d1e5/ofertas"
+  }
+  ```
+}

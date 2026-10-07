@@ -1,0 +1,8 @@
+**/__pycache__
+**/.DS_Store
+portal
+pruebas
+ver-contrato.py
+openapi.yaml
+Dockerfile
+.dockerignore

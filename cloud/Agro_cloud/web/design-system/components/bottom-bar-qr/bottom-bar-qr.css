@@ -1,0 +1,141 @@
+/* ============================================================
+   Componente: bottom_bar_qr
+   Origen Figma: node 7772:12881 (file qkyZrZ17ur7zSThXvLvqDh)
+   Variante de bottom_bar con botón QR central elevado.
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.bottom-bar-qr {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 430px;
+  padding: var(--space-2) var(--space-4) var(--space-3);
+  background: var(--color-surface);
+  border-top-left-radius: var(--radius-xlarge);
+  border-top-right-radius: var(--radius-xlarge);
+  box-shadow: var(--shadow-elevated-strong-up);
+  box-sizing: border-box;
+}
+
+/* Cada ítem de navegación (idéntico patrón a bottom_bar_standard) */
+.bottom-bar-qr__item {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) 0 0;
+  background: none;
+  border: none;
+  color: var(--color-text-secondary);
+  transition: color 0.15s ease;
+}
+
+/* Barra indicadora superior (solo ítem activo) */
+.bottom-bar-qr__item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  transition: background 0.15s ease;
+}
+
+.bottom-bar-qr__icon {
+  width: 24px;
+  height: 24px;
+  color: var(--icon-secondary);
+  transition: color 0.15s ease;
+}
+
+.bottom-bar-qr__label {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body-small);
+  line-height: var(--line-height-small);
+  font-weight: var(--font-weight-medium);
+  letter-spacing: var(--letter-spacing-1);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+/* ---- Estado activo ---- */
+.bottom-bar-qr__item.is-active { color: var(--color-secondary); }
+.bottom-bar-qr__item.is-active::before { background: var(--color-success); }
+.bottom-bar-qr__item.is-active .bottom-bar-qr__icon { color: var(--color-success); }
+.bottom-bar-qr__item.is-active .bottom-bar-qr__label {
+  color: var(--color-success);
+  font-weight: var(--font-weight-bold);
+}
+
+/* ---- Interacción ---- */
+.bottom-bar-qr__item:hover:not(.is-active) .bottom-bar-qr__icon,
+.bottom-bar-qr__item:hover:not(.is-active) .bottom-bar-qr__label {
+  color: var(--color-text);
+}
+.bottom-bar-qr__item:active .bottom-bar-qr__icon { transform: scale(0.92); }
+.bottom-bar-qr__item:focus-visible,
+.bottom-bar-qr__item.is-focused {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+  border-radius: var(--radius-small);
+}
+.bottom-bar-qr__item:disabled,
+.bottom-bar-qr__item.is-disabled { cursor: not-allowed; opacity: var(--opacity-disabled); }
+.bottom-bar-qr__item:disabled .bottom-bar-qr__icon,
+.bottom-bar-qr__item.is-disabled .bottom-bar-qr__icon { color: var(--color-disabled-text); }
+.bottom-bar-qr__item:disabled .bottom-bar-qr__label,
+.bottom-bar-qr__item.is-disabled .bottom-bar-qr__label { color: var(--color-disabled-text); }
+
+/* ---- Botón QR central elevado ---- */
+.bottom-bar-qr__qr {
+  flex: 1 1 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.bottom-bar-qr__qr-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  margin-top: -28px;           /* eleva el botón por encima de la barra */
+  border: 4px solid var(--color-surface); /* halo que separa del fondo */
+  border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-md);
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.bottom-bar-qr__qr-button:hover { background: #0a3c37; }
+.bottom-bar-qr__qr-button:active,
+.bottom-bar-qr__qr-button.is-active { background: #0a3c37; transform: scale(0.96); }
+.bottom-bar-qr__qr-button:focus-visible,
+.bottom-bar-qr__qr-button.is-focused {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+.bottom-bar-qr__qr-button:disabled,
+.bottom-bar-qr__qr-button.is-disabled {
+  background: var(--color-disabled-bg);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+
+.bottom-bar-qr__qr-icon {
+  width: 26px;
+  height: 26px;
+  color: currentColor;
+}

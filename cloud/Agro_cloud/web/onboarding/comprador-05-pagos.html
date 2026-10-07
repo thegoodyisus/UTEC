@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Cómo pagarás los lotes</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/progress-bar/progress-bar.css" />
+  <link rel="stylesheet" href="../design-system/components/select-field/select-field.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body style="visibility:hidden">
+  <div class="screen">
+
+    <!-- Barra de estado simulada (verde de marca) -->
+    <div class="status-sim status-sim--brand" aria-hidden="true">
+      <span class="status-sim__time">9:41</span>
+      <span class="status-sim__net">4G · 100 %</span>
+    </div>
+
+    <!-- Top bar: Registro de empresa + etiqueta "Empresas" -->
+    <header class="flow-topbar">
+      <span class="flow-topbar__title">
+        <a class="flow-header__back" href="comprador-03-representante.html" aria-label="Volver" data-testid="pagos-back">
+          <svg viewBox="0 0 8 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 1 1 7l6 6"/></svg>
+        </a>
+        Registro de empresa
+      </span>
+      <span class="flow-topbar__tag">Empresas</span>
+    </header>
+
+    <!-- Pasos del registro de empresa (Paso 3 de 5 · Pagos) -->
+    <div class="step-header">
+      <p class="step-header__label">Paso 3 de 5 · Pagos</p>
+      <div class="step-bar" role="progressbar" aria-valuenow="3" aria-valuemin="0" aria-valuemax="5" aria-label="Paso 3 de 5">
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg is-done"></span>
+        <span class="step-bar__seg"></span>
+        <span class="step-bar__seg"></span>
+      </div>
+    </div>
+
+    <div class="screen__body">
+      <h1 class="screen__title" style="color: var(--color-primary);">Cómo pagarás los lotes</h1>
+
+      <!-- Cuenta de cargo: desplegable (select) cuando hay más de 2 cuentas -->
+      <div class="pay-section">
+        <p class="pay-section__label">Cuenta de cargo</p>
+
+        <!-- Si hay >2 cuentas se muestra un desplegable; si no, una tarjeta fija -->
+        <div class="select-field" id="cuenta-select-wrap">
+          <label class="select-field__label" for="cuenta-select">Elige la cuenta de la que debitaremos</label>
+          <div class="select-field__control">
+            <select class="select-field__select" id="cuenta-select" data-testid="cuenta-select"></select>
+            <span class="select-field__chevron"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></span>
+          </div>
+        </div>
+
+        <!-- Resumen de la cuenta elegida -->
+        <div class="pay-option pay-option--static" id="cuenta-resumen">
+          <span class="pay-option__radio" style="border-color: var(--color-secondary);"><span style="width:12px;height:12px;border-radius:999px;background:var(--color-secondary);display:block;"></span></span>
+          <span class="pay-option__body">
+            <span class="pay-option__title" id="cuenta-resumen-title">Cta. Cte. Soles ***-8830</span>
+            <span class="pay-option__desc" id="cuenta-resumen-desc">Cuenta ficticia de prueba</span>
+          </span>
+        </div>
+
+        <button class="pay-link" type="button" id="btn-cuenta-nueva" data-testid="solicitar-cuenta">Solicitar una cuenta nueva</button>
+
+        <div class="gate-note gate-note--ok" id="gate-cuenta-nueva" style="display:none;">
+          <span class="gate-note__icon">✓</span>
+          <span>Cuenta nueva agregada a la lista. Podrás usarla tras un Cash In (simulado).</span>
+        </div>
+      </div>
+
+      <!-- Modalidad de pago -->
+      <div class="pay-section">
+        <p class="pay-section__label">Modalidad de pago</p>
+
+        <label class="pay-option">
+          <input class="pay-option__input" type="radio" name="modalidad" value="recibir" checked data-testid="mod-recibir" />
+          <span class="pay-option__radio"></span>
+          <span class="pay-option__body">
+            <span class="pay-option__title">Pago al recibir</span>
+            <span class="pay-option__desc">Se debita al confirmar la recepción.</span>
+          </span>
+        </label>
+      </div>
+
+      <!-- Términos del convenio -->
+      <label class="consent-box">
+        <input class="consent-box__input" type="checkbox" id="acepta-convenio" data-testid="acepta-convenio" />
+        <span class="consent-box__check" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        </span>
+        <span class="consent-box__label">Acepto los términos del convenio de pago.</span>
+      </label>
+    </div>
+
+    <div class="screen__footer">
+      <button class="btn btn--primary btn--block" type="button" id="btn-guardar" data-testid="pagos-guardar-button" disabled>Guardar forma de pago</button>
+      <p class="mock-note">Cuentas de prueba guardadas en la base · convenio simulado</p>
+    </div>
+
+  </div>
+  <script src="../assets/vendor/amazon-cognito-identity-6.3.20.min.js"></script>
+  <script src="../assets/agro.js"></script>
+  <script src="assets/prototype.js"></script>
+  <script>
+    var selectWrap = document.getElementById("cuenta-select-wrap");
+    var select = document.getElementById("cuenta-select");
+    var CUENTAS = [];
+    function pintarResumen(c) {
+      document.getElementById("cuenta-resumen-title").textContent = c.titulo;
+      document.getElementById("cuenta-resumen-desc").textContent = c.descripcion;
+    }
+    //la cuenta nueva seria inventada: no se ofrece en esta demo
+    document.getElementById("btn-cuenta-nueva").style.display = "none";
+    Agro.proteger({ fase: "alta", paso: "comprador-05-pagos" }).then(function (ctx) {
+      return Agro.api("GET", "/cuentas-demo").then(function (lista) {
+        CUENTAS = lista;
+        select.innerHTML = lista.map(function (c) { return '<option value="' + c.id + '">' + Agro.escapar(c.titulo + " · " + c.descripcion) + '</option>'; }).join("");
+        selectWrap.style.display = lista.length > 1 ? "" : "none";
+        if (ctx.flujo.datos.cuentaCargoId) select.value = ctx.flujo.datos.cuentaCargoId;
+        pintarResumen(lista.filter(function (c) { return c.id === select.value; })[0] || lista[0]);
+        revisar();
+      });
+    });
+    select.addEventListener("change", function () {
+      pintarResumen(CUENTAS.filter(function (c) { return c.id === select.value; })[0]);
+    });
+    var acepta = document.getElementById("acepta-convenio");
+    var btnGuardar = document.getElementById("btn-guardar");
+    function revisar() { btnGuardar.disabled = !acepta.checked || !CUENTAS.length; btnGuardar.style.opacity = btnGuardar.disabled ? "0.5" : ""; }
+    acepta.addEventListener("change", revisar);
+    revisar();
+    btnGuardar.addEventListener("click", function () {
+      if (btnGuardar.disabled) return;
+      Agro.completar("comprador-05-pagos", {
+        cuentaCargoId: select.value || CUENTAS[0].id,
+        modalidadPago: document.querySelector('input[name="modalidad"]:checked').value
+      });
+      goTo("comprador-04-preferencias.html");
+    });
+  </script>
+</body>
+</html>

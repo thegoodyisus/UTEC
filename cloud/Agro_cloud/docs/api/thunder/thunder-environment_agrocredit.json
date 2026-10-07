@@ -1,0 +1,45 @@
+{
+  "clientName": "Thunder Client",
+  "environmentName": "agrocredit",
+  "dateExported": "2026-10-06T00:00:00.000Z",
+  "version": "1.1",
+  "folder": "",
+  "data": [
+    {
+      "name": "baseUrl",
+      "value": "http://<dns-del-alb>/api/v1"
+    },
+    {
+      "name": "tokenAgricultor",
+      "value": ""
+    },
+    {
+      "name": "tokenComprador",
+      "value": ""
+    },
+    {
+      "name": "dniAgricultor",
+      "value": "12345678"
+    },
+    {
+      "name": "rucComprador",
+      "value": "20123456789"
+    },
+    {
+      "name": "dniRepresentante",
+      "value": "87654321"
+    },
+    {
+      "name": "campaniaId",
+      "value": ""
+    },
+    {
+      "name": "ofertaId",
+      "value": ""
+    },
+    {
+      "name": "fotoId",
+      "value": ""
+    }
+  ]
+}

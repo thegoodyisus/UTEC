@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgroCredit — Inicio</title>
+  <link rel="stylesheet" href="../design-system/tokens/tokens.css" />
+  <link rel="stylesheet" href="../design-system/styles/base.css" />
+  <link rel="stylesheet" href="../design-system/components/primary-button/primary-button.css" />
+  <link rel="stylesheet" href="assets/prototype.css" />
+</head>
+<body>
+  <div class="screen">
+
+    <!-- Hero superior de marca con logo AgroCredit -->
+    <section class="landing-hero">
+      <div class="status-sim status-sim--on-hero" aria-hidden="true">
+        <span class="status-sim__time">9:41</span>
+        <span class="status-sim__net">4G · 100 %</span>
+      </div>
+
+      <div class="landing-hero__topbar">
+        <div class="brand-lockup brand-lockup--on-green brand-lockup--inline" role="img" aria-label="AgroCredit">
+          <p class="brand-lockup__wordmark">
+            <span class="brand-lockup__agro">Agro</span><span class="brand-lockup__credit">Credit</span>
+            <span class="brand-lockup__leaf" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path class="hoja-a" d="M11.6 22C4.8 21.3 1.2 15.4 2.2 5.6c6.8.3 10.6 6.2 9.4 16.4Z" fill="currentColor"/><path class="hoja-b" d="M12.4 22c-.9-10.6 3.4-17.6 9.6-19.6 2 10-2.4 18.2-9.6 19.6Z" fill="var(--color-leaf-light, #75b175)"/><path d="M11.2 21C9.4 16 6.9 11.6 4 8.4M12.9 21c1.6-5.4 4.2-10.2 7.6-14.4" stroke="rgba(255,255,255,0.55)" stroke-width="0.9" stroke-linecap="round"/></svg>
+            </span>
+          </p>
+        </div>
+        <span class="landing-hero__menu" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+        </span>
+      </div>
+
+      <!-- Tarjeta blanca con el saludo y las acciones principales -->
+      <div class="landing-card">
+        <h1 class="landing-card__hello" id="saludo">Buenas tardes</h1>
+
+        <button class="btn btn--primary btn--block" type="button" data-testid="inicio-login-button" onclick="goTo('00b-login.html')">Iniciar sesión</button>
+        <button class="btn btn--secondary btn--block" type="button" data-testid="inicio-nuevo-button" onclick="goTo('00-rol.html')">Usuario nuevo</button>
+
+        <p class="landing-card__hint">¿Primera vez en AgroCredit? Crea tu cuenta como <strong>usuario nuevo</strong>.</p>
+
+        <!-- Accesos rápidos -->
+        <div class="quick-row">
+          <div class="quick-item">
+            <span class="quick-item__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20a8 8 0 0 1 16 0"/></svg>
+            </span>
+            <span class="quick-item__label">Regístrate</span>
+          </div>
+          <div class="quick-item">
+            <span class="quick-item__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12Z"/><circle cx="12" cy="9" r="2.5"/></svg>
+            </span>
+            <span class="quick-item__label">Cómo<br/>funciona</span>
+          </div>
+          <div class="quick-item">
+            <span class="quick-item__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h4l2 5-3 2a12 12 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2Z"/></svg>
+            </span>
+            <span class="quick-item__label">Contáctanos</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección inferior: promo "Crea tu cuenta" -->
+    <section class="landing-promo">
+      <h2 class="landing-promo__title">Crea tu cuenta</h2>
+      <div class="landing-promo__card">
+        <div class="landing-promo__art" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none"><rect width="64" height="64" rx="12" fill="#d8f9e1"/><path d="M14 46c0-16 12-28 34-30-2 20-14 30-34 30Z" fill="#418e49"/><path d="M22 40c4-6 10-10 16-12" stroke="#135c40" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <p class="landing-promo__lead">Tu cosecha se encuentra con compradores formales.</p>
+          <p class="landing-promo__meta">Regístrate como agricultor o comprador y empieza hoy.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+  <script src="assets/prototype.js"></script>
+  <script>
+    // Saludo según la hora ( filler ilustrativo).
+    (function () {
+      var h = new Date().getHours();
+      var saludo = h < 12 ? "Buenos días" : (h < 19 ? "Buenas tardes" : "Buenas noches");
+      document.getElementById("saludo").textContent = saludo;
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+{
+  "GET /salud": {
+    "microservicio": "Plataforma",
+    "tipo": "lectura",
+    "destino": "memoria de la tarea ECS (sin tabla)",
+    "operacion": "-"
+  },
+  "GET /config": {
+    "microservicio": "Identidad y perfil",
+    "tipo": "lectura",
+    "destino": "variables de entorno de la tarea: ids de Cognito (sin tabla)",
+    "operacion": "-"
+  },
+  "POST /perfil": {
+    "microservicio": "Identidad y perfil",
+    "tipo": "escritura directa",
+    "destino": "agro-datos",
+    "operacion": "PutItem USER#<sub> / PROFILE (condicion attribute_not_exists); lee CATALOGO o CUENTA_DEMO para validar"
+  },
+  "GET /perfil": {
+    "microservicio": "Identidad y perfil",
+    "tipo": "lectura",
+    "destino": "agro-datos",
+    "operacion": "GetItem USER#<sub> / PROFILE"
+  },
+  "GET /catalogo/cultivos": {
+    "microservicio": "Padron y catalogos",
+    "tipo": "lectura",
+    "destino": "agro-datos",
+    "operacion": "Query PK=CATALOGO, SK empieza con CULTIVO#"
+  },
+  "POST /padron/consulta": {
+    "microservicio": "Padron y catalogos",
+    "tipo": "escritura directa (transaccion)",
+    "destino": "agro-padron-empresas o agro-padron-personas + agro-datos",
+    "operacion": "Scan consistente + TransactWriteItems: Delete del registro del padron + Put USER#<sub> / PADRON#<uso>#<tipoDoc>"
+  },
+  "GET /cuentas-demo": {
+    "microservicio": "Padron y catalogos",
+    "tipo": "lectura",
+    "destino": "agro-datos",
+    "operacion": "Query PK=CUENTA_DEMO"
+  },
+  "POST /campanas": {
+    "microservicio": "Campanas y fotos",
+    "tipo": "escritura asincrona",
+    "destino": "SQS agro-insercion -> Lambda agro-worker -> agro-datos",
+    "operacion": "la api lee CATALOGO y PROFILE y encola; el worker hace PutItem CAMP#<id> / META con indices por-usuario y publicadas-por-cultivo"
+  },
+  "GET /campanas/{campaniaId}": {
+    "microservicio": "Campanas y fotos",
+    "tipo": "lectura",
+    "destino": "agro-datos",
+    "operacion": "GetItem CAMP#<id> / META"
+  },
+  "PATCH /campanas/{campaniaId}": {
+    "microservicio": "Campanas y fotos",
+    "tipo": "actualizacion directa",
+    "destino": "agro-datos",
+    "operacion": "UpdateItem CAMP#<id> / META con condicion attribute_exists(PK) AND propietarioSub = <sub> AND numeroOfertas = 0"
+  },
+  "GET /campanas": {
+    "microservicio": "Campanas y fotos",
+    "tipo": "lectura",
+    "destino": "agro-datos (indice por-usuario)",
+    "operacion": "Query usuarioClave=USER#<sub>, usuarioOrden empieza con CAMP#"
+  },
+  "POST /campanas/{campaniaId}/fotos/url": {
+    "microservicio": "Campanas y fotos",
+    "tipo": "escritura asincrona",
+    "destino": "S3 agro-fotos -> SQS agro-fotos -> Lambda agro-etiquetar -> Rekognition -> agro-datos",
+    "operacion": "la api firma un POST a entrada/<sub>/<campana>/<foto>; la lambda registra CAMP#<id> / FOTO#<fotoId>"
+  },
+  "GET /campanas/{campaniaId}/fotos": {
+    "microservicio": "Campanas y fotos",
+    "tipo": "lectura",
+    "destino": "agro-datos + S3 agro-fotos",
+    "operacion": "Query PK=CAMP#<id>, SK empieza con FOTO#; URL de lectura temporal"
+  },
+  "GET /campanas/publicadas": {
+    "microservicio": "Campanas y fotos",
+    "tipo": "lectura",
+    "destino": "agro-datos (indice publicadas-por-cultivo)",
+    "operacion": "Query publicadaClave=PUB#<cultivo>#<departamento>"
+  },
+  "POST /campanas/{campaniaId}/ofertas": {
+    "microservicio": "Ofertas",
+    "tipo": "escritura asincrona",
+    "destino": "SQS agro-insercion -> Lambda agro-worker -> agro-datos",
+    "operacion": "la api lee META y PROFILE y encola; el worker hace TransactWriteItems: Put CAMP#<id> / OFFER#<id> + Update META numeroOfertas"
+  },
+  "GET /ofertas": {
+    "microservicio": "Ofertas",
+    "tipo": "lectura",
+    "destino": "agro-datos (indice por-usuario)",
+    "operacion": "Query usuarioClave=USER#<sub>, usuarioOrden empieza con OFFER#"
+  },
+  "GET /campanas/{campaniaId}/ofertas": {
+    "microservicio": "Ofertas",
+    "tipo": "lectura",
+    "destino": "agro-datos",
+    "operacion": "Query PK=CAMP#<id>, SK empieza con OFFER#"
+  }
+}

@@ -1,0 +1,77 @@
+/* ============================================================
+   Componente: text-field
+   Origen Figma: file qkyZrZ17ur7zSThXvLvqDh (pantalla login)
+   Campo de texto con label superior y placeholder.
+   Depende de tokens/tokens.css y styles/base.css
+   ============================================================ */
+
+.text-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.text-field__label {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.text-field__input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-large);
+  background: var(--color-surface);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  color: var(--color-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.text-field__input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.7;
+}
+
+/* Hover */
+.text-field__input:hover {
+  border-color: var(--color-text-secondary);
+}
+
+/* Focused (teclado / foco) */
+.text-field__input:focus,
+.text-field__input.is-focused {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
+}
+
+/* Active / selected (campo con valor confirmado o activo) */
+.text-field__input.is-active,
+.text-field__input:active {
+  border-color: var(--color-primary);
+}
+
+/* Estado de error */
+.text-field--error .text-field__input {
+  border-color: var(--color-danger);
+}
+.text-field__error {
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body-small);
+  color: var(--color-danger);
+}
+
+/* Disabled (gris) */
+.text-field__input:disabled,
+.text-field__input.is-disabled {
+  background: var(--color-disabled-bg);
+  border-color: var(--color-disabled-border);
+  color: var(--color-disabled-text);
+  cursor: not-allowed;
+}
+.text-field__input:disabled::placeholder { color: var(--color-disabled-text); }

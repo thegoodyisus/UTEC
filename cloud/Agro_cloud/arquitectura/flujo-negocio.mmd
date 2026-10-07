@@ -1,0 +1,70 @@
+%% flujo de negocio del corte vertical por rol (2026-10-05); los pasos simulados de v03 no se dibujan
+%% hexagonos = lo que hace el sistema en aws; flechas punteadas = efecto en el otro rol
+%% sin el monitoreo del panel de resiliencia (decision 60)
+flowchart LR
+    inicio(["Inicio: la persona elige su rol"])
+
+    subgraph agri["Agricultor"]
+        direction TB
+        a1["Crea su cuenta<br/>DNI + correo"]
+        a2["Define PIN de 6 digitos"]
+        sa1{{"Cognito envia un codigo al correo"}}
+        a3["Ingresa el codigo<br/>e inicia sesion con DNI + PIN"]
+        a5["Completa datos personales,<br/>cultivos y ubicacion"]
+        a6["Perfil listo"]
+        a7["Nueva campana: cultivo, ubicacion,<br/>logistica y foto del producto"]
+        sa2{{"Rekognition analiza la foto<br/>y la compara con el catalogo"}}
+        a8["Condiciones: volumen, cosecha,<br/>capital y precios"]
+        a9{"Foto reconocida?"}
+        a10["Ve la etiqueta, p. ej. papa"]
+        a11["Ve sin-etiqueta<br/>y puede publicar igual"]
+        a12["Publica la campana"]
+        sa3{{"Campana registrada y buscable<br/>por cultivo y departamento"}}
+        a13["Inicio: sus campanas<br/>con numero de ofertas"]
+        a14["Revisa las ofertas recibidas"]
+        a1 --> a2 --> sa1 --> a3 --> a5 --> a6 --> a7 --> sa2 --> a8 --> a9
+        a9 -->|"si"| a10 --> a12
+        a9 -->|"no"| a11 --> a12
+        a12 --> sa3 --> a13 --> a14
+    end
+
+    subgraph comp["Comprador"]
+        direction TB
+        c1["Crea su cuenta<br/>RUC o DNI + correo"]
+        c2["Define PIN de 6 digitos"]
+        sc1{{"Cognito envia un codigo al correo"}}
+        c3["Ingresa el codigo<br/>e inicia sesion con documento + PIN"]
+        c4{"Quedan registros<br/>en el padron?"}
+        c5["Recibe datos de una empresa ficticia<br/>y de su representante"]
+        c6["Sistema no disponible:<br/>no puede continuar"]
+        c7["Elige cuenta de cargo<br/>y modalidad de pago"]
+        c8["Perfil listo"]
+        c9["Busca campanas publicadas<br/>por cultivo y departamento"]
+        c10["Ve el detalle y las fotos<br/>sin capital ni datos personales del productor"]
+        c11["Envia oferta: volumen, precio,<br/>modalidad, logistica, fecha"]
+        c12{"Oferta valida?<br/>volumen <= campana<br/>y campana publicada"}
+        c14["Corrige los datos"]
+        sc2{{"Oferta registrada una sola vez<br/>y suma 1 al contador de la campana"}}
+        c13["La ve en Mis ofertas"]
+        c1 --> c2 --> sc1 --> c3 --> c4
+        c4 -->|"si"| c5 --> c7 --> c8 --> c9
+        c4 -->|"no"| c6
+        c9 --> c10 --> c11 --> c12
+        c12 -->|"si"| sc2 --> c13
+        c12 -->|"no"| c14 --> c11
+    end
+
+    fuera["Fuera del corte: aceptar oferta,<br/>reserva de volumen y financiamiento"]
+
+    inicio -->|"agricultor"| a1
+    inicio -->|"comprador"| c1
+    sa3 -.->|"aparece en la busqueda"| c9
+    sc2 -.->|"el agricultor ve 1 oferta mas"| a13
+    a14 -.-> fuera
+
+    classDef sistema fill:#e3ecfb,stroke:#1565c0,color:#0d3c78
+    classDef decision fill:#fff4e0,stroke:#ef6c00,color:#5a2d00
+    classDef fin fill:#f2f2f2,stroke:#999,color:#555
+    class sa1,sa2,sa3,sc1,sc2 sistema
+    class a9,c4,c12 decision
+    class c6,fuera fin
