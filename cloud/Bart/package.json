@@ -1,0 +1,11 @@
+{
+  "name": "bart-onboarding",
+  "private": true,
+  "description": "Bart: onboarding financiero conversacional. Infraestructura con Serverless Framework v4.",
+  "scripts": {
+    "sls": "serverless"
+  },
+  "devDependencies": {
+    "serverless": "^4.46.0"
+  }
+}

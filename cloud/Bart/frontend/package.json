@@ -1,0 +1,27 @@
+{
+  "name": "bart-web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Web de Bart: chat con el cliente y bandeja del banco (POC, datos sinteticos).",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "vite",
+    "prebuild": "node scripts/copiar_demo.mjs",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.2",
+    "serverless": "^4.46.0",
+    "serverless-plugin-scripts": "^1.0.2",
+    "serverless-s3-sync": "^3.3.0",
+    "vite": "^6.0.5"
+  }
+}

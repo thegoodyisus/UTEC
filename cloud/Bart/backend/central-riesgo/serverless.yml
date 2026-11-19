@@ -1,0 +1,76 @@
+# Microservicio Central de riesgo (simulada) - Bart
+# Datos sinteticos (es_sintetico = true).
+service: bart-central-riesgo
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: python3.14
+  stage: ${opt:stage, "dev"}
+  region: ${opt:region, "us-east-1"}
+  architecture: x86_64
+  iam:
+    role: arn:aws:iam::${aws:accountId}:role/LabRole
+  httpApi:
+    name: ${self:service}-${sls:stage}
+    payload: "2.0"
+  environment:
+    RCC_TABLE: ${self:custom.tablaRcc}
+  tags:
+    proyecto: bart
+    microservicio: central-riesgo
+    datos: sinteticos
+
+custom:
+  tablaRcc: bart-rcc-evaluacion-clientes-${sls:stage}
+
+functions:
+  consultarRcc:
+    name: ${self:service}-consultar-rcc-${sls:stage}
+    description: Central de riesgo simulada. GET /rcc/{dni} devuelve el RCC mas reciente del cliente (datos sinteticos).
+    handler: handler.consultar_rcc
+    timeout: 10
+    memorySize: 256
+    events:
+      - httpApi:
+          method: GET
+          path: /rcc/{dni}
+
+resources:
+  Resources:
+    RccTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tablaRcc}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: documento
+            AttributeType: S
+          - AttributeName: periodo
+            AttributeType: S
+        KeySchema:
+          - AttributeName: documento
+            KeyType: HASH
+          - AttributeName: periodo
+            KeyType: RANGE
+        Tags:
+          - Key: proyecto
+            Value: bart
+          - Key: datos
+            Value: sinteticos
+
+  Outputs:
+    RccApiUrl:
+      Description: URL base de la API Central de riesgo
+      Value:
+        Fn::Join:
+          - ""
+          - - "https://"
+            - Ref: HttpApi
+            - ".execute-api."
+            - Ref: AWS::Region
+            - ".amazonaws.com"
+    RccTableName:
+      Description: Tabla DynamoDB de la central de riesgo
+      Value:
+        Ref: RccTable

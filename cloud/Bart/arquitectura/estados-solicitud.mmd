@@ -1,0 +1,16 @@
+stateDiagram-v2
+    direction LR
+    [*] --> EN_PROCESO: POST /solicitudes
+    EN_PROCESO --> PRE_APROBADA: R6 cumple
+    EN_PROCESO --> CONTRAOFERTA: R6 no cumple
+    EN_PROCESO --> NO_ELEGIBLE: falla R1 a R5
+    EN_PROCESO --> DOC_INCONSISTENTE: falla V1 a V3
+    EN_PROCESO --> ERROR: falla tecnica
+    CONTRAOFERTA --> PRE_APROBADA: cliente acepta
+    CONTRAOFERTA --> DESISTIDA: cliente rechaza
+    PRE_APROBADA --> CERRADA: banco cierra
+    NO_ELEGIBLE --> [*]
+    DOC_INCONSISTENTE --> [*]
+    DESISTIDA --> [*]
+    ERROR --> [*]
+    CERRADA --> [*]

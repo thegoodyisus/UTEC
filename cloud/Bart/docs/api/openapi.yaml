@@ -1,0 +1,395 @@
+openapi: 3.0.3
+info:
+  title: Bart - APIs
+  version: "1.1"
+  description: |
+    Contrato de las tres APIs HTTP de Bart (cada una con su propia URL base en us-east-1):
+    chat, solicitudes y central de riesgo simulada. Todos los datos son ficticios.
+
+    - JSON en UTF-8. Montos en soles (PEN), tasas como decimal (0.2231 = 22.31%), fechas en ISO-8601 UTC.
+    - `dni` son 8 digitos; en la base y en las respuestas el campo `documento` es `DNI#` + dni.
+    - Errores siempre con la forma `{"error": {"codigo", "mensaje", "detalle?"}}`.
+    - Sin autenticacion. CORS abierto solo para el dominio de la web y `localhost:5173`.
+    - La Lambda de solicitudes tambien se invoca directo (sin HTTP) con `{"operacion", "datos"}` desde Bart:
+      LISTAR_OFERTAS, CREAR_SOLICITUD, LEER_SOLICITUD y DECIDIR_CONTRAOFERTA, con los mismos cuerpos de abajo.
+tags:
+  - name: Chat
+  - name: Solicitudes
+  - name: Central de riesgo
+paths:
+  /chat/sesiones:
+    post:
+      tags: [Chat]
+      summary: Abre una conversacion
+      servers: [{ url: "https://{apiId}.execute-api.us-east-1.amazonaws.com", variables: { apiId: { default: "bart-chat" } } }]
+      requestBody:
+        content: { application/json: { schema: { type: object }, example: {} } }
+      responses:
+        "201": { description: Sesion creada con el saludo, content: { application/json: { schema: { $ref: "#/components/schemas/RespuestaChat" } } } }
+  /chat/mensajes:
+    post:
+      tags: [Chat]
+      summary: Envia un mensaje del cliente
+      description: |
+        `texto` va de 1 a 500 caracteres y puede ir vacio solo si hay `adjunto`. El adjunto (PDF en base64, hasta 2 MB)
+        solo se acepta cuando la respuesta anterior tenia `espera: BOLETA`.
+      servers: [{ url: "https://{apiId}.execute-api.us-east-1.amazonaws.com", variables: { apiId: { default: "bart-chat" } } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MensajeChat" }
+            example: { sesion_id: "5d0c2a3e-8f0b-4b7e-9a51-2f4c1d9e7a10", texto: "quiero un prestamo, mi dni es 99990069" }
+      responses:
+        "200": { description: Respuesta de Bart y paso actual, content: { application/json: { schema: { $ref: "#/components/schemas/RespuestaChat" } } } }
+        "400": { $ref: "#/components/responses/Error" }
+        "404": { $ref: "#/components/responses/Error" }
+        "409": { description: "SESION_FINALIZADA o SESION_OCUPADA", content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+        "410": { description: SESION_EXPIRADA, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+        "413": { description: BOLETA_MUY_GRANDE, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+        "502": { description: DEPENDENCIA_NO_DISPONIBLE, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+  /chat/sesiones/{sesion_id}:
+    get:
+      tags: [Chat]
+      summary: Consulta el estado de la conversacion (polling mientras se evalua la boleta)
+      description: Mientras la solicitud sigue EN_PROCESO el campo `mensaje` es null; al terminar trae el mensaje final.
+      servers: [{ url: "https://{apiId}.execute-api.us-east-1.amazonaws.com", variables: { apiId: { default: "bart-chat" } } }]
+      parameters: [{ name: sesion_id, in: path, required: true, schema: { type: string, format: uuid } }]
+      responses:
+        "200": { description: Estado actual, content: { application/json: { schema: { $ref: "#/components/schemas/RespuestaChat" } } } }
+        "404": { $ref: "#/components/responses/Error" }
+        "410": { description: SESION_EXPIRADA, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+  /clientes/{dni}/ofertas:
+    get:
+      tags: [Solicitudes]
+      summary: Ofertas preaprobadas vigentes de un cliente
+      description: Solo lee la tabla de ofertas de campana (no consulta la central de riesgo). Sin ofertas devuelve 200 con lista vacia.
+      servers: [{ url: "https://{apiId}.execute-api.us-east-1.amazonaws.com", variables: { apiId: { default: "bart-solicitudes" } } }]
+      parameters: [{ $ref: "#/components/parameters/Dni" }]
+      responses:
+        "200": { description: Ofertas vigentes ordenadas por prioridad, content: { application/json: { schema: { $ref: "#/components/schemas/Ofertas" } } } }
+        "400": { $ref: "#/components/responses/Error" }
+  /solicitudes:
+    post:
+      tags: [Solicitudes]
+      summary: Crea una solicitud con la boleta e inicia la evaluacion
+      description: |
+        Valida la oferta, el monto (entre el minimo y el maximo de la oferta; el plazo es el de la oferta), el PDF y que el DNI
+        no tenga otra solicitud activa. Guarda el PDF en S3, crea la solicitud EN_PROCESO y arranca el workflow. Responde de inmediato.
+      servers: [{ url: "https://{apiId}.execute-api.us-east-1.amazonaws.com", variables: { apiId: { default: "bart-solicitudes" } } }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { $ref: "#/components/schemas/NuevaSolicitud" } } }
+      responses:
+        "202":
+          description: Solicitud recibida
+          content: { application/json: { schema: { $ref: "#/components/schemas/SolicitudCreada" } } }
+        "400": { description: "CUERPO_INVALIDO, DNI_INVALIDO o BOLETA_NO_PDF", content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+        "404": { description: OFERTA_NO_ENCONTRADA, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+        "409": { description: "OFERTA_NO_VIGENTE o SOLICITUD_ACTIVA (en `detalle` viene el solicitud_id activo)", content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+        "413": { description: BOLETA_MUY_GRANDE (maximo 2 MB), content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+        "422": { description: MONTO_FUERA_DE_OFERTA (en `detalle` viene el rango), content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+        "502": { description: DEPENDENCIA_NO_DISPONIBLE, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+    get:
+      tags: [Solicitudes]
+      summary: Bandeja del banco
+      description: Ordenada de la mas reciente a la mas antigua. Sin `estado` ni `dni` devuelve las PRE_APROBADA.
+      servers: [{ url: "https://{apiId}.execute-api.us-east-1.amazonaws.com", variables: { apiId: { default: "bart-solicitudes" } } }]
+      parameters:
+        - { name: estado, in: query, schema: { $ref: "#/components/schemas/Estado" } }
+        - { name: dni, in: query, description: "Si viene, se listan las solicitudes de ese DNI (el filtro estado sigue aplicando)", schema: { type: string, pattern: "^[0-9]{8}$" } }
+        - { name: limite, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+        - { name: cursor, in: query, description: "Valor de siguiente_cursor de la respuesta anterior", schema: { type: string } }
+      responses:
+        "200": { description: Pagina de solicitudes, content: { application/json: { schema: { $ref: "#/components/schemas/Bandeja" } } } }
+        "400": { description: PARAMETRO_INVALIDO, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+  /solicitudes/{solicitud_id}:
+    get:
+      tags: [Solicitudes]
+      summary: JSON de salida completo de una solicitud
+      servers: [{ url: "https://{apiId}.execute-api.us-east-1.amazonaws.com", variables: { apiId: { default: "bart-solicitudes" } } }]
+      parameters: [{ $ref: "#/components/parameters/SolicitudId" }]
+      responses:
+        "200": { description: Solicitud con reglas evaluadas, boleta e historial, content: { application/json: { schema: { $ref: "#/components/schemas/Solicitud" } } } }
+        "404": { $ref: "#/components/responses/Error" }
+  /solicitudes/{solicitud_id}/contraoferta:
+    post:
+      tags: [Solicitudes]
+      summary: El cliente acepta o rechaza la contraoferta
+      description: Solo si la solicitud esta en CONTRAOFERTA. ACEPTA la pasa a PRE_APROBADA con el monto aprobable; RECHAZA la deja en DESISTIDA.
+      servers: [{ url: "https://{apiId}.execute-api.us-east-1.amazonaws.com", variables: { apiId: { default: "bart-solicitudes" } } }]
+      parameters: [{ $ref: "#/components/parameters/SolicitudId" }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [decision], properties: { decision: { type: string, enum: [ACEPTA, RECHAZA] } } } } }
+      responses:
+        "200":
+          description: Decision registrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  solicitud_id: { type: string }
+                  estado: { type: string }
+                  motivo: { type: string }
+                  monto_preaprobado: { type: number, nullable: true }
+                  cuota_mensual_estimada: { type: number, nullable: true }
+        "400": { description: DECISION_INVALIDA, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+        "404": { $ref: "#/components/responses/Error" }
+        "409": { description: ESTADO_NO_PERMITE, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+  /solicitudes/{solicitud_id}/cierre:
+    post:
+      tags: [Solicitudes]
+      summary: El banco cierra una solicitud PRE_APROBADA
+      servers: [{ url: "https://{apiId}.execute-api.us-east-1.amazonaws.com", variables: { apiId: { default: "bart-solicitudes" } } }]
+      parameters: [{ $ref: "#/components/parameters/SolicitudId" }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [usuario_banco, producto_final]
+              properties:
+                usuario_banco: { type: string, minLength: 1, maxLength: 50 }
+                producto_final: { type: string, minLength: 1, maxLength: 50, description: Referencia del producto contratado en el sistema del banco }
+            example: { usuario_banco: analista.demo, producto_final: PLD-DEMO-0001 }
+      responses:
+        "200":
+          description: Solicitud cerrada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  solicitud_id: { type: string }
+                  estado: { type: string, enum: [CERRADA] }
+                  motivo: { type: string, enum: [CERRADA_POR_BANCO] }
+                  cierre: { $ref: "#/components/schemas/Cierre" }
+        "400": { $ref: "#/components/responses/Error" }
+        "404": { $ref: "#/components/responses/Error" }
+        "409": { description: ESTADO_NO_PERMITE (tambien si ya estaba cerrada), content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+  /rcc/{dni}:
+    get:
+      tags: [Central de riesgo]
+      summary: Reporte crediticio consolidado de un cliente
+      description: Estructura propia (no es el formato oficial de la SBS). Sin `periodo` devuelve el mas reciente.
+      servers: [{ url: "https://{apiId}.execute-api.us-east-1.amazonaws.com", variables: { apiId: { default: "bart-central-riesgo" } } }]
+      parameters:
+        - { $ref: "#/components/parameters/Dni" }
+        - { name: periodo, in: query, schema: { type: string, pattern: "^[0-9]{4}-(0[1-9]|1[0-2])$", example: "2026-09" } }
+      responses:
+        "200": { description: Reporte con las lineas de deuda, content: { application/json: { schema: { $ref: "#/components/schemas/Rcc" } } } }
+        "400": { description: "DNI_INVALIDO o PARAMETRO_INVALIDO", content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+        "404": { description: RCC_NO_ENCONTRADO, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+components:
+  parameters:
+    Dni: { name: dni, in: path, required: true, schema: { type: string, pattern: "^[0-9]{8}$", example: "99990069" } }
+    SolicitudId: { name: solicitud_id, in: path, required: true, schema: { type: string, format: uuid } }
+  responses:
+    Error: { description: Error, content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } } }
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            codigo: { type: string, example: MONTO_FUERA_DE_OFERTA }
+            mensaje: { type: string }
+            detalle: { type: object, nullable: true }
+    Estado:
+      type: string
+      enum: [EN_PROCESO, PRE_APROBADA, CONTRAOFERTA, NO_ELEGIBLE, DOC_INCONSISTENTE, DESISTIDA, CERRADA, ERROR]
+      description: |
+        EN_PROCESO: el workflow esta evaluando. PRE_APROBADA: pre-aprobada, sujeta a validacion del banco. CONTRAOFERTA: la capacidad
+        alcanza un monto menor al pedido. NO_ELEGIBLE: no califica (invitacion a tienda). DOC_INCONSISTENTE: la boleta no paso la validacion.
+        DESISTIDA: el cliente rechazo la contraoferta. CERRADA: la cerro el banco. ERROR: fallo tecnico.
+    Motivo:
+      type: string
+      nullable: true
+      enum: [DENTRO_DE_CAPACIDAD, CONTRAOFERTA_ACEPTADA, MONTO_SOBRE_CAPACIDAD, CALIFICACION, INGRESO_INSUFICIENTE, SIN_DEUDA_COMPRABLE, SIN_CAPACIDAD, SIN_AHORRO, PDF_SIN_TEXTO, DNI_NO_ENCONTRADO, DNI_NO_COINCIDE, SCORE_BAJO, CONTRAOFERTA_RECHAZADA, CERRADA_POR_BANCO, RCC_NO_ENCONTRADO, ERROR_TECNICO]
+    MensajeChat:
+      type: object
+      required: [sesion_id]
+      properties:
+        sesion_id: { type: string, format: uuid }
+        texto: { type: string, maxLength: 500 }
+        adjunto:
+          type: object
+          nullable: true
+          properties:
+            nombre_archivo: { type: string }
+            tipo: { type: string, example: application/pdf }
+            contenido_base64: { type: string }
+    RespuestaChat:
+      type: object
+      properties:
+        sesion_id: { type: string, format: uuid }
+        paso: { type: string, enum: [INICIO, PEDIR_DNI, ELEGIR_PRODUCTO, PEDIR_MONTO, PEDIR_BOLETA, EN_PROCESO, DECIDIR_CONTRAOFERTA, FIN] }
+        espera: { type: string, enum: [INTENCION, DNI, PRODUCTO, MONTO, BOLETA, DECISION, NADA], description: Lo que Bart espera del cliente }
+        mensaje: { type: string, nullable: true }
+        ofertas: { type: array, nullable: true, items: { $ref: "#/components/schemas/Oferta" }, description: Solo en la respuesta que muestra las ofertas }
+        solicitud:
+          type: object
+          nullable: true
+          properties: { solicitud_id: { type: string }, estado: { $ref: "#/components/schemas/Estado" } }
+        expira_en: { type: string, format: date-time, description: La sesion vence 30 minutos despues del ultimo mensaje }
+    Oferta:
+      type: object
+      properties:
+        oferta_id: { type: string, example: OF-2026-11-99990069-PLD }
+        producto_id: { type: string, enum: [PLD, TC, VEHICULAR, HIPOTECARIO, COMPRA_DEUDA] }
+        producto_nombre: { type: string }
+        moneda: { type: string, example: PEN }
+        monto_minimo: { type: number }
+        monto_maximo: { type: number, description: En tarjeta de credito es la linea }
+        tea: { type: number }
+        tcea_referencial: { type: number }
+        plazo_meses: { type: integer, nullable: true, description: Nulo en tarjeta }
+        cuota_mensual_referencial: { type: number }
+        ahorro_mensual_estimado: { type: number, nullable: true, description: Solo en compra de deuda }
+        fecha_fin_vigencia: { type: string, format: date }
+        condiciones: { type: string }
+    Ofertas:
+      type: object
+      properties:
+        documento: { type: string, example: "DNI#99990069" }
+        fecha_consulta: { type: string, format: date }
+        ofertas: { type: array, items: { $ref: "#/components/schemas/Oferta" } }
+        es_sintetico: { type: boolean }
+    NuevaSolicitud:
+      type: object
+      required: [dni, oferta_id, monto_solicitado, boleta]
+      properties:
+        dni: { type: string, pattern: "^[0-9]{8}$" }
+        oferta_id: { type: string }
+        monto_solicitado: { type: number, description: Entre monto_minimo y monto_maximo de la oferta }
+        boleta:
+          type: object
+          required: [contenido_base64]
+          properties: { nombre_archivo: { type: string }, contenido_base64: { type: string, description: PDF con texto, hasta 2 MB } }
+        sesion_id: { type: string, nullable: true }
+        canal: { type: string, enum: [BART, WEB, API], default: API }
+    SolicitudCreada:
+      type: object
+      properties:
+        solicitud_id: { type: string, format: uuid }
+        estado: { type: string, enum: [EN_PROCESO] }
+        creado_en: { type: string, format: date-time }
+        consultar: { type: string, example: "/solicitudes/96427893-8db4-42c5-bdac-1e0110672a4d" }
+    Bandeja:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              solicitud_id: { type: string }
+              estado: { $ref: "#/components/schemas/Estado" }
+              motivo: { $ref: "#/components/schemas/Motivo" }
+              documento: { type: string }
+              producto_id: { type: string }
+              monto_solicitado: { type: number }
+              monto_preaprobado: { type: number, nullable: true }
+              creado_en: { type: string, format: date-time }
+              actualizado_en: { type: string, format: date-time }
+        siguiente_cursor: { type: string, nullable: true }
+    Cierre:
+      type: object
+      nullable: true
+      properties: { usuario_banco: { type: string }, fecha: { type: string, format: date-time }, producto_final: { type: string } }
+    Solicitud:
+      type: object
+      properties:
+        version_contrato: { type: string, example: "1.1" }
+        solicitud_id: { type: string, format: uuid }
+        estado: { $ref: "#/components/schemas/Estado" }
+        motivo: { $ref: "#/components/schemas/Motivo" }
+        documento: { type: string }
+        es_sintetico: { type: boolean }
+        producto: { type: object, properties: { producto_id: { type: string }, nombre: { type: string } } }
+        oferta: { type: object, description: Oferta sobre la que se pidio (monto minimo y maximo, tea, plazo y vigencia) }
+        monto_solicitado: { type: number }
+        evaluacion:
+          type: object
+          nullable: true
+          description: Nulo si no se llego a evaluar (EN_PROCESO, DOC_INCONSISTENTE o ERROR antes de las reglas)
+          properties:
+            ingreso_neto_validado: { type: number }
+            periodo_rcc: { type: string }
+            clasificacion_sbs: { type: string }
+            cuota_rcc_actual: { type: number }
+            ratio_endeud_max: { type: number }
+            capacidad_mensual: { type: number }
+            monto_aprobable: { type: number }
+            monto_preaprobado: { type: number, nullable: true }
+            cuota_mensual_estimada: { type: number, nullable: true }
+            ratio_endeudamiento: { type: number, nullable: true }
+            version_reglas: { type: string }
+            reglas_evaluadas:
+              type: array
+              items:
+                type: object
+                properties:
+                  regla: { type: string, enum: [R1_CALIFICACION, R2_INGRESO_MINIMO, R3_DEUDA_COMPRABLE, R4_CAPACIDAD, R5_AHORRO, R6_MONTO] }
+                  valor: { description: Lo que se midio }
+                  umbral: { description: Con lo que se comparo }
+                  cumple: { type: boolean }
+        compra_deuda: { type: object, nullable: true, description: Solo en compra de deuda (saldo comprable, cuota reemplazada y ahorro) }
+        boleta:
+          type: object
+          nullable: true
+          properties:
+            periodo: { type: string, nullable: true }
+            score_consistencia: { type: integer, nullable: true, description: De 0 a 100; el minimo para aprobar es 70 }
+            banderas: { type: array, items: { type: string } }
+            sha256: { type: string }
+        explicacion: { type: string, nullable: true, description: Mensaje que vio el cliente }
+        historial:
+          type: array
+          items:
+            type: object
+            properties: { estado: { type: string }, motivo: { type: string, nullable: true }, fecha: { type: string, format: date-time }, origen: { type: string, enum: [API_SOLICITUDES, WORKFLOW, CLIENTE, BANCO] } }
+        cierre: { $ref: "#/components/schemas/Cierre" }
+        sesion_id: { type: string, nullable: true }
+        execution_arn: { type: string, nullable: true }
+        creado_en: { type: string, format: date-time }
+        actualizado_en: { type: string, format: date-time }
+        version: { type: integer }
+    Rcc:
+      type: object
+      properties:
+        documento: { type: string }
+        periodo: { type: string, example: "2026-09" }
+        sbs_customer_id: { type: string }
+        clasificacion_sbs: { type: string, enum: [NORMAL, CPP, DEFICIENTE, DUDOSO, PERDIDA] }
+        pct_normal: { type: number }
+        max_dias_atraso: { type: integer }
+        n_entidades: { type: integer }
+        n_creditos: { type: integer }
+        deuda_total: { type: number }
+        deuda_directa: { type: number }
+        deuda_con_atraso: { type: number }
+        deuda_consumo: { type: number }
+        deuda_tarjeta: { type: number }
+        deuda_vehicular: { type: number }
+        deuda_hipotecario: { type: number }
+        cuota_mensual_estimada: { type: number }
+        banda_endeudamiento: { type: string, enum: [BAJO, MEDIO, ALTO] }
+        lineas:
+          type: array
+          items:
+            type: object
+            properties:
+              entidad: { type: string }
+              tipo_credito: { type: string }
+              producto: { type: string }
+              tipo_riesgo: { type: string, enum: [DIRECTO, INDIRECTO] }
+              saldo: { type: number }
+              dias_atraso: { type: integer }
+              calificacion: { type: string }
+              cuota_estimada: { type: number }
+        es_sintetico: { type: boolean }

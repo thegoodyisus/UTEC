@@ -1,0 +1,25 @@
+# credenciales y entorno local
+credential.txt
+.venv/
+node_modules/
+.env*
+__pycache__/
+.DS_Store
+
+# se generan al desplegar
+.serverless/
+vendor/
+dist/
+frontend/public/demo/
+despliegue_logs/
+despliegue_resultado.txt
+backend/*/*.postman_collection.json
+
+# material de trabajo que no se sube
+docs/_tools/
+docs/costos/
+docs/version_final/
+registros/
+compartir/
+.claude/
+Data/*.xlsx

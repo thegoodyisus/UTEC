@@ -1,0 +1,79 @@
+# Microservicio Bart (chat por estados). Groq no recibe historial; la memoria es el estado de la sesion.
+# Requiere bart-solicitudes desplegado (lo invoca directo).
+service: bart-chat
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: python3.14
+  stage: ${opt:stage, "dev"}
+  region: ${opt:region, "us-east-1"}
+  architecture: x86_64
+  iam:
+    role: arn:aws:iam::${aws:accountId}:role/LabRole
+  httpApi:
+    name: ${self:service}-${sls:stage}
+    payload: "2.0"
+    cors:
+      allowedOrigins:
+        - http://bart-web-${sls:stage}-${self:custom.sufijo}.s3-website-us-east-1.amazonaws.com
+        - http://localhost:5173
+      allowedHeaders:
+        - Content-Type
+      allowedMethods:
+        - GET
+        - POST
+        - OPTIONS
+  environment:
+    SESIONES_TABLE: ${self:custom.tablaSesiones}
+    SOLICITUDES_FUNCTION: ${cf:bart-solicitudes-${sls:stage}.SolicitudesApiFunctionArn}
+    GROQ_API_KEY: ${env:GROQ_API_KEY}
+    GROQ_MODEL: openai/gpt-oss-120b
+  tags:
+    proyecto: bart
+    microservicio: chat
+    datos: sinteticos
+
+custom:
+  # Sufijo de los buckets (unicos en todo AWS): viene de 'sufijo' en credential.txt (variable BART_SUFIJO)
+  sufijo: ${env:BART_SUFIJO}
+  tablaSesiones: bart-sesiones-${sls:stage}
+
+package:
+  patterns:
+    - "!README.md"
+    - "!*.postman_collection.json"
+    - "!**/__pycache__/**"
+
+functions:
+  chat:
+    name: ${self:service}-api-${sls:stage}
+    description: Bart, asistente de creditos por estados (Groq sin historial; estado en DynamoDB).
+    handler: bart.handler
+    timeout: 29
+    memorySize: 512
+    events:
+      - httpApi: { method: POST, path: /chat/sesiones }
+      - httpApi: { method: POST, path: /chat/mensajes }
+      - httpApi: { method: GET, path: "/chat/sesiones/{sesion_id}" }
+
+resources:
+  Resources:
+    SesionesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tablaSesiones}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - { AttributeName: sesion_id, AttributeType: S }
+        KeySchema:
+          - { AttributeName: sesion_id, KeyType: HASH }
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+
+  Outputs:
+    ChatApiUrl:
+      Description: URL base de la API de Bart
+      Value:
+        Fn::Join: ["", ["https://", { Ref: HttpApi }, ".execute-api.", { Ref: "AWS::Region" }, ".amazonaws.com"]]

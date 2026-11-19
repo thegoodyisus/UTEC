@@ -1,0 +1,4 @@
+# Dependencias Python para desplegar y probar Bart (las instala desplegar.py en .venv).
+# boto3: carga de datos, verificaciones y pruebas en AWS. pypdf: se empaqueta en la Lambda que lee boletas.
+boto3==1.44.2
+pypdf==7.0.1

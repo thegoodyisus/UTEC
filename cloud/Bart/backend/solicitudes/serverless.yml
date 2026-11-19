@@ -1,0 +1,311 @@
+# Microservicio Solicitudes y workflow de Bart. Datos sinteticos.
+# pypdf va empaquetado en vendor/ (desplegar.py lo instala antes de desplegar).
+service: bart-solicitudes
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: python3.14
+  stage: ${opt:stage, "dev"}
+  region: ${opt:region, "us-east-1"}
+  architecture: x86_64
+  iam:
+    role: arn:aws:iam::${aws:accountId}:role/LabRole
+  httpApi:
+    name: ${self:service}-${sls:stage}
+    payload: "2.0"
+    cors:
+      allowedOrigins:
+        - http://bart-web-${sls:stage}-${self:custom.sufijo}.s3-website-us-east-1.amazonaws.com
+        - http://localhost:5173
+      allowedHeaders:
+        - Content-Type
+      allowedMethods:
+        - GET
+        - POST
+        - OPTIONS
+  environment:
+    SOLICITUDES_TABLE: ${self:custom.tablas.solicitudes}
+    BOLETAS_TABLE: ${self:custom.tablas.boletas}
+    PRODUCTOS_TABLE: ${self:custom.tablas.productos}
+    OFERTAS_TABLE: ${self:custom.tablas.ofertas}
+    BOLETAS_BUCKET: ${self:custom.bucketBoletas}
+  tags:
+    proyecto: bart
+    microservicio: solicitudes
+    datos: sinteticos
+
+custom:
+  # Sufijo de los buckets (unicos en todo AWS): viene de 'sufijo' en credential.txt (variable BART_SUFIJO)
+  sufijo: ${env:BART_SUFIJO}
+  bucketBoletas: bart-boletas-${sls:stage}-${self:custom.sufijo}
+  tablas:
+    solicitudes: bart-solicitudes-${sls:stage}
+    boletas: bart-boletas-${sls:stage}
+    productos: bart-productos-${sls:stage}
+    ofertas: bart-ofertas-preaprobadas-${sls:stage}
+  groq:
+    GROQ_API_KEY: ${env:GROQ_API_KEY}
+    GROQ_MODEL: openai/gpt-oss-120b
+
+package:
+  patterns:
+    - "!README.md"
+    - "!*.postman_collection.json"
+    - "!tests/**"
+    - "!**/__pycache__/**"
+
+functions:
+  api:
+    name: ${self:service}-api-${sls:stage}
+    description: API Solicitudes (ofertas, crear, leer, listar, contraoferta, cierre) e invoke para Bart.
+    handler: api.handler
+    timeout: 15
+    memorySize: 512
+    environment:
+      STATE_MACHINE_ARN:
+        Ref: EvaluacionStateMachine
+    events:
+      - httpApi: { method: GET, path: "/clientes/{dni}/ofertas" }
+      - httpApi: { method: POST, path: /solicitudes }
+      - httpApi: { method: GET, path: /solicitudes }
+      - httpApi: { method: GET, path: "/solicitudes/{solicitud_id}" }
+      - httpApi: { method: POST, path: "/solicitudes/{solicitud_id}/contraoferta" }
+      - httpApi: { method: POST, path: "/solicitudes/{solicitud_id}/cierre" }
+
+  leerBoleta:
+    name: ${self:service}-leer-boleta-${sls:stage}
+    description: "Workflow paso 1: lee el PDF de S3, extrae texto (pypdf) y campos con Groq (sin DNI ni nombre)."
+    handler: workflow.leer_boleta
+    timeout: 30
+    memorySize: 512
+    environment: ${self:custom.groq}
+
+  validarBoleta:
+    name: ${self:service}-validar-boleta-${sls:stage}
+    description: "Workflow paso 2: V1-V3 (texto, DNI, puntaje) y guarda la tabla boletas."
+    handler: workflow.validar_boleta
+    timeout: 10
+    memorySize: 256
+
+  consultarRcc:
+    name: ${self:service}-consultar-rcc-${sls:stage}
+    description: "Workflow paso 3: GET a la API de la central de riesgo."
+    handler: workflow.consultar_rcc
+    timeout: 15
+    memorySize: 256
+    environment:
+      RCC_API_URL: ${cf:bart-central-riesgo-${sls:stage}.RccApiUrl}
+
+  evaluarProducto:
+    name: ${self:service}-evaluar-producto-${sls:stage}
+    description: "Workflow paso 4: reglas R1-R6 con la oferta y la version vigente de productos."
+    handler: workflow.evaluar_producto
+    timeout: 10
+    memorySize: 256
+
+  explicarResultado:
+    name: ${self:service}-explicar-resultado-${sls:stage}
+    description: "Workflow paso 5: Groq redacta el resultado ya decidido; si falla, plantilla."
+    handler: workflow.explicar_resultado
+    timeout: 30
+    memorySize: 256
+    environment: ${self:custom.groq}
+
+  guardarResultado:
+    name: ${self:service}-guardar-resultado-${sls:stage}
+    description: "Workflow paso 6: guarda estado, motivo y JSON de salida (o ERROR)."
+    handler: workflow.guardar_resultado
+    timeout: 10
+    memorySize: 256
+
+resources:
+  Resources:
+    SolicitudesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tablas.solicitudes}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - { AttributeName: solicitud_id, AttributeType: S }
+          - { AttributeName: estado, AttributeType: S }
+          - { AttributeName: documento, AttributeType: S }
+          - { AttributeName: creado_en, AttributeType: S }
+        KeySchema:
+          - { AttributeName: solicitud_id, KeyType: HASH }
+        GlobalSecondaryIndexes:
+          - IndexName: gsi_estado
+            KeySchema:
+              - { AttributeName: estado, KeyType: HASH }
+              - { AttributeName: creado_en, KeyType: RANGE }
+            Projection: { ProjectionType: ALL }
+          - IndexName: gsi_documento
+            KeySchema:
+              - { AttributeName: documento, KeyType: HASH }
+              - { AttributeName: creado_en, KeyType: RANGE }
+            Projection: { ProjectionType: ALL }
+
+    BoletasTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tablas.boletas}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - { AttributeName: solicitud_id, AttributeType: S }
+          - { AttributeName: periodo, AttributeType: S }
+        KeySchema:
+          - { AttributeName: solicitud_id, KeyType: HASH }
+          - { AttributeName: periodo, KeyType: RANGE }
+
+    ProductosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tablas.productos}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - { AttributeName: producto_id, AttributeType: S }
+          - { AttributeName: version, AttributeType: S }
+        KeySchema:
+          - { AttributeName: producto_id, KeyType: HASH }
+          - { AttributeName: version, KeyType: RANGE }
+
+    OfertasTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.tablas.ofertas}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - { AttributeName: documento, AttributeType: S }
+          - { AttributeName: producto_id, AttributeType: S }
+        KeySchema:
+          - { AttributeName: documento, KeyType: HASH }
+          - { AttributeName: producto_id, KeyType: RANGE }
+
+    BoletasBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:custom.bucketBoletas}
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: true
+          BlockPublicPolicy: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+        BucketEncryption:
+          ServerSideEncryptionConfiguration:
+            - ServerSideEncryptionByDefault: { SSEAlgorithm: AES256 }
+        LifecycleConfiguration:
+          Rules:
+            - Id: borrar-boletas-30-dias
+              Status: Enabled
+              ExpirationInDays: 30
+
+    EvaluacionStateMachine:
+      Type: AWS::StepFunctions::StateMachine
+      Properties:
+        StateMachineName: bart-evaluacion-${sls:stage}
+        RoleArn: arn:aws:iam::${aws:accountId}:role/LabRole
+        DefinitionSubstitutions:
+          LeerBoletaArn: !GetAtt LeerBoletaLambdaFunction.Arn
+          ValidarBoletaArn: !GetAtt ValidarBoletaLambdaFunction.Arn
+          ConsultarRccArn: !GetAtt ConsultarRccLambdaFunction.Arn
+          EvaluarProductoArn: !GetAtt EvaluarProductoLambdaFunction.Arn
+          ExplicarResultadoArn: !GetAtt ExplicarResultadoLambdaFunction.Arn
+          GuardarResultadoArn: !GetAtt GuardarResultadoLambdaFunction.Arn
+        Definition:
+          Comment: "Bart - evaluacion de una solicitud. Reglas en el paso 4; Groq en los pasos 1 y 5."
+          StartAt: LeerBoleta
+          TimeoutSeconds: 300
+          States:
+            LeerBoleta:
+              Type: Task
+              Resource: "${LeerBoletaArn}"
+              ResultPath: "$.boleta"
+              Retry:
+                - ErrorEquals: [GroqReintentable, GroqRespuestaInvalida]
+                  IntervalSeconds: 3
+                  MaxAttempts: 3
+                  BackoffRate: 2
+                - ErrorEquals: [Lambda.ServiceException, Lambda.AWSLambdaException, Lambda.SdkClientException, Lambda.TooManyRequestsException]
+                  IntervalSeconds: 2
+                  MaxAttempts: 2
+                  BackoffRate: 2
+              Catch:
+                - { ErrorEquals: [States.ALL], ResultPath: "$.error", Next: GuardarResultado }
+              Next: ValidarBoleta
+            ValidarBoleta:
+              Type: Task
+              Resource: "${ValidarBoletaArn}"
+              ResultPath: "$.validacion"
+              Retry:
+                - ErrorEquals: [Lambda.ServiceException, Lambda.AWSLambdaException, Lambda.SdkClientException, Lambda.TooManyRequestsException]
+                  IntervalSeconds: 2
+                  MaxAttempts: 2
+                  BackoffRate: 2
+              Catch:
+                - { ErrorEquals: [States.ALL], ResultPath: "$.error", Next: GuardarResultado }
+              Next: BoletaValida
+            BoletaValida:
+              Type: Choice
+              Choices:
+                - Variable: "$.validacion.resultado"
+                  StringEquals: OK
+                  Next: ConsultarRCC
+              Default: GuardarResultado
+            ConsultarRCC:
+              Type: Task
+              Resource: "${ConsultarRccArn}"
+              ResultPath: "$.rcc"
+              Retry:
+                - ErrorEquals: [RccNoDisponible, Lambda.ServiceException, Lambda.AWSLambdaException, Lambda.SdkClientException, Lambda.TooManyRequestsException]
+                  IntervalSeconds: 2
+                  MaxAttempts: 2
+                  BackoffRate: 2
+              Catch:
+                - { ErrorEquals: [States.ALL], ResultPath: "$.error", Next: GuardarResultado }
+              Next: EvaluarProducto
+            EvaluarProducto:
+              Type: Task
+              Resource: "${EvaluarProductoArn}"
+              ResultPath: "$.evaluacion"
+              Retry:
+                - ErrorEquals: [Lambda.ServiceException, Lambda.AWSLambdaException, Lambda.SdkClientException, Lambda.TooManyRequestsException]
+                  IntervalSeconds: 2
+                  MaxAttempts: 2
+                  BackoffRate: 2
+              Catch:
+                - { ErrorEquals: [States.ALL], ResultPath: "$.error", Next: GuardarResultado }
+              Next: ExplicarResultado
+            ExplicarResultado:
+              Type: Task
+              Resource: "${ExplicarResultadoArn}"
+              ResultPath: "$.explicacion"
+              Retry:
+                - ErrorEquals: [Lambda.ServiceException, Lambda.AWSLambdaException, Lambda.SdkClientException, Lambda.TooManyRequestsException]
+                  IntervalSeconds: 2
+                  MaxAttempts: 2
+                  BackoffRate: 2
+              Catch:
+                - { ErrorEquals: [States.ALL], ResultPath: "$.error", Next: GuardarResultado }
+              Next: GuardarResultado
+            GuardarResultado:
+              Type: Task
+              Resource: "${GuardarResultadoArn}"
+              Retry:
+                - ErrorEquals: [Lambda.ServiceException, Lambda.AWSLambdaException, Lambda.SdkClientException, Lambda.TooManyRequestsException]
+                  IntervalSeconds: 2
+                  MaxAttempts: 3
+                  BackoffRate: 2
+              End: true
+
+  Outputs:
+    SolicitudesApiUrl:
+      Description: URL base de la API Solicitudes
+      Value:
+        Fn::Join: ["", ["https://", { Ref: HttpApi }, ".execute-api.", { Ref: "AWS::Region" }, ".amazonaws.com"]]
+    SolicitudesApiFunctionArn:
+      Description: Lambda API Solicitudes (Bart la invoca directo)
+      Value: !GetAtt ApiLambdaFunction.Arn
+    EvaluacionStateMachineArn:
+      Value: { Ref: EvaluacionStateMachine }
+    BoletasBucketName:
+      Value: { Ref: BoletasBucket }

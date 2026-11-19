@@ -1,0 +1,23 @@
+flowchart TD
+    A([Cliente abre la web en S3]) --> B[Bart saluda<br/>sesion nueva en DynamoDB]
+    B --> C{Quiere un credito?}
+    C -- otro tema --> C1[Respuesta fija:<br/>solo creditos] --> C
+    C -- si --> D[Pide el DNI<br/>hasta 3 intentos]
+    D -- 3 fallidos --> Z1([Fin: invitacion a tienda])
+    D -- DNI valido --> E[Lista ofertas de campana<br/>sin consultar el RCC]
+    E -- sin ofertas --> Z1
+    E -- con ofertas --> F[Groq redacta las ofertas<br/>el cliente elige producto]
+    F --> G[Monto dentro de la oferta<br/>plazo fijo de la oferta]
+    G -- otro plazo o fuera de rango --> G1[Invita a tienda<br/>y repite la pregunta] --> G
+    G -- monto valido --> H[El cliente adjunta<br/>su boleta en PDF]
+    H --> I[Solicitudes guarda el PDF en S3<br/>crea la solicitud EN_PROCESO<br/>y arranca Step Functions]
+    I --> J[[Workflow bart-evaluacion<br/>boleta, RCC actual y reglas R1-R6]]
+    J --> K{Resultado}
+    K -- PRE_APROBADA --> L[JSON de salida<br/>en la bandeja del banco]
+    K -- CONTRAOFERTA --> M{El cliente acepta<br/>el monto aprobable?}
+    M -- si --> L
+    M -- no --> Z2([DESISTIDA: invitacion a tienda])
+    K -- NO_ELEGIBLE --> Z3([Invitacion a tienda])
+    K -- DOC_INCONSISTENTE --> Z4([Boleta no valida: tienda])
+    L --> N[El banco revisa el JSON<br/>y cierra la solicitud]
+    N --> O([CERRADA])

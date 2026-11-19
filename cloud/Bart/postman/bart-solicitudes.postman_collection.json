@@ -1,0 +1,542 @@
+{
+  "info": {
+    "name": "bart-solicitudes",
+    "description": "API Solicitudes + workflow Step Functions + Groq (datos sinteticos). Correr TODA la coleccion en orden con el Runner: crea 3 solicitudes, espera al workflow, acepta la contraoferta y al final cierra todo para poder repetir.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://<api-id>.execute-api.us-east-1.amazonaws.com"
+    },
+    {
+      "key": "sol_pre",
+      "value": ""
+    },
+    {
+      "key": "sol_contra",
+      "value": ""
+    },
+    {
+      "key": "sol_doc",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Ofertas vigentes 99990016 (200)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/clientes/99990016/ofertas",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('5 ofertas', () => pm.expect(pm.response.json().ofertas.length).to.eql(5));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Ofertas con DNI invalido (400)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/clientes/123/ofertas",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+              "pm.test('error.codigo = DNI_INVALIDO', () => pm.expect(pm.response.json().error.codigo).to.eql(\"DNI_INVALIDO\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Crear solicitud PLD 99990016 por 20,000 (202)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/solicitudes",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"dni\": \"99990016\",\n  \"oferta_id\": \"OF-2026-11-99990016-PLD\",\n  \"monto_solicitado\": 20000,\n  \"boleta\": {\n    \"nombre_archivo\": \"boleta_2026-10.pdf\",\n    \"contenido_base64\": \"JVBERi0xLjMKJenr8b8KMSAwIG9iago8PAovQ291bnQgMQovS2lkcyBbMyAwIFJdCi9NZWRpYUJveCBbMCAwIDU5NS4yOCA4NDEuODldCi9UeXBlIC9QYWdlcwo+PgplbmRvYmoKMiAwIG9iago8PAovT3BlbkFjdGlvbiBbMyAwIFIgL0ZpdEggbnVsbF0KL1BhZ2VMYXlvdXQgL09uZUNvbHVtbgovUGFnZXMgMSAwIFIKL1R5cGUgL0NhdGFsb2cKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL0NvbnRlbnRzIDQgMCBSCi9QYXJlbnQgMSAwIFIKL1Jlc291cmNlcyA3IDAgUgovVHlwZSAvUGFnZQo+PgplbmRvYmoKNCAwIG9iago8PAovRmlsdGVyIC9GbGF0ZURlY29kZQovTGVuZ3RoIDYyNQo+PgpzdHJlYW0KeJyNlNtuozAQhu/7FHPZSu3UJw7hziFOlSoBBGSveuMmbpYqgSwk2tdfG3rYilYKigCRfzz/fDM2g8crgl4Af6+mJdzPGVCKhED5Aqp0nzhFGkJICHIG5Raup+lSlRJmCjL5kLpnrlbrROUyXqSJKm6gfP0SG4QERdjHztJ4vVJJmUKxSEpVLuLUrpJLyPK1msoC7twf8Esu0xyW6kEu/1vtfk6/NxcIgsGkT6AOx73R26aNQK2yXBXO6CoF4kGBEmMcu2MEJ14fnK/jCCbvF/HGWmIftNdmpq2abRMBI8y/o2Sk9UOKLOi1Zauf9evgqszlVD7Kma3vEwEh1B8v4FMUA/JZshiMfS8UFL2Bb6zbnfX0qObKNUbmSo7ljGIgevncbH5r2Bqo6l1ruqEaekfcbxxni5+QAZTZVQdTw9HUXdXU2qKIQM4z2z53l8u5/NK3H4bK8xmyAeciebDNSotL2u0Jhjx4M3I416bVG+sCnnVXbXQE4a0XEMt+VIHHGHp8GOKmrl6s2gVGQGyWsZow9AesZXPS+3dI3bcZfixS+Lz/6tqoinjtpv+iMoXgSP0+0EHVx6Y9GWie99VOn5oeeegFSPjIuWAcOf2I3DSHquvrpJxhKMZ6wlEEH/pjWx36qejM7tzaNJQGKMYDwUOOPn/rQ33qQ/6cK/e20Sezsx5dN6gtY5yTWyxve3aguzXd5myXcXzp7cTuSsEu4cuZQDrwTZQ9WKQ7lmQegX/riwmG3iWsWSje99qqqc3W+u6aveng6TpTydMNwswy78COzKmyM9PBzri529q3o241mD1kaQxT3Z4+jph/4PpVRQplbmRzdHJlYW0KZW5kb2JqCjUgMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL1N1YnR5cGUgL1R5cGUxCi9UeXBlIC9Gb250Cj4+CmVuZG9iago2IDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL1N1YnR5cGUgL1R5cGUxCi9UeXBlIC9Gb250Cj4+CmVuZG9iago3IDAgb2JqCjw8Ci9Gb250IDw8L0YxIDUgMCBSCi9GMiA2IDAgUj4+Ci9Qcm9jU2V0IFsvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJXQo+PgplbmRvYmoKOCAwIG9iago8PAovQ3JlYXRpb25EYXRlIChEOjIwMjYxMTA1MDkwMDAwWikKL0NyZWF0b3IgKGJhcnQtZHVtbXkgYnVpbGRfYm9sZXRhcy5weSkKL1Byb2R1Y2VyIChiYXJ0LWR1bW15IFwoZnBkZjJcKSkKL1RpdGxlIChCb2xldGEgZGUgcGFnbyBzaW50ZXRpY2EpCj4+CmVuZG9iagp4cmVmCjAgOQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMTUgMDAwMDAgbiAKMDAwMDAwMDEwMiAwMDAwMCBuIAowMDAwMDAwMjA1IDAwMDAwIG4gCjAwMDAwMDAyODUgMDAwMDAgbiAKMDAwMDAwMDk4MiAwMDAwMCBuIAowMDAwMDAxMDc5IDAwMDAwIG4gCjAwMDAwMDExODEgMDAwMDAgbiAKMDAwMDAwMTI3OCAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9TaXplIDkKL1Jvb3QgMiAwIFIKL0luZm8gOCAwIFIKL0lEIFs8MzAyRjA1RUVCREU2MDI0MjIyMTg3OTdCMDgzNTQ1NDM+PDMwMkYwNUVFQkRFNjAyNDIyMjE4Nzk3QjA4MzU0NTQzPl0KPj4Kc3RhcnR4cmVmCjE0MzkKJSVFT0YK\"\n  },\n  \"canal\": \"API\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 202', () => pm.response.to.have.status(202));",
+              "pm.test('estado = EN_PROCESO', () => pm.expect(pm.response.json().estado).to.eql(\"EN_PROCESO\"));",
+              "if (pm.response.code < 300) { pm.collectionVariables.set('sol_pre', pm.response.json().solicitud_id); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Segunda solicitud del mismo DNI (409)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/solicitudes",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"dni\": \"99990016\",\n  \"oferta_id\": \"OF-2026-11-99990016-PLD\",\n  \"monto_solicitado\": 5000,\n  \"boleta\": {\n    \"nombre_archivo\": \"boleta_2026-10.pdf\",\n    \"contenido_base64\": \"JVBERi0xLjMKJenr8b8KMSAwIG9iago8PAovQ291bnQgMQovS2lkcyBbMyAwIFJdCi9NZWRpYUJveCBbMCAwIDU5NS4yOCA4NDEuODldCi9UeXBlIC9QYWdlcwo+PgplbmRvYmoKMiAwIG9iago8PAovT3BlbkFjdGlvbiBbMyAwIFIgL0ZpdEggbnVsbF0KL1BhZ2VMYXlvdXQgL09uZUNvbHVtbgovUGFnZXMgMSAwIFIKL1R5cGUgL0NhdGFsb2cKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL0NvbnRlbnRzIDQgMCBSCi9QYXJlbnQgMSAwIFIKL1Jlc291cmNlcyA3IDAgUgovVHlwZSAvUGFnZQo+PgplbmRvYmoKNCAwIG9iago8PAovRmlsdGVyIC9GbGF0ZURlY29kZQovTGVuZ3RoIDYyNQo+PgpzdHJlYW0KeJyNlNtuozAQhu/7FHPZSu3UJw7hziFOlSoBBGSveuMmbpYqgSwk2tdfG3rYilYKigCRfzz/fDM2g8crgl4Af6+mJdzPGVCKhED5Aqp0nzhFGkJICHIG5Raup+lSlRJmCjL5kLpnrlbrROUyXqSJKm6gfP0SG4QERdjHztJ4vVJJmUKxSEpVLuLUrpJLyPK1msoC7twf8Esu0xyW6kEu/1vtfk6/NxcIgsGkT6AOx73R26aNQK2yXBXO6CoF4kGBEmMcu2MEJ14fnK/jCCbvF/HGWmIftNdmpq2abRMBI8y/o2Sk9UOKLOi1Zauf9evgqszlVD7Kma3vEwEh1B8v4FMUA/JZshiMfS8UFL2Bb6zbnfX0qObKNUbmSo7ljGIgevncbH5r2Bqo6l1ruqEaekfcbxxni5+QAZTZVQdTw9HUXdXU2qKIQM4z2z53l8u5/NK3H4bK8xmyAeciebDNSotL2u0Jhjx4M3I416bVG+sCnnVXbXQE4a0XEMt+VIHHGHp8GOKmrl6s2gVGQGyWsZow9AesZXPS+3dI3bcZfixS+Lz/6tqoinjtpv+iMoXgSP0+0EHVx6Y9GWie99VOn5oeeegFSPjIuWAcOf2I3DSHquvrpJxhKMZ6wlEEH/pjWx36qejM7tzaNJQGKMYDwUOOPn/rQ33qQ/6cK/e20Sezsx5dN6gtY5yTWyxve3aguzXd5myXcXzp7cTuSsEu4cuZQDrwTZQ9WKQ7lmQegX/riwmG3iWsWSje99qqqc3W+u6aveng6TpTydMNwswy78COzKmyM9PBzri529q3o241mD1kaQxT3Z4+jph/4PpVRQplbmRzdHJlYW0KZW5kb2JqCjUgMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL1N1YnR5cGUgL1R5cGUxCi9UeXBlIC9Gb250Cj4+CmVuZG9iago2IDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL1N1YnR5cGUgL1R5cGUxCi9UeXBlIC9Gb250Cj4+CmVuZG9iago3IDAgb2JqCjw8Ci9Gb250IDw8L0YxIDUgMCBSCi9GMiA2IDAgUj4+Ci9Qcm9jU2V0IFsvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJXQo+PgplbmRvYmoKOCAwIG9iago8PAovQ3JlYXRpb25EYXRlIChEOjIwMjYxMTA1MDkwMDAwWikKL0NyZWF0b3IgKGJhcnQtZHVtbXkgYnVpbGRfYm9sZXRhcy5weSkKL1Byb2R1Y2VyIChiYXJ0LWR1bW15IFwoZnBkZjJcKSkKL1RpdGxlIChCb2xldGEgZGUgcGFnbyBzaW50ZXRpY2EpCj4+CmVuZG9iagp4cmVmCjAgOQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMTUgMDAwMDAgbiAKMDAwMDAwMDEwMiAwMDAwMCBuIAowMDAwMDAwMjA1IDAwMDAwIG4gCjAwMDAwMDAyODUgMDAwMDAgbiAKMDAwMDAwMDk4MiAwMDAwMCBuIAowMDAwMDAxMDc5IDAwMDAwIG4gCjAwMDAwMDExODEgMDAwMDAgbiAKMDAwMDAwMTI3OCAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9TaXplIDkKL1Jvb3QgMiAwIFIKL0luZm8gOCAwIFIKL0lEIFs8MzAyRjA1RUVCREU2MDI0MjIyMTg3OTdCMDgzNTQ1NDM+PDMwMkYwNUVFQkRFNjAyNDIyMjE4Nzk3QjA4MzU0NTQzPl0KPj4Kc3RhcnR4cmVmCjE0MzkKJSVFT0YK\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409', () => pm.response.to.have.status(409));",
+              "pm.test('error.codigo = SOLICITUD_ACTIVA', () => pm.expect(pm.response.json().error.codigo).to.eql(\"SOLICITUD_ACTIVA\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Monto mayor a la oferta (422)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/solicitudes",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"dni\": \"99990016\",\n  \"oferta_id\": \"OF-2026-11-99990016-PLD\",\n  \"monto_solicitado\": 999999,\n  \"boleta\": {\n    \"nombre_archivo\": \"boleta_2026-10.pdf\",\n    \"contenido_base64\": \"JVBERi0xLjMKJenr8b8KMSAwIG9iago8PAovQ291bnQgMQovS2lkcyBbMyAwIFJdCi9NZWRpYUJveCBbMCAwIDU5NS4yOCA4NDEuODldCi9UeXBlIC9QYWdlcwo+PgplbmRvYmoKMiAwIG9iago8PAovT3BlbkFjdGlvbiBbMyAwIFIgL0ZpdEggbnVsbF0KL1BhZ2VMYXlvdXQgL09uZUNvbHVtbgovUGFnZXMgMSAwIFIKL1R5cGUgL0NhdGFsb2cKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL0NvbnRlbnRzIDQgMCBSCi9QYXJlbnQgMSAwIFIKL1Jlc291cmNlcyA3IDAgUgovVHlwZSAvUGFnZQo+PgplbmRvYmoKNCAwIG9iago8PAovRmlsdGVyIC9GbGF0ZURlY29kZQovTGVuZ3RoIDYyNQo+PgpzdHJlYW0KeJyNlNtuozAQhu/7FHPZSu3UJw7hziFOlSoBBGSveuMmbpYqgSwk2tdfG3rYilYKigCRfzz/fDM2g8crgl4Af6+mJdzPGVCKhED5Aqp0nzhFGkJICHIG5Raup+lSlRJmCjL5kLpnrlbrROUyXqSJKm6gfP0SG4QERdjHztJ4vVJJmUKxSEpVLuLUrpJLyPK1msoC7twf8Esu0xyW6kEu/1vtfk6/NxcIgsGkT6AOx73R26aNQK2yXBXO6CoF4kGBEmMcu2MEJ14fnK/jCCbvF/HGWmIftNdmpq2abRMBI8y/o2Sk9UOKLOi1Zauf9evgqszlVD7Kma3vEwEh1B8v4FMUA/JZshiMfS8UFL2Bb6zbnfX0qObKNUbmSo7ljGIgevncbH5r2Bqo6l1ruqEaekfcbxxni5+QAZTZVQdTw9HUXdXU2qKIQM4z2z53l8u5/NK3H4bK8xmyAeciebDNSotL2u0Jhjx4M3I416bVG+sCnnVXbXQE4a0XEMt+VIHHGHp8GOKmrl6s2gVGQGyWsZow9AesZXPS+3dI3bcZfixS+Lz/6tqoinjtpv+iMoXgSP0+0EHVx6Y9GWie99VOn5oeeegFSPjIuWAcOf2I3DSHquvrpJxhKMZ6wlEEH/pjWx36qejM7tzaNJQGKMYDwUOOPn/rQ33qQ/6cK/e20Sezsx5dN6gtY5yTWyxve3aguzXd5myXcXzp7cTuSsEu4cuZQDrwTZQ9WKQ7lmQegX/riwmG3iWsWSje99qqqc3W+u6aveng6TpTydMNwswy78COzKmyM9PBzri529q3o241mD1kaQxT3Z4+jph/4PpVRQplbmRzdHJlYW0KZW5kb2JqCjUgMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL1N1YnR5cGUgL1R5cGUxCi9UeXBlIC9Gb250Cj4+CmVuZG9iago2IDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhLUJvbGQKL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcKL1N1YnR5cGUgL1R5cGUxCi9UeXBlIC9Gb250Cj4+CmVuZG9iago3IDAgb2JqCjw8Ci9Gb250IDw8L0YxIDUgMCBSCi9GMiA2IDAgUj4+Ci9Qcm9jU2V0IFsvUERGIC9UZXh0IC9JbWFnZUIgL0ltYWdlQyAvSW1hZ2VJXQo+PgplbmRvYmoKOCAwIG9iago8PAovQ3JlYXRpb25EYXRlIChEOjIwMjYxMTA1MDkwMDAwWikKL0NyZWF0b3IgKGJhcnQtZHVtbXkgYnVpbGRfYm9sZXRhcy5weSkKL1Byb2R1Y2VyIChiYXJ0LWR1bW15IFwoZnBkZjJcKSkKL1RpdGxlIChCb2xldGEgZGUgcGFnbyBzaW50ZXRpY2EpCj4+CmVuZG9iagp4cmVmCjAgOQowMDAwMDAwMDAwIDY1NTM1IGYgCjAwMDAwMDAwMTUgMDAwMDAgbiAKMDAwMDAwMDEwMiAwMDAwMCBuIAowMDAwMDAwMjA1IDAwMDAwIG4gCjAwMDAwMDAyODUgMDAwMDAgbiAKMDAwMDAwMDk4MiAwMDAwMCBuIAowMDAwMDAxMDc5IDAwMDAwIG4gCjAwMDAwMDExODEgMDAwMDAgbiAKMDAwMDAwMTI3OCAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9TaXplIDkKL1Jvb3QgMiAwIFIKL0luZm8gOCAwIFIKL0lEIFs8MzAyRjA1RUVCREU2MDI0MjIyMTg3OTdCMDgzNTQ1NDM+PDMwMkYwNUVFQkRFNjAyNDIyMjE4Nzk3QjA4MzU0NTQzPl0KPj4Kc3RhcnR4cmVmCjE0MzkKJSVFT0YK\"\n  }\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 422', () => pm.response.to.have.status(422));",
+              "pm.test('error.codigo = MONTO_FUERA_DE_OFERTA', () => pm.expect(pm.response.json().error.codigo).to.eql(\"MONTO_FUERA_DE_OFERTA\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Crear solicitud con boleta de neto bajo 99990006 (202)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/solicitudes",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"dni\": \"99990006\",\n  \"oferta_id\": \"OF-2026-11-99990006-PLD\",\n  \"monto_solicitado\": 35000.0,\n  \"boleta\": {\n    \"nombre_archivo\": \"boleta_2026-10_neto_bajo.pdf\",\n    \"contenido_base64\": \"JVBERi0xLjMKJenr8b8KMSAwIG9iago8PAovQ291bnQgMQovS2lkcyBbMyAwIFJdCi9NZWRpYUJveCBbMCAwIDU5NS4yOCA4NDEuODldCi9UeXBlIC9QYWdlcwo+PgplbmRvYmoKMiAwIG9iago8PAovT3BlbkFjdGlvbiBbMyAwIFIgL0ZpdEggbnVsbF0KL1BhZ2VMYXlvdXQgL09uZUNvbHVtbgovUGFnZXMgMSAwIFIKL1R5cGUgL0NhdGFsb2cKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL0NvbnRlbnRzIDQgMCBSCi9QYXJlbnQgMSAwIFIKL1Jlc291cmNlcyA3IDAgUgovVHlwZSAvUGFnZQo+PgplbmRvYmoKNCAwIG9iago8PAovRmlsdGVyIC9GbGF0ZURlY29kZQovTGVuZ3RoIDYyMQo+PgpzdHJlYW0KeJyNVE1vozAUvPdXvGMrNa4/geTmEKdKlQAC0lMvbnBZqgSykGj//tqQdreilcIBLDNjz5s3NoWnG4yED39u5jk8LCkQgjCG/A1U7qYYQSSAAGPEKOQF3M7jtcolLBQk8jF231RttpFKZbiKI5XdQf7+hesHGPGg5y7icLtRUR5Dtopyla/C2K6SSkjSrZrLDCbuBzzLdZzCWj3K9X+rPSzJ9+J8jpE/7TdQh+Pe6KJpZ6A2SaoyJ3QTg8CQIYlCNFZHMZqKnpxuwxlMPx6Bx1hsP6THJqatmqKZAcXUm5Ax1gsIon6PzVv9qt8HVXkq5/JJLmx9/yzAGHvjBTyC+GD5IloNwr4HcoLE4G+o29JqyraJSp9XWZyOwZQgn/fgpdn90lAYqOqyNd1QC59gOsFkzLOlT/Fgkymrg6nhaOquamptjZiBXCa2ee4t10v5pWs/REp4FNHBzFX0aFsVZ9c0W3CKmH8RcjjXptU7qwJedVft9Az4/dQPEGOjCgSlSLAhwk1dvVm0I85ACIaIGOMxRd5ga96c9P7Dps4y7oXF8OCaMrnH+lnXRpWFW5f+qwrl3MryeqKzVR+b9mSged1XpT41vek/KOeUIUY+mbvmUHV9pYGwvR/DMUPc/4Qf2+rQx6Iz5bm1u/iWFYxYLGDIY5c+1Kee8ftcudFOn0xpFdpuMOKhYJwmZk25nNjB28J0u7NdxrlL7vHV7jLKERncjZS9VqS7lGTqYiDslYXxNU7TgH+ctE1Tm8Lq7pq96eDlNlHRyx2ChXW8AxuZU2Uz00FpXO4KOzrqVoPZQxKHMNft6fOC+QuhHVV1CmVuZHN0cmVhbQplbmRvYmoKNSAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYQovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovU3VidHlwZSAvVHlwZTEKL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjYgMCBvYmoKPDwKL0Jhc2VGb250IC9IZWx2ZXRpY2EtQm9sZAovRW5jb2RpbmcgL1dpbkFuc2lFbmNvZGluZwovU3VidHlwZSAvVHlwZTEKL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjcgMCBvYmoKPDwKL0ZvbnQgPDwvRjEgNSAwIFIKL0YyIDYgMCBSPj4KL1Byb2NTZXQgWy9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUldCj4+CmVuZG9iago4IDAgb2JqCjw8Ci9DcmVhdGlvbkRhdGUgKEQ6MjAyNjExMDUwOTAwMDBaKQovQ3JlYXRvciAoYmFydC1kdW1teSBidWlsZF9ib2xldGFzLnB5KQovUHJvZHVjZXIgKGJhcnQtZHVtbXkgXChmcGRmMlwpKQovVGl0bGUgKEJvbGV0YSBkZSBwYWdvIHNpbnRldGljYSkKPj4KZW5kb2JqCnhyZWYKMCA5CjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDAxNSAwMDAwMCBuIAowMDAwMDAwMTAyIDAwMDAwIG4gCjAwMDAwMDAyMDUgMDAwMDAgbiAKMDAwMDAwMDI4NSAwMDAwMCBuIAowMDAwMDAwOTc4IDAwMDAwIG4gCjAwMDAwMDEwNzUgMDAwMDAgbiAKMDAwMDAwMTE3NyAwMDAwMCBuIAowMDAwMDAxMjc0IDAwMDAwIG4gCnRyYWlsZXIKPDwKL1NpemUgOQovUm9vdCAyIDAgUgovSW5mbyA4IDAgUgovSUQgWzxDM0E5OEUxREI2NDYwNEFBQUM1MDRDNUYzNDI5OTE0MD48QzNBOThFMURCNjQ2MDRBQUFDNTA0QzVGMzQyOTkxNDA+XQo+PgpzdGFydHhyZWYKMTQzNQolJUVPRgo=\"\n  },\n  \"canal\": \"API\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 202', () => pm.response.to.have.status(202));",
+              "if (pm.response.code < 300) { pm.collectionVariables.set('sol_contra', pm.response.json().solicitud_id); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Crear solicitud con boleta de otra persona 99990025 (202)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/solicitudes",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"dni\": \"99990025\",\n  \"oferta_id\": \"OF-2026-11-99990025-PLD\",\n  \"monto_solicitado\": 10000,\n  \"boleta\": {\n    \"nombre_archivo\": \"boleta_2026-10_dni_otro.pdf\",\n    \"contenido_base64\": \"JVBERi0xLjMKJenr8b8KMSAwIG9iago8PAovQ291bnQgMQovS2lkcyBbMyAwIFJdCi9NZWRpYUJveCBbMCAwIDU5NS4yOCA4NDEuODldCi9UeXBlIC9QYWdlcwo+PgplbmRvYmoKMiAwIG9iago8PAovT3BlbkFjdGlvbiBbMyAwIFIgL0ZpdEggbnVsbF0KL1BhZ2VMYXlvdXQgL09uZUNvbHVtbgovUGFnZXMgMSAwIFIKL1R5cGUgL0NhdGFsb2cKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL0NvbnRlbnRzIDQgMCBSCi9QYXJlbnQgMSAwIFIKL1Jlc291cmNlcyA3IDAgUgovVHlwZSAvUGFnZQo+PgplbmRvYmoKNCAwIG9iago8PAovRmlsdGVyIC9GbGF0ZURlY29kZQovTGVuZ3RoIDYzNQo+PgpzdHJlYW0KeJyNlE1zokAQhu/5FX1MquJkvvjyNuKYIqVgAeaUy0QnLCkFF7T2728DJrspkio5CEK/028/3TMcnm4ocTz4czPL4WHBgTFCKeRvoPPulWCE+eBTSgSHfAe3s2SpcwVzDWv1mHT3VK82sU5VGCWxzu4gf/+i9XxKpN9r50m4Wek4TyCL4lznUZjgKqmCdbrRM5XBpPsAz2qZpLDUj2r532oPC/a9OU9S4gV9An047q3Z1c0U9Gqd6qwzukqA+pARRUIydscpCZxenG7CKQQfF/XHsRRvrI9d26asd/UUOOXuhNFRrOszwr0+Nm/Mq3kfXOWpmqknNcf6/iGglDvjBVxG5IB8HkeDMUqZOw6UjDgD39A0BXpSWZTliFmDmq+iGP+kKo+ek7GUM+LJXrqw218GdhbKqmhs21fG3AnlE8rGOgQR0AGaLcqDreBoq7asK4NY0MBija3sfmc4K196+MOAOS4nfEAbxY/YuCS7pvWO5ER4FyOHc2Ubs0UX8Gracmum4NzzACdXjipwOCeOGAa6rso3jO6EU6CYZRxNOXEHxHl9MvsPSO23GX4sUrqif9u1VGfhptsJV5UppSDM7YUdVHOsm5OF+nVfFuZU98gdHhAqRs4lF0SwT+W2PpRtX6fnEc8bh1NBpPcZfmzKQz8UrS3ODWbxOG7lkUr4grji0oXq1Ct+n8vuaWtOtkCH2AuOKSUfixHKZfcObHe23Z5xmY5u4LjEo9ewFVwSNrCNNR4wqjueVDoFeS8E2pPXcOa+/Nhzq7qyO3Td1nvbwsvtWscvdwTmyLsFHJdTifPSQmG7mdvh09E0Buwe1kkIM9OcPo+av3NhWJ4KZW5kc3RyZWFtCmVuZG9iago1IDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhCi9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nCi9TdWJ0eXBlIC9UeXBlMQovVHlwZSAvRm9udAo+PgplbmRvYmoKNiAwIG9iago8PAovQmFzZUZvbnQgL0hlbHZldGljYS1Cb2xkCi9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nCi9TdWJ0eXBlIC9UeXBlMQovVHlwZSAvRm9udAo+PgplbmRvYmoKNyAwIG9iago8PAovRm9udCA8PC9GMSA1IDAgUgovRjIgNiAwIFI+PgovUHJvY1NldCBbL1BERiAvVGV4dCAvSW1hZ2VCIC9JbWFnZUMgL0ltYWdlSV0KPj4KZW5kb2JqCjggMCBvYmoKPDwKL0NyZWF0aW9uRGF0ZSAoRDoyMDI2MTEwNTA5MDAwMFopCi9DcmVhdG9yIChiYXJ0LWR1bW15IGJ1aWxkX2JvbGV0YXMucHkpCi9Qcm9kdWNlciAoYmFydC1kdW1teSBcKGZwZGYyXCkpCi9UaXRsZSAoQm9sZXRhIGRlIHBhZ28gc2ludGV0aWNhKQo+PgplbmRvYmoKeHJlZgowIDkKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDE1IDAwMDAwIG4gCjAwMDAwMDAxMDIgMDAwMDAgbiAKMDAwMDAwMDIwNSAwMDAwMCBuIAowMDAwMDAwMjg1IDAwMDAwIG4gCjAwMDAwMDA5OTIgMDAwMDAgbiAKMDAwMDAwMTA4OSAwMDAwMCBuIAowMDAwMDAxMTkxIDAwMDAwIG4gCjAwMDAwMDEyODggMDAwMDAgbiAKdHJhaWxlcgo8PAovU2l6ZSA5Ci9Sb290IDIgMCBSCi9JbmZvIDggMCBSCi9JRCBbPDI1NTFEMzE2NzVDRjYzMzg1RTM0MzRFQUZCNzU0QjA0PjwyNTUxRDMxNjc1Q0Y2MzM4NUUzNDM0RUFGQjc1NEIwND5dCj4+CnN0YXJ0eHJlZgoxNDQ5CiUlRU9GCg==\"\n  },\n  \"canal\": \"API\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 202', () => pm.response.to.have.status(202));",
+              "if (pm.response.code < 300) { pm.collectionVariables.set('sol_doc', pm.response.json().solicitud_id); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Resultado PLD 99990016 (PRE_APROBADA)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/solicitudes/{{sol_pre}}",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "setTimeout(function () {}, 4000);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const j = pm.response.json();",
+              "const n = Number(pm.collectionVariables.get('intentos_pre') || 0);",
+              "if (j.estado === 'EN_PROCESO' && n < 10) {",
+              "  pm.collectionVariables.set('intentos_pre', n + 1);",
+              "  postman.setNextRequest('8. Resultado PLD 99990016 (PRE_APROBADA)');",
+              "} else { pm.collectionVariables.set('intentos_pre', 0); }",
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "if (pm.response.json().estado !== 'EN_PROCESO') {",
+              "  pm.test('estado = PRE_APROBADA', () => pm.expect(pm.response.json().estado).to.eql(\"PRE_APROBADA\"));",
+              "  pm.test('reglas evaluadas', () => pm.expect(pm.response.json().evaluacion.reglas_evaluadas.length).to.be.above(2));",
+              "}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "9. Resultado neto bajo 99990006 (CONTRAOFERTA)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/solicitudes/{{sol_contra}}",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "setTimeout(function () {}, 4000);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const j = pm.response.json();",
+              "const n = Number(pm.collectionVariables.get('intentos_contra') || 0);",
+              "if (j.estado === 'EN_PROCESO' && n < 10) {",
+              "  pm.collectionVariables.set('intentos_contra', n + 1);",
+              "  postman.setNextRequest('9. Resultado neto bajo 99990006 (CONTRAOFERTA)');",
+              "} else { pm.collectionVariables.set('intentos_contra', 0); }",
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "if (pm.response.json().estado !== 'EN_PROCESO') { pm.test('estado = CONTRAOFERTA', () => pm.expect(pm.response.json().estado).to.eql(\"CONTRAOFERTA\")); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10. Resultado DNI de otro 99990025 (DOC_INCONSISTENTE)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/solicitudes/{{sol_doc}}",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "setTimeout(function () {}, 4000);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const j = pm.response.json();",
+              "const n = Number(pm.collectionVariables.get('intentos_doc') || 0);",
+              "if (j.estado === 'EN_PROCESO' && n < 10) {",
+              "  pm.collectionVariables.set('intentos_doc', n + 1);",
+              "  postman.setNextRequest('10. Resultado DNI de otro 99990025 (DOC_INCONSISTENTE)');",
+              "} else { pm.collectionVariables.set('intentos_doc', 0); }",
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "if (pm.response.json().estado !== 'EN_PROCESO') { pm.test('estado = DOC_INCONSISTENTE', () => pm.expect(pm.response.json().estado).to.eql(\"DOC_INCONSISTENTE\")); pm.test('motivo = DNI_NO_COINCIDE', () => pm.expect(pm.response.json().motivo).to.eql(\"DNI_NO_COINCIDE\")); }"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11. El cliente acepta la contraoferta (200)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/solicitudes/{{sol_contra}}/contraoferta",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"decision\": \"ACEPTA\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('estado = PRE_APROBADA', () => pm.expect(pm.response.json().estado).to.eql(\"PRE_APROBADA\"));",
+              "pm.test('motivo = CONTRAOFERTA_ACEPTADA', () => pm.expect(pm.response.json().motivo).to.eql(\"CONTRAOFERTA_ACEPTADA\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12. Bandeja del banco: PRE_APROBADA (200)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/solicitudes?estado=PRE_APROBADA&limite=50",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('incluye la solicitud creada', () => pm.expect(pm.response.json().items.map(i => i.solicitud_id)).to.include(pm.collectionVariables.get('sol_pre')));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13. Solicitudes de un DNI (200)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/solicitudes?dni=99990016",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "14. El banco cierra la solicitud de 99990016 (200)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/solicitudes/{{sol_pre}}/cierre",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"usuario_banco\": \"analista.demo\",\n  \"producto_final\": \"PLD-DEMO-0016\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('estado = CERRADA', () => pm.expect(pm.response.json().estado).to.eql(\"CERRADA\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "15. El banco cierra la solicitud de 99990006 (200)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/solicitudes/{{sol_contra}}/cierre",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"usuario_banco\": \"analista.demo\",\n  \"producto_final\": \"PLD-DEMO-0006\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('estado = CERRADA', () => pm.expect(pm.response.json().estado).to.eql(\"CERRADA\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "16. Cierre repetido (409)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/solicitudes/{{sol_pre}}/cierre",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"usuario_banco\": \"analista.demo\",\n  \"producto_final\": \"PLD-DEMO-0016\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409', () => pm.response.to.have.status(409));",
+              "pm.test('error.codigo = ESTADO_NO_PERMITE', () => pm.expect(pm.response.json().error.codigo).to.eql(\"ESTADO_NO_PERMITE\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "17. JSON de salida final (cerrada)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/solicitudes/{{sol_pre}}",
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('estado = CERRADA', () => pm.expect(pm.response.json().estado).to.eql(\"CERRADA\"));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
